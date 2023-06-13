@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="tech.wedev.wecom.dao.ZhQywxContactConfigInfoMapper">
+    <resultMap id="BaseResultMap" type="tech.wedev.wecom.entity.po.ZhQywxContactConfigInfoPO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="id" property="id"/>
+        <result column="qr_id" property="qrId"/>
+        <result column="config_id" property="configId"/>
+        <result column="corp_id" property="corpId"/>
+        <result column="app_name" property="appName"/>
+        <result column="app_flag" property="appFlag"/>
+        <result column="qr_type" property="qrType"/>
+        <result column="channel_name" property="channelName"/>
+        <result column="inner_mgr_type" property="innerMgrType"/>
+        <result column="inner_mgr_id" property="innerMgrId"/>
+        <result column="inner_cust_id" property="innerCustId"/>
+        <result column="cust_account" property="custAccount"/>
+        <result column="cust_name" property="custName"/>
+        <result column="cust_mobile" property="custMobile"/>
+        <result column="contact_cust_role" property="contactCustRole"/>
+        <result column="contact_cust_name" property="contactCustName"/>
+        <result column="link_url" property="linkUrl"/>
+        <result column="link_type" property="linkType"/>
+        <result column="state" property="state"/>
+        <result column="qr_code" property="qrCode"/>
+        <result column="remark" property="remark"/>
+        <result column="remark1" property="remark1"/>
+        <result column="remark2" property="remark2"/>
+        <result column="org_code" property="orgCode"/>
+        <result column="welcome_id" property="welcomeId"/>
+        <result column="gmt_create" property="gmtCreate"/>
+        <result column="create_id" property="createId"/>
+        <result column="gmt_modified" property="gmtModified"/>
+        <result column="modified_id" property="modifiedId"/>
+        <result column="is_deleted" property="isDeleted"/>
+    </resultMap>
+     <sql id="Base_Column_List">
+            `id`,`qr_id`,`config_id`,`corp_id`,`app_name`,`app_flag`,`qr_type`,`channel_name`,`inner_mgr_type`,`inner_mgr_id`,`inner_cust_id`,`cust_account`,`cust_name`,`cust_mobile`,`contact_cust_role`,`contact_cust_name`,`link_url`,`link_type`,`state`,`qr_code`,`remark`,`remark1`,`remark2`,`org_code`,`welcome_id`,`gmt_create`,`create_id`,`gmt_modified`,`modified_id`,`is_deleted`
+     </sql>
+</mapper>

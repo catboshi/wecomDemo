@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="tech.wedev.wecom.dao.GenParamMapper">
+    <resultMap id="BaseResultMap" type="tech.wedev.wecom.entity.po.GenParamPO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="id" property="id"/>
+        <result column="corp_id" property="corpId"/>
+        <result column="param_type" property="paramType"/>
+        <result column="param_code" property="paramCode"/>
+        <result column="param_value" property="paramValue"/>
+        <result column="param_desc" property="paramDesc"/>
+        <result column="gmt_create" property="gmtCreate"/>
+        <result column="create_id" property="createId"/>
+        <result column="gmt_modified" property="gmtModified"/>
+        <result column="modified_id" property="modifiedId"/>
+        <result column="is_deleted" property="isDeleted"/>
+    </resultMap>
+     <sql id="Base_Column_List">
+            `id`,`corp_id`,`param_type`,`param_code`,`param_value`,`param_desc`,`gmt_create`,`create_id`,`gmt_modified`,`modified_id`,`is_deleted`
+     </sql>
+    <resultMap id="paramValidCount" type="java.lang.Integer">
+        <id column="total" property="total" jdbcType="INTEGER"/>
+    </resultMap>
+    <select id="select" resultMap="BaseResultMap.paramValidCount"
+            parameterType="tech.wedev.wecom.entity.qo.GenParamQO">
+        select
+        <if test="pageSize!=null and pageNum!=null">
+            sql_calc_found_rows
+        </if>
+        <include refid="Base_Column_List"/>
+        from zh_gen_param
+        <where>
+            <if test="id!=null">
+                and id=#{id}
+            </if>
+            <if test="ids != null and ids.size > 0">
+                and id in
+                <foreach open="(" close=")" collection="ids" separator="," item="id">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="paramType!=null">
+                and `param_type`=#{paramType}
+            </if>
+            <if test="paramCode!=null">
+                and `param_code`=#{paramCode}
+            </if>
+            <if test="paramValue!=null">
+                and `param_value`=#{paramValue}
+            </if>
+            <if test="paramDesc!=null">
+                and `param_desc`=#{paramDesc}
+            </if>
+            <if test="isDeleted!=null">
+                and `is_deleted`=#{isDeleted}
+            </if>
+            <if test="gmtCreateStart!=null">
+                and `gmt_create`<![CDATA[ >= ]]>#{gmtCreateStart}
+            </if>
+            <if test="gmtCreateEnd!=null">
+                and `gmt_create`<![CDATA[ <= ]]>#{gmtCreateEnd}
+            </if>
+            <if test="corpId!=null">
+                and `corp_id`=#{corpId}
+            </if>
+            <if test="corpIds !=null and corpIds.size>0">
+                and corp_id in
+                <foreach open="(" close=")" collection="corpIds" separator="," item="corpId">
+                    #{corpId}
+                </foreach>
+            </if>
+        </where>
+        <if test="pageSize != null and pageNum != null">
+            <bind name="keyOffset" value="(pageNum-1) * pageSize"/>
+            limit #{keyOffset},#{pageSize};
+            select found_rows() as total;
+        </if>
+    </select>
+
+    <delete id="batchDeleteByPrimaryKey" parameterType="java.util.List">
+        delete from zh_gen_param
+        <where>
+            <if test="id!=null">
+                and id=#{id}
+            </if>
+            <if test="ids != null and ids.size > 0">
+                and id in
+                <foreach open="(" close=")" collection="ids" separator="," item="id">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+    </delete>
+
+    <update id="updateByPrimaryKey" parameterType="tech.wedev.wecom.entity.qo.GenParamQO">
+        update zh_gen_param
+        <set>
+            <if test="paramType!=null">
+                and `param_type`=#{paramType},
+            </if>
+            <if test="paramCode!=null">
+                and `param_code`=#{paramCode},
+            </if>
+            <if test="paramValue!=null">
+                and `param_value`=#{paramValue},
+            </if>
+            <if test="paramDesc!=null">
+                and `param_desc`=#{paramDesc},
+            </if>
+            <if test="gmtCreate!=null">
+                and `gmt_create`=#{gmtCreate},
+            </if>
+            <if test="createId!=null">
+                and `create_id`=#{createId},
+            </if>
+            <if test="gmtModified!=null">
+                and `gmt_modified`=#{gmtModified},
+            </if>
+            <if test="modifiedId!=null">
+                and `modified_id`=#{modifiedId},
+            </if>
+            <if test="isDeleted!=null">
+                and `is_deleted`=#{isDeleted},
+            </if>
+            <if test="corpId!=null">
+                and `corp_id`=#{corpId}
+            </if>
+        </set>
+        <where>
+            <if test="id!=null">
+                and id=#{id}
+            </if>
+            <if test="ids != null and ids.size > 0">
+                and id in
+                <foreach open="(" close=")" collection="ids" separator="," item="id">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+    </update>
+
+    <insert id="save" parameterType="tech.wedev.wecom.entity.qo.GenParamQO">
+        insert into zh_gen_param (<include refid="Base_Column_List"/>)
+        values
+        (null,#{paramType},#{paramCode},#{paramValue},#{paramDesc},
+         #{gmtCreate},#{createId},#{gmtModified},#{modifiedId},
+         #{isDeleted},#{corpId})
+        <selectKey keyProperty="id" resultType="java.lang.Long" order="AFTER">
+            select LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+    <update id="updateWecomGenParam" parameterType="tech.wedev.wecom.entity.qo.GenParamQO">
+        update zh_gen_param
+        <set>
+            <if test="paramType!=null">
+                and `param_type`=#{paramType},
+            </if>
+            <if test="paramCode!=null">
+                and `param_code`=#{paramCode},
+            </if>
+            <if test="paramValue!=null">
+                and `param_value`=#{paramValue},
+            </if>
+            <if test="paramDesc!=null">
+                and `param_desc`=#{paramDesc},
+            </if>
+            <if test="gmtCreate!=null">
+                and `gmt_create`=#{gmtCreate},
+            </if>
+            <if test="createId!=null">
+                and `create_id`=#{createId},
+            </if>
+            <if test="gmtModified!=null">
+                and `gmt_modified`=#{gmtModified},
+            </if>
+            <if test="modifiedId!=null">
+                and `modified_id`=#{modifiedId},
+            </if>
+            <if test="isDeleted!=null">
+                and `is_deleted`=#{isDeleted},
+            </if>
+        </set>
+        <where>
+            <if test="id!=null">
+                and id=#{id}
+            </if>
+            <if test="paramType!=null">
+                and `param_type`=#{paramType}
+            </if>
+            <if test="paramCode!=null">
+            and `param_code`=#{paramCode}
+            </if>
+            <if test="corpId!=null">
+                and `corp_id`=#{corpId}
+            </if>
+            <if test="isDeleted!=null">
+                and `is_deleted`=#{isDeleted},
+            </if>
+        </where>
+    </update>
+
+    <select id="selectValueByUK" resultType="java.lang.String">
+        select param_value
+        from zh_gen_param
+        where 1=1
+        <if test="genParamEnum!=null">
+            and param_type = #{genParamEnum.paramTypeEnum.name}
+            and param_code = #{genParamEnum.name}
+        </if>
+        <if test="corpId != null">
+            and corp_id <![CDATA[ <= ]]>#{corpId}
+        </if>
+    </select>
+
+    <select id="selectByParam" resultMap="BaseResultMap">
+        select
+            <include refid="Base_Column_List"/>
+        from zh_gen_param
+        where 1=1
+        <if test="wecomGenParam.id!=null and wecomGenParam.id!=''">
+            and id=#{wecomGenParam.id}
+        </if>
+        <if test="wecomGenParam.paramType!=null and wecomGenParam.paramType!=''">
+            and param_type = #{wecomGenParam.paramType}
+        </if>
+        <if test="wecomGenParam.paramCode!=null and wecomGenParam.paramCode!=''">
+            and param_code = #{wecomGenParam.paramCode}
+        </if>
+        <if test="wecomGenParam.paramValue!=null and wecomGenParam.paramValue!=''">
+            and param_value = #{wecomGenParam.paramValue}
+        </if>
+        <if test="wecomGenParam.paramDesc!=null and wecomGenParam.paramDesc!=''">
+            and param_desc = #{wecomGenParam.paramDesc}
+        </if>
+        <if test="wecomGenParam.corpId!=null and wecomGenParam.corpId!=''">
+            and corp_id = #{wecomGenParam.corpId}
+        </if>
+    </select>
+
+    <select id="selectByParams" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from zh_gen_param
+        where 1=1
+        <if test="wecomGenParam.id!=null and wecomGenParam.id!=''">
+            and id=#{wecomGenParam.id}
+        </if>
+        <if test="wecomGenParam.paramType!=null and wecomGenParam.paramType!=''">
+            and param_type = #{wecomGenParam.paramType}
+        </if>
+        <if test="wecomGenParam.paramCode!=null and wecomGenParam.paramCode!=''">
+            and param_code = #{wecomGenParam.paramCode}
+        </if>
+        <if test="wecomGenParam.paramValue!=null and wecomGenParam.paramValue!=''">
+            and param_value = #{wecomGenParam.paramValue}
+        </if>
+        <if test="wecomGenParam.paramDesc!=null and wecomGenParam.paramDesc!=''">
+            and param_desc = #{wecomGenParam.paramDesc}
+        </if>
+        <if test="wecomGenParam.corpId!=null and wecomGenParam.corpId!=''">
+            and corp_id = #{wecomGenParam.corpId}
+        </if>
+    </select>
+
+    <select id="selectByParamType" resultType="tech.wedev.wecom.entity.po.GenParamPO">
+        select
+        <include refid="Base_Column_List"/>
+        from zh_gen_param
+        where param_type = #{wecomGenParam.paramType}
+        <if test="wecomGenParam.corpId!=null and wecomGenParam.corpId!=''">
+            and corp_id = #{wecomGenParam.corpId}
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="tech.wedev.wecom.dao.ZhWecomMarketArticleMapper">
+    <resultMap id="BaseResultMap" type="tech.wedev.wecom.entity.po.ZhWecomMarketArticlePO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="id" property="id"/>
+        <result column="article_app" property="articleApp"/>
+        <result column="article_visible" property="articleVisible"/>
+        <result column="article_source" property="articleSource"/>
+        <result column="article_link" property="articleLink"/>
+        <result column="article_title" property="articleTitle"/>
+        <result column="article_abstract" property="articleAbstract"/>
+        <result column="release_time" property="releaseTime"/>
+        <result column="article_create_time" property="articleCreateTime"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+        <result column="article_thumbnail" property="articleThumbnail"/>
+        <result column="source_format" property="sourceFormat"/>
+        <result column="source_format_name" property="sourceFormatName"/>
+        <result column="business_code" property="businessCode"/>
+        <result column="business_name" property="businessName"/>
+        <result column="source_type" property="sourceType"/>
+        <result column="source_type_name" property="sourceTypeName"/>
+        <result column="is_delete" property="isDelete"/>
+        <result column="apply_mgr_id" property="applyMgrId"/>
+        <result column="apply_corp_id" property="applyCorpId"/>
+        <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="status" property="status"/>
+        <result column="orgin_url_id" property="orginUrlId"/>
+        <result column="is_top" property="isTop"/>
+        <result column="is_carousel" property="isCarousel"/>
+        <result column="corp_id" property="corpId"/>
+        <result column="applicant_name" property="applicantName"/>
+        <result column="areacode" property="areacode"/>
+        <result column="content_id" property="contentId"/>
+        <result column="suffix" property="suffix"/>
+        <result column="langcode" property="langcode"/>
+        <result column="thumbnail" property="thumbnail"/>
+        <result column="thumbnail_format" property="thumbnailFormat"/>
+        <result column="video_id" property="videoId"/>
+        <result column="video_link" property="videoLink"/>
+        <result column="video_name" property="videoName"/>
+        <result column="appid" property="appid"/>
+        <result column="app_link" property="appLink"/>
+        <result column="media_id" property="mediaId"/>
+        <result column="media_created_time" property="mediaCreatedTime"/>
+    </resultMap>
+     <sql id="Base_Column_List">
+            `id`,`article_app`,`article_visible`,`article_source`,`article_link`,`article_title`,`article_abstract`,`release_time`,`article_create_time`,`create_time`,`modify_time`,`article_thumbnail`,`source_format`,`source_format_name`,`business_code`,`business_name`,`source_type`,`source_type_name`,`is_delete`,`apply_mgr_id`,`apply_corp_id`,`start_time`,`end_time`,`status`,`orgin_url_id`,`is_top`,`is_carousel`,`corp_id`,`applicant_name`,`areacode`,`content_id`,`suffix`,`langcode`,`thumbnail`,`thumbnail_format`,`video_id`,`video_link`,`video_name`,`appid`,`app_link`,`media_id`,`media_created_time`
+     </sql>
+    <update id="updateByArticleSourceAndArticleApp" parameterType="tech.wedev.wecom.entity.qo.ClientShareUploadQO">
+        update zh_wecom_market_article
+        <set>
+            <if test="mediaId != null">
+                media_id = #{mediaId},
+            </if>
+            <if test="date != null">
+                media_created_time = #{date},
+            </if>
+        </set>
+        where article_source = #{clientShareUploadQO.articleSource}
+        and article_app = #{clientShareUploadQO.articleApp}
+    </update>
+
+    <select id="checkIsValid" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"></include>
+        from zh_wecom_market_article
+        where
+        id = #{id}
+        and now() between start_time and end_time
+        and is_delete=0
+        and status=1
+        limit 1
+    </select>
+
+</mapper>

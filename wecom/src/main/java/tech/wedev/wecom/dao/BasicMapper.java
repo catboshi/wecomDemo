@@ -1,8 +1,8 @@
 package tech.wedev.wecom.dao;
 
 import org.apache.ibatis.annotations.*;
-import tech.wedev.wecom.basic.entity.po.BasicPO;
-import tech.wedev.wecom.basic.entity.qo.BasicQO;
+import tech.wedev.wecom.entity.po.BasicPO;
+import tech.wedev.wecom.entity.qo.BasicQO;
 import tech.wedev.wecom.dao.provider.CommonProvider;
 
 import java.math.BigDecimal;

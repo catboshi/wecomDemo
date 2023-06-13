@@ -1,9 +1,12 @@
 package tech.wedev.wecom.api.entity;
 
 import lombok.var;
+import tech.wedev.wecom.exception.ExceptionCode;
+import tech.wedev.wecom.exception.WecomException;
 import tech.wedev.wecom.monad.Try;
 import tech.wedev.wecom.entity.po.ZhWecomMarketArticlePO;
 import tech.wedev.wecom.enums.AttachmentsMsgTypeEnum;
+import tech.wedev.wecom.request.RequestV1Private;
 import tech.wedev.wecom.utils.ObjectUtils;
 import tech.wedev.wecom.utils.StringUtils;
 
@@ -29,29 +32,33 @@ public class BaseFunctional<T> {
     }*/
 
 //    public static class Transforms{
-        public static Try<Object> transform (Class clazzT, Object ... objects) throws Throwable {
-            /*switch (msgType){
+//        public static Try<Object> transform (Class clazzT, Object ... objects) throws Throwable {
+        public static Object transform (Object ... objects) {
+            var msgType = (String) Arrays.stream(objects).filter(o -> o.getClass() == String.class).filter(o->StringUtils.isNotBlank(String.valueOf(o))).findFirst().orElseThrow(()->new WecomException(ExceptionCode.INVALID_PARAMETER));
+            var article = (ZhWecomMarketArticlePO) Arrays.stream(objects).filter(o -> o.getClass() == ZhWecomMarketArticlePO.class).findFirst().orElseThrow(()->new WecomException(ExceptionCode.INVALID_PARAMETER));
+            var enum0 = Arrays.stream(AttachmentsMsgTypeEnum.values()).filter(a -> a.getDesc().equals(msgType)).findFirst().orElseThrow(() -> new WecomException(ExceptionCode.UNSUPPORT_MSGTYPE));
+            switch (msgType){
                 case "link":
 //                    return new Object (RequestV1Private.Attachments.builder()
                     return RequestV1Private.Attachments.builder()
                             .msgtype(msgType)
                             .link(RequestV1Private.Link.builder()
-                                            .title(article.getArticleTitle())
-                                            .picurl(picUrl)
-                                            .desc(article.getArticleAbstract())
-                                            .url(article.getArticleLink())
-                                            .build())
+                                    .title(article.getArticleTitle())
+                                    .picurl(enum0.getValue())
+                                    .desc(article.getArticleAbstract())
+                                    .url(article.getArticleLink())
+                                    .build())
                             .build();
                 case "miniprogram":
 //                    return new Object (RequestV1Private.Attachments.builder()
                     return RequestV1Private.Attachments.builder()
                             .msgtype(msgType)
-                            .miniprogram (RequestV1Private.Miniprogram.builder()
-                                            .title(article.getArticleTitle())
-                                            .pic_media_id(mediaId)
-                                            .appid(article.getAppid())
-                                            .page(article.getAppLink () )
-                                            .build())
+                            .miniprogram(RequestV1Private.Miniprogram.builder()
+                                    .title(article.getArticleTitle())
+                                    .pic_media_id(enum0.getValue())
+                                    .appid(article.getAppid())
+                                    .page(article.getAppLink())
+                                    .build())
                             .build();
                 case "video":
                 //...
@@ -60,8 +67,8 @@ public class BaseFunctional<T> {
                 default:
 //                    return new Object(null);
                     return null;
-            }*/
-            var msgType = (String) Arrays.stream(objects).filter(o -> o.getClass() == String.class).findFirst().orElse("");
+            }
+            /*var msgType = (String) Arrays.stream(objects).filter(o -> o.getClass() == String.class).findFirst().orElse("");
             var article = (ZhWecomMarketArticlePO) Arrays.stream(objects).filter(o -> o.getClass() == ZhWecomMarketArticlePO.class).findFirst().orElse(null);
             var clazzR = Class.forName(clazzT.getName());
             var clazzA = Class.forName(clazzT.getName() + "$" + "Attachments");
@@ -74,7 +81,7 @@ public class BaseFunctional<T> {
                 if (!Optional.ofNullable(enum0.getMap().get(field.getName())).isPresent()) {field.set(obj0, enum0.getValue());continue;}
                 Field field1 = article.getClass().getDeclaredField(enum0.getMap().get(field.getName()));
                 field1.setAccessible(true);
-                field.set(obj0,field1.get(article));//我是标题
+                field.set(obj0,field1.get(article));
             }
             return Arrays.stream(clazzR.getDeclaredClasses())
                     .filter(a -> a == clazzA)
@@ -89,16 +96,18 @@ public class BaseFunctional<T> {
                         f1.set(ObjectUtils.strObjToType(instance, clazzA), obj0);
                         return instance;
                     }))
-                    .orElse(null);
+                    .orElse(null);*/
         }
 //    }
 
     @FunctionalInterface
     public interface FN<V, R> {
-        Try<R> apply(V v);
+//        Try<R> apply(V v);
+        R apply(V v);
     }
 
-    public <R> BaseFunctional<Try<?>> map(FN<T, R> fn) {
+//    public <R> BaseFunctional<Try<?>> map(FN<T, R> fn) {
+    public <R> BaseFunctional<?> map(FN<T, R> fn) {
         return new BaseFunctional<>(fn.apply(this.data));
     }
 }

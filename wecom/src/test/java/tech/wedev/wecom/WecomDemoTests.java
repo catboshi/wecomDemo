@@ -5,8 +5,8 @@ import tech.wedev.wecom.api.entity.BaseFunctional;
 import tech.wedev.wecom.entity.po.ZhWecomMarketArticlePO;
 import tech.wedev.wecom.enums.AttachmentsMsgTypeEnum;
 import tech.wedev.wecom.monad.Try;
-import tech.wedev.wecom.standard.TestService;
 import tech.wedev.wecom.request.RequestV1Private;
+import tech.wedev.wecom.standard.TestAopService;
 import tech.wedev.wecom.utils.ObjectUtils;
 import tech.wedev.wecom.utils.SM4Util;
 import tech.wedev.wecom.utils.StringUtils;
@@ -31,7 +31,7 @@ import java.util.stream.Stream;
 public class WecomDemoTests {
 
 	@Autowired
-	TestService testService;
+	TestAopService testAopService;
 	@Value("${spring.datasource.password}")
 	private String password;
 
@@ -210,7 +210,7 @@ public class WecomDemoTests {
 
 	@Test
 	public void test10() throws Exception {
-		testService.testAop();
+		testAopService.testAop();
 		String replace = "123a-11".replaceAll("(.*\\-)", "");//11
 		String className = "123$888";
 		className = className.indexOf("$") == -1 ? className : StringUtils.subString(className, 0, className.indexOf("$"));//123
