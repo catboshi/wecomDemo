@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="tech.wedev.wecom.dao.ZhCorpInfoMapper">
+    <resultMap id="BaseResultMap" type="tech.wedev.wecom.entity.po.ZhCorpInfo">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="id" property="id"/>
+        <result column="corp_id" property="corpId"/>
+        <result column="agent_application" property="agentApplication"/>
+        <result column="agent_jsapi_ticket" property="agentJsapiTicket"/>
+        <result column="corp_jsapi_ticket" property="corpJsapiTicket"/>
+        <result column="secret_application" property="secretApplication"/>
+        <result column="secret_communication" property="secretCommunication"/>
+        <result column="secret_external_contact" property="secretExternalContact"/>
+        <result column="secret_msg_audit" property="secretMsgAudit"/>
+        <result column="token_application" property="tokenApplication"/>
+        <result column="token_communication" property="tokenCommunication"/>
+        <result column="token_external_contact" property="tokenExternalContact"/>
+        <result column="token_msg_audit" property="tokenMsgAudit"/>
+        <result column="token_application_modified" property="tokenApplicationModified"/>
+        <result column="token_communication_modified" property="tokenCommunicationModified"/>
+        <result column="token_external_contact_modified" property="tokenExternalContactModified"/>
+        <result column="token_msg_audit_modified" property="tokenMsgAuditModified"/>
+        <result column="agent_jsapi_ticket_modified" property="agentJsapiTicketModified"/>
+        <result column="corp_jsapi_ticket_modified" property="corpJsapiTicketModified"/>
+        <result column="chat_save_pri_key" property="chatSavePriKey"/>
+        <result column="gmt_create" property="gmtCreate"/>
+        <result column="create_id" property="createId"/>
+        <result column="gmt_modified" property="gmtModified"/>
+        <result column="modified_id" property="modifiedId"/>
+        <result column="is_deleted" property="isDeleted"/>
+    </resultMap>
+     <sql id="Base_Column_List">
+            `id`,`corp_id`,`agent_application`,`agent_jsapi_ticket`,`corp_jsapi_ticket`,`secret_application`,`secret_communication`,`secret_external_contact`,`secret_msg_audit`,`token_application`,`token_communication`,`token_external_contact`,`token_msg_audit`,`token_application_modified`,`token_communication_modified`,`token_external_contact_modified`,`token_msg_audit_modified`,`agent_jsapi_ticket_modified`,`corp_jsapi_ticket_modified`,`chat_save_pri_key`,`gmt_create`,`create_id`,`gmt_modified`,`modified_id`,`is_deleted`
+     </sql>
+    <update id="updateByPrimaryKeySelective" parameterType="tech.wedev.wecom.entity.po.ZhCorpInfo">
+        update zh_corp_info
+        <set>
+            <if test="corpId !=null">
+                corp_id = #{corpId,jdbcType=VARCHAR},
+            </if>
+            <if test="agentApplication !=null">
+                agent_application = #{agentApplication,jdbcType=VARCHAR},
+            </if>
+            <if test="agentJsapiTicket !=null">
+                agent_jsapi_ticket = #{agentJsapiTicket,jdbcType=VARCHAR},
+            </if>
+            <if test="corpJsapiTicket !=null">
+                corp_jsapi_ticket = #{corpJsapiTicket,jdbcType=VARCHAR},
+            </if>
+            <if test="secretApplication !=null">
+                secret_application = #{secretApplication,jdbcType=VARCHAR},
+            </if>
+            <if test="secretCommunication !=null">
+                secret_communication = #{secretCommunication,jdbcType=VARCHAR},
+            </if>
+            <if test="secretExternalContact !=null">
+                secret_external_contact = #{secretExternalContact,jdbcType=VARCHAR},
+            </if>
+            <if test="secretMsgAudit !=null">
+                secret_msg_audit = #{secretMsgAudit,jdbcType=VARCHAR},
+            </if>
+            <if test="tokenApplication !=null">
+                token_application = #{tokenApplication,jdbcType=VARCHAR},
+            </if>
+            <if test="tokenCommunication !=null">
+                token_communication = #{tokenCommunication,jdbcType=VARCHAR},
+            </if>
+            <if test="tokenExternalContact !=null">
+                token_external_contact = #{tokenExternalContact,jdbcType=VARCHAR},
+            </if>
+            <if test="tokenMsgAudit !=null">
+                token_msg_audit = #{tokenMsgAudit,jdbcType=VARCHAR},
+            </if>
+            <if test="tokenApplicationModified !=null">
+                token_application_modified = #{tokenApplicationModified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="tokenCommunicationModified !=null">
+                token_communication_modified = #{tokenCommunicationModified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="tokenExternalContactModified !=null">
+                token_external_contact_modified = #{tokenExternalContactModified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="tokenMsgAuditModified !=null">
+                token_msg_audit_modified = #{tokenMsgAuditModified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="agentJsapiTicketModified !=null">
+                agent_jsapi_ticket_modified = #{agentJsapiTicketModified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="corpJsapiTicketModified !=null">
+                corp_jsapi_ticket_modified = #{corpJsapiTicketModified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="chatSavePriKey !=null">
+                chat_save_pri_key = #{chatSavePriKey,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtCreate!=null">
+                gmt_create=#{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createId!=null">
+                create_id=#{createId,jdbcType=BIGINT},
+            </if>
+            <if test="gmtModified!=null">
+                gmt_modified=#{gmtModified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="modifiedId!=null">
+                modified_id=#{modifiedId,jdbcType=BIGINT},
+            </if>
+            <if test="isDeleted!=null">
+                is_deleted=#{isDeleted,jdbcType=INTEGER},
+            </if>
+        </set>
+            where id = #{id,jdbcType=BIGINT}
+    </update>
+    <select id="findByCorpId" resultMap="BaseResultMap">
+        select
+            <include refid="Base_Column_List"/>
+        from zh_corp_info
+        <where>
+            <if test="corpId !=null and corpId !=''">
+                and corp_id=#{corpId}
+            </if>
+        </where>
+    </select>
+</mapper>

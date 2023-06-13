@@ -17,14 +17,14 @@ public enum AttachmentsMsgTypeEnum implements BaseStringEnum{
             return value;
         }
 
-        @Override
+        /*@Override
         public Map<String, String> getMap() {
             map.put("title", "articleTitle");
             map.put("picurl", null);
             map.put("desc", "articleAbstract");
             map.put("url", "articleLink");
             return map;
-        }
+        }*/
     },
     IMAGE_TEXT("2", "link") {
         Map<String, String> map = new HashMap<>();
@@ -39,14 +39,14 @@ public enum AttachmentsMsgTypeEnum implements BaseStringEnum{
             return value;
         }
 
-        @Override
+        /*@Override
         public Map<String, String> getMap() {
             map.put("title", "articleTitle");
             map.put("picurl", null);
             map.put("desc", "articleAbstract");
             map.put("url", "articleLink");
             return map;
-        }
+        }*/
     },
     MINIPROGRAN("3", "miniprogram") {
         Map<String, String> map = new HashMap<>();
@@ -61,14 +61,14 @@ public enum AttachmentsMsgTypeEnum implements BaseStringEnum{
             return value;
         }
 
-        @Override
+        /*@Override
         public Map<String, String> getMap() {
             map.put("title", "articleTitle");
             map.put("pic_media_id", null);
             map.put("appid", "appid");
             map.put("page", "appLink");
             return map;
-        }
+        }*/
     },
     TEXT("8", "text") {
         @Override
@@ -77,13 +77,13 @@ public enum AttachmentsMsgTypeEnum implements BaseStringEnum{
 
         @Override
         public String getValue() {
-            return null;
+            return "";
         }
 
-        @Override
+        /*@Override
         public Map<String, String> getMap() {
             return null;
-        }
+        }*/
     };
 
     private final String code;
@@ -106,5 +106,5 @@ public enum AttachmentsMsgTypeEnum implements BaseStringEnum{
 
     public abstract void setValue(String... args);
     public abstract String getValue();
-    public abstract Map<String,String> getMap();
+//    public abstract Map<String,String> getMap();
 }

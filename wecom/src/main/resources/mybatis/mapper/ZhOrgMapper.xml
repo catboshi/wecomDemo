@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="tech.wedev.wecom.dao.ZhOrgMapper">
+    <resultMap id="BaseResultMap" type="tech.wedev.wecom.entity.po.ZhOrgPO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="parent_code" property="parentCode"/>
+        <result column="name" property="name"/>
+        <result column="level" property="level"/>
+        <result column="type" property="type"/>
+        <result column="sign" property="sign"/>
+        <result column="sort" property="sort"/>
+        <result column="qywx_department" property="qywxDepartment"/>
+        <result column="gmt_create" property="gmtCreate"/>
+        <result column="create_id" property="createId"/>
+        <result column="gmt_modified" property="gmtModified"/>
+        <result column="modified_id" property="modifiedId"/>
+        <result column="is_deleted" property="isDeleted"/>
+    </resultMap>
+     <sql id="Base_Column_List">
+            `id`,`code`,`parent_code`,`name`,`level`,`type`,`sign`,`sort`,`qywx_department`,`gmt_create`,`create_id`,`gmt_modified`,`modified_id`,`is_deleted`
+     </sql>
+    <select id="selectParentNodeInfoByCode" resultType="tech.wedev.wecom.entity.po.ZhOrgPO">
+        SELECT t2.code, t2.parent_code AS parentCode, t2.name FROM(
+            SELECT
+                @R AS _CODE,
+                (SELECT @R := T.PARENT_CODE FROM ZH_ORG T WHERE T.CODE = _CODE AND T.TYPE = 1 AND T.IS_DELETED =0 LIMIT 1) AS _PARENT_CODE,
+                @L := @L + 1 AS _LEVEL
+            FROM (SELECT @R := #{orgCode,jdbcType=VARCHAR}, @L :=0) VARS,ZH_ORG H
+            WHERE @R > 0
+        ) T1
+        JOIN ZH_ORG T2 ON T1._CODE = T2.CODE
+        ORDER BY T1._LEVEL DESC
+    </select>
+</mapper>

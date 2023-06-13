@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="tech.wedev.wecom.dao.GenParamBasicMapper">
+    <resultMap id="BaseResultMap" type="tech.wedev.wecom.entity.po.GenParamBasicPO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="id" property="id"/>
+        <result column="corp_id" property="corpId"/>
+        <result column="param_type" property="paramType"/>
+        <result column="param_code" property="paramCode"/>
+        <result column="param_value" property="paramValue"/>
+        <result column="param_desc" property="paramDesc"/>
+        <result column="gmt_create" property="gmtCreate"/>
+        <result column="create_id" property="createId"/>
+        <result column="gmt_modified" property="gmtModified"/>
+        <result column="modified_id" property="modifiedId"/>
+        <result column="is_deleted" property="isDeleted" typeHandler="tech.wedev.wecom.handler.BaseIntegerEnumTypeHandler"/>
+    </resultMap>
+     <sql id="Base_Column_List">
+            `id`,`corp_id`,`param_type`,`param_code`,`param_value`,`param_desc`,`gmt_create`,`create_id`,`gmt_modified`,`modified_id`,`is_deleted`
+     </sql>
+</mapper>

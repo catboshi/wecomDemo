@@ -1,7 +1,7 @@
 package tech.wedev.wecom.utils;
 
 import com.alibaba.dubbo.common.utils.CollectionUtils;
-import tech.wedev.wecom.basic.entity.po.BasicPO;
+import tech.wedev.wecom.entity.po.BasicPO;
 import tech.wedev.wecom.container.Triplet;
 import tech.wedev.wecom.exception.ExceptionAssert;
 import lombok.SneakyThrows;
@@ -138,10 +138,10 @@ public class LowCodeUtils {
         poSb.append("import").append(blankChar).append("lombok.experimental.SuperBuilder").append(";").append(System.getProperty("line.separator"));
 //        poSb.append("import").append(blankChar).append("com.icbc.cfbi.wecom.common.annos.TableName").append(";").append(System.getProperty("line.separator"));
         poSb.append("import").append(blankChar).append("tech.wedev.wecom.annos.TableName").append(";").append(System.getProperty("line.separator"));
-        poSb.append("import").append(blankChar).append("lombok.AllArgsConstructor").append(";").append(System.getProperty("line.separator"));
+        qoSb.append("import").append(blankChar).append("lombok.AllArgsConstructor").append(";").append(System.getProperty("line.separator"));
         qoSb.append("import").append(blankChar).append("lombok.Data").append(";").append(System.getProperty("line.separator"));
         qoSb.append("import").append(blankChar).append("lombok.NoArgsConstructor").append(";").append(System.getProperty("line.separator"));
-        qoSb.append("import").append(blankChar).append("lombok.experimental.superBuilder").append(";").append(System.getProperty("line.separator"));
+        qoSb.append("import").append(blankChar).append("lombok.experimental.SuperBuilder").append(";").append(System.getProperty("line.separator"));
         qoSb.append("import").append(blankChar).append("tech.wedev.wecom.annos.TableName").append(";").append(System.getProperty("line.separator"));
         Set<String> fieldClasses = triplets.stream().filter(a -> !basePOFieldSet.contains(a.getLeft())).map(a -> a.getRight().getName()).filter(a -> !a.startsWith("java.lang")).collect(Collectors.toSet());
         for (String fieldClass : fieldClasses) {
@@ -430,7 +430,7 @@ public class LowCodeUtils {
         controller.append("@RestController").append(System.getProperty("line.separator"));
         controller.append("@RequestMapping").append("(").append("\"").append(controllerPathPre).append(StringUtils.fieldNameToColumnName(beanFileName)).append("\"").append(")").append(System.getProperty("line.separator"));
         controller.append("@Slf4j").append(System.getProperty("line.separator"));
-        controller.append("public").append(blankChar).append("class").append(blankChar).append(StringUtils.capitalizeFirstLetter(beanFileName)).append("Controller").append(blankChar).append("extends").append(blankChar).append("BasicController<").append(StringUtils.capitalizeFirstLetter(beanFileName)).append("PO").append(",").append(StringUtils.capitalizeFirstLetter(beanFileName)).append("QO").append(">").append(blankChar).append("{").append(System.getProperty("line.separator"));
+        controller.append("public").append(blankChar).append("class").append(blankChar).append(StringUtils.capitalizeFirstLetter(beanFileName)).append("Controller").append(blankChar).append("extends").append(blankChar).append("BasicController<").append(StringUtils.capitalizeFirstLetter(beanFileName)).append("PO").append(", ").append(StringUtils.capitalizeFirstLetter(beanFileName)).append("QO").append(">").append(blankChar).append("{").append(System.getProperty("line.separator"));
         controller.append(tabChar).append("@Autowired").append(System.getProperty("line.separator"));
         controller.append(tabChar).append("private").append(blankChar).append(StringUtils.capitalizeFirstLetter(beanFileName)).append("Service").append(blankChar).append(StringUtils.lowerCaseFirstLetter(beanFileName)).append("Service").append(";").append(System.getProperty("line.separator"));
         controller.append(tabChar).append("@Override").append(System.getProperty("line.separator"));
