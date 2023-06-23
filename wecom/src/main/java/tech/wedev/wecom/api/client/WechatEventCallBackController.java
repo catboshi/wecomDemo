@@ -4,6 +4,8 @@ import cn.hutool.core.util.XmlUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.collections.MapUtils;
+import tech.wedev.autm.asyntask.AsynTaskBean;
+import tech.wedev.autm.asyntask.AsynTaskEnum.TaskPriorityType;
 import tech.wedev.wecom.api.entity.BaseFunctional;
 import tech.wedev.wecom.constants.WecomApiUrlConstant;
 import tech.wedev.wecom.entity.po.ZhWecomMarketArticlePO;
@@ -34,11 +36,9 @@ import tech.wedev.wecom.standard.GenParamBasicService;
 import tech.wedev.wecom.standard.ZhQywxContactConfigInfoService;
 import tech.wedev.wecom.standard.ZhWecomMarketArticleService;
 import tech.wedev.wecom.third.WecomRequestService;
-import tech.wedev.wecom.utils.DateUtils;
-import tech.wedev.wecom.utils.LongUtil;
-import tech.wedev.wecom.utils.ObjectUtils;
-import tech.wedev.wecom.utils.StringUtils;
+import tech.wedev.wecom.utils.*;
 
+import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -80,7 +80,7 @@ public class WechatEventCallBackController {
     private ZhWecomMarketArticleService wecomMarketArticleService;
 
     @GetMapping("/eventcallback/V1")
-    public String eventCallBackGet(@RequestParam("gywxcorpid") String qywxCorpId,
+    public String eventCallBackGet(@RequestParam("qywxcorpid") String qywxCorpId,
                                    @RequestParam("msg_signature") String msgSignature,
                                    @RequestParam("timestamp") String timeStamp,
                                    @RequestParam("nonce") String nonce,
@@ -100,7 +100,7 @@ public class WechatEventCallBackController {
             echoStr = echoStr.replaceAll(" ", "+");
             log.info("echoStr:" + echoStr);
             qywxCorpId = URLDecoder.decode(qywxCorpId, "UTF-8");
-            log.info("gywxCorpId:" + qywxCorpId);
+            log.info("qywxCorpId:" + qywxCorpId);
 
             // 获取Token、EncodingAESKey
             String token = genParamBasicService.queryWecomGenParam(GenParamBasicQO.builder().paramType(GenParamBasicParamTypeEnum.WECOM_OUTER_NOTIFY).paramCode(GenParamBasicParamCodeEnum.OUTER_TOKEN).build());
@@ -116,7 +116,7 @@ public class WechatEventCallBackController {
     }
 
     @PostMapping(value = "/eventcallback/V1")
-    public String eventCallBackPost(@RequestParam("gywxcorpid") String qywxCorpId,
+    public String eventCallBackPost(@RequestParam("qywxcorpid") String qywxCorpId,
                                     @RequestParam("msg_signature") String msgSignature,
                                     @RequestParam("timestamp") String timeStamp,
                                     @RequestParam("nonce") String nonce,
@@ -185,20 +185,20 @@ public class WechatEventCallBackController {
 
         if (StringUtils.isNotBlank(taskType)) {
             //回调事件异步任务
-//            AsynTaskBean taskBean = new AsynTaskBean();
-//            taskBean.setTaskId(SnowFlakeUtil.getNextLongId());
-//            taskBean.setKeywords(taskType);
-//            taskBean.setTaskType(taskType);
-//            taskBean.setSubTaskType(taskType);
-//            taskBean.setState("0");
-//            taskBean.setPriority(AsynTaskEnum.TaskPriorityType.NORMAL);
-//            taskBean.setDealNum(new BigDecimal(0));
-//            taskBean.setTimeoutLimit(BigDecimal.ZERO);
-//            taskBean.setRefCol1(userID);//userid --> 客户经理id
-//            taskBean.setRefCol2(externalUserID);//externalUserID --> 客户id
-//            taskBean.setRefCol3(wechatCallBackDataMap);
-//            asynTaskDtlService.insertAsynTask(taskBean);
-//            log.info(changeType + "事件回调插入异步任务成功");
+            AsynTaskBean taskBean = new AsynTaskBean();
+            taskBean.setTaskId(SnowFlakeUtil.getNextLongId());
+            taskBean.setKeywords(taskType);
+            taskBean.setTaskType(taskType);
+            taskBean.setSubTaskType(taskType);
+            taskBean.setState("0");
+            taskBean.setPriority(TaskPriorityType.NORMAL);
+            taskBean.setDealNum(new BigDecimal(0));
+            taskBean.setTimeoutLimit(BigDecimal.ZERO);
+            taskBean.setRefCol1(userID);//userid --> 客户经理id
+            taskBean.setRefCol2(externalUserID);//externalUserID --> 客户id
+            taskBean.setRefCol3(wechatCallBackDataMap);
+            asynTaskDtlService.insertAsynTask(taskBean);
+            log.info(changeType + "事件回调插入异步任务成功");
         }
     }
 
@@ -265,7 +265,7 @@ public class WechatEventCallBackController {
             log.info("发送新客户欢迎语成功！{} ", externalUserID);
 
         } catch (WecomException wecomException) {
-            log.info("send_welcom_message response message: {} ", wecomException.getCode() + wecomException.getMsg());
+            log.info("send_welcome_message response message: {} ", wecomException.getCode() + wecomException.getMsg());
         } catch (Exception e) {
             log.error("请求API服务异常: ", "", e);
         }

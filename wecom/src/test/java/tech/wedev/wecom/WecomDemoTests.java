@@ -33,7 +33,10 @@ public class WecomDemoTests {
 	@Autowired
 	TestAopService testAopService;
 	@Value("${spring.datasource.password}")
-	private String password;
+	private String datasource_password;
+
+	@Value("${spring.redis.password}")
+	private String redis_password;
 
 	@Test
 	public void test0() {
@@ -123,7 +126,7 @@ public class WecomDemoTests {
 			} catch (Throwable e) {
 				throw new RuntimeException(e);
 			}
-		})).findFirst().get().data.get();
+		})).findFirst().get().data;
 		System.out.println(attachments);
 	}
 
@@ -148,7 +151,7 @@ public class WecomDemoTests {
 		var obj = ObjectUtils.strObjToType(Class.forName("tech.wedev.wecom.request.RequestV1Private$" + StringUtils.capitalizeFirstLetter("link")).newInstance(), RequestV1Private.Link.class);
 
 		var declaredFields1 = Class.forName("com.stream.streamdemo.request.RequestV1Private$" + StringUtils.capitalizeFirstLetter("link")).getDeclaredFields();
-		for (Field field : declaredFields1) {
+		/*for (Field field : declaredFields1) {
 			field.setAccessible(true);
 			var map = Arrays.stream(AttachmentsMsgTypeEnum.values()).filter(a -> a.getDesc().equals("link"))
 					.map(AttachmentsMsgTypeEnum::getMap)
@@ -158,7 +161,7 @@ public class WecomDemoTests {
 			Field field1 = article.getClass().getDeclaredField(map.get(field.getName()));//articleTitle
 			field1.setAccessible(true);
 			field.set(obj,field1.get(article));//我是标题
-		}
+		}*/
 		var declaredFields = clazz.getDeclaredFields();
 		var declaredClasses = clazz.getDeclaredClasses();
 		Arrays.stream(declaredClasses)
@@ -221,7 +224,8 @@ public class WecomDemoTests {
 	@Test
 	public void test11() {
 		System.out.println(SM4Util.encryptEcb(SM4Util.hexKey, "123456"));
-		System.out.println(SM4Util.decryptEcb(SM4Util.hexKey, password));
+//		System.out.println(SM4Util.decryptEcb(SM4Util.hexKey, datasource_password));
+//		System.out.println(SM4Util.decryptEcb(SM4Util.hexKey, redis_password));
 	}
 
 }

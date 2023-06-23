@@ -200,7 +200,7 @@ public abstract class BasicServiceImpl<P extends BasicPO, Q extends BasicQO> imp
             if (basePO != null) {
                 baseQO.setUpdateValPO(basePO);
                 basePO.setGmtModified(Optional.ofNullable(basePO).map(a -> a.getGmtModified()).orElse(new Date()));
-                basePO.setIsDeleted(BaseDeletedEnum.DEL);
+                basePO.setIsDeleted(BaseDeletedEnum.DEL.getCode());
             }
             baseQO.setIds(ids);
             return this.getBasicMapper().updateSelective((Q) baseQO);
@@ -218,7 +218,7 @@ public abstract class BasicServiceImpl<P extends BasicPO, Q extends BasicQO> imp
             if (basePO != null) {
                 baseQO.setUpdateValPO(basePO);
                 basePO.setGmtModified(Optional.ofNullable(basePO).map(a -> a.getGmtModified()).orElse(new Date()));
-                basePO.setIsDeleted(BaseDeletedEnum.DEL);
+                basePO.setIsDeleted(BaseDeletedEnum.DEL.getCode());
             }
             baseQO.setId(id);
             return this.getBasicMapper().updateSelective((Q) baseQO);
@@ -232,7 +232,7 @@ public abstract class BasicServiceImpl<P extends BasicPO, Q extends BasicQO> imp
     public Integer deleteByLogic(Q q) {
         BasicPO updateValPO = q.getUpdateValPO() == null ? pClass.newInstance() : q.getUpdateValPO();
         q.setUpdateValPO(updateValPO);
-        updateValPO.setIsDeleted(BaseDeletedEnum.DEL);
+        updateValPO.setIsDeleted(BaseDeletedEnum.DEL.getCode());
         updateValPO.setGmtModified(updateValPO.getModifiedId() == null ? new Date() : updateValPO.getGmtModified());
         return this.getBasicMapper().updateSelective(q);
     }

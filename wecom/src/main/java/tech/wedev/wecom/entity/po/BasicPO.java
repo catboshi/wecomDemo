@@ -21,7 +21,7 @@ public class BasicPO implements Serializable {
     /**
      * 是否删除，0.存在，1.删除
      */
-    private BaseDeletedEnum isDeleted;
+    private Integer isDeleted;
     /**
      * 创建时间
      */

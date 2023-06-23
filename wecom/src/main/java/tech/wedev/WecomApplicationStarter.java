@@ -10,7 +10,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Slf4j
-@MapperScan("com.stream.dao")
+@MapperScan("tech.wedev.wecom.dao")
 @SpringBootApplication
 @EnableTransactionManagement
 public class WecomApplicationStarter extends SpringBootServletInitializer {
@@ -36,7 +36,7 @@ public class WecomApplicationStarter extends SpringBootServletInitializer {
         SpringApplication.run(WecomApplicationStarter.class, args);
         long endTime = System.currentTimeMillis();
         long cost = (endTime - startTime) / 1000;
-        log.info(String.format("*******************%s has been started successfully and it takes %s seconds***************", "WECOM-ONLINE", String.valueOf(cost)));
+        log.info(String.format("*******************%s has been started successfully and it takes %s seconds***************", "WECOM", String.valueOf(cost)));
     }
 
 
