@@ -3,7 +3,6 @@
 <mapper namespace="tech.wedev.wecom.dao.ZhCustMgrMapMapper">
     <resultMap id="BaseResultMap" type="tech.wedev.wecom.entity.po.ZhCustMgrMapPO">
         <id column="id" property="id" jdbcType="BIGINT"/>
-        <result column="id" property="id"/>
         <result column="inner_mgr_id" property="innerMgrId"/>
         <result column="inner_mgr_name" property="innerMgrName"/>
         <result column="org_code" property="orgCode"/>
@@ -32,11 +31,11 @@
      <sql id="Base_Column_List">
             `id`,`inner_mgr_id`,`inner_mgr_name`,`org_code`,`qywx_mgr_id`,`qywx_corp_id`,`qywx_mgr_name`,`qywx_mgr_mobile`,`qywx_mgr_position`,`qywx_mgr_email`,`qywx_mgr_alias`,`qywx_mgr_status`,`qywx_mgr_address`,`enable`,`enable_reason`,`department`,`main_department`,`business_line_name`,`business_line_tag`,`business_line_org`,`gmt_create`,`create_id`,`gmt_modified`,`modified_id`,`is_deleted`
      </sql>
-    <select id="selectByQywxMgrIdAndQywxCorpId" resultType="tech.wedev.wecom.entity.po.ZhCustMgrMapPO">
+    <select id="selectByQywxMgrIdAndQywxCorpId" resultMap="BaseResultMap">
         select
-        <include refid="Base_Column_List"></include>
+        <include refid="Base_Column_List"/>
         from zh_cust_mgr_map
-        where qywx_mgr_id=#{qywxMgrId} and qywx_copr_id=#{qywxCorpId};
+        where qywx_mgr_id=#{qywxMgrId} and qywx_corp_id=#{qywxCorpId}
         and qywx_mgr_status=1
         and enable=1
         and is_deleted=0

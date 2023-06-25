@@ -126,8 +126,8 @@ public interface IAsynTaskDtlMapper {
             "       info3" +
             ")\n" +
             " values (\n" +
-            "           (#{asynTaskDtl.taskId}, #{asynTaskDtl.keywords}, #{asynTaskDtl.taskType}, #{asynTaskDtl.subTaskType}, #{asynTaskDtl.state}, #{asynTaskDtl.priority},\n" +
-            "           #{asynTaskDtl.applyTime}, #{asynTaskDtl.inQueueTime}, #{asynTaskDtl.ip}, #{asynTaskDtl.threadId}, #{asynTaskDtl.startWorkTime}, #{asynTaskDtl.endWorkTime},\n" +
+            "           #{asynTaskDtl.taskId}, #{asynTaskDtl.keywords}, #{asynTaskDtl.taskType}, #{asynTaskDtl.subTaskType}, #{asynTaskDtl.state}, #{asynTaskDtl.priority},\n" +
+            "           now(), #{asynTaskDtl.inQueueTime}, #{asynTaskDtl.ip}, #{asynTaskDtl.threadId}, #{asynTaskDtl.startWorkTime}, #{asynTaskDtl.endWorkTime},\n" +
             "           #{asynTaskDtl.errCode}, #{asynTaskDtl.errMsg}, #{asynTaskDtl.dealNum}, #{asynTaskDtl.timeoutLimit}, #{asynTaskDtl.planTime}, #{asynTaskDtl.refCol1},\n" +
             "           #{asynTaskDtl.refCol2}, #{asynTaskDtl.refCol3}, #{asynTaskDtl.info1}, #{asynTaskDtl.info2}, #{asynTaskDtl.info3})\n" +
             "</script>"})

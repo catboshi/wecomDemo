@@ -3,7 +3,6 @@
 <mapper namespace="tech.wedev.wecom.dao.GenParamBasicMapper">
     <resultMap id="BaseResultMap" type="tech.wedev.wecom.entity.po.GenParamBasicPO">
         <id column="id" property="id" jdbcType="BIGINT"/>
-        <result column="id" property="id"/>
         <result column="corp_id" property="corpId"/>
         <result column="param_type" property="paramType"/>
         <result column="param_code" property="paramCode"/>

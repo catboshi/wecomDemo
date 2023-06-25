@@ -387,7 +387,7 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
         }
 
         for (Map.Entry<String, List<Object>> stringObjectEntry : inFields.entrySet()) {
-            where.append(andStr).append("`").append(StringUtils.fieldNameToColumnName(stringObjectEntry.getKey())).append("`").append(StringUtils.fieldNameToColumnName(stringObjectEntry.getKey())).append("`").append(" in (");
+            where.append(andStr).append("`").append(StringUtils.fieldNameToColumnName(stringObjectEntry.getKey())).append("`").append(" in (");
             List<Object> value = stringObjectEntry.getValue();
             for (int i = 0; i < value.size(); i++) {
                 Object obj = value.get(i);

@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -53,7 +54,7 @@ public class WecomRequestServiceImpl implements WecomRequestService {
     @Autowired
     private RedisUtils redisUtils;
 
-    //    @Value("${wecom.api.url.prefix}")
+    @Value("${wecom.api.url.prefix}")
     private String wecomApiUrlPrefix;
 
     @Override
@@ -236,6 +237,26 @@ public class WecomRequestServiceImpl implements WecomRequestService {
     }
 
     /**
+     * 根据paramType匹配ZhCorpInfo对应Secret值
+     * @param paramType
+     * @param zhCorpInfo
+     * @return
+     */
+    private String findSecretFromZhCorpInfoDB(GenParamEnum paramType, ZhCorpInfo zhCorpInfo) {
+        if (AccessCredentialsEnum.UrlParamType.APPLICATION.getCode().equals(paramType.getName())) {
+            return zhCorpInfo.getSecretApplication();
+        } else if (AccessCredentialsEnum.UrlParamType.MSG_AUDIT.getCode().equals(paramType.getName())) {
+            return zhCorpInfo.getSecretMsgAudit();
+        } else if (AccessCredentialsEnum.UrlParamType.COMMUNICATION.getCode().equals(paramType.getName())) {
+            return zhCorpInfo.getSecretCommunication();
+        } else if (AccessCredentialsEnum.UrlParamType.EXTERNAL_CONTACT.getCode().equals(paramType.getName())) {
+            return zhCorpInfo.getSecretExternalContact();
+        }
+        return "";
+    }
+
+
+    /**
      * 从企业微信获取token
      *
      * @param paramType
@@ -290,7 +311,7 @@ public class WecomRequestServiceImpl implements WecomRequestService {
 
     private String getTokenFromQiweApi(GenParamEnum paramType, ZhCorpInfo zhCorpInfo) {
         //查询secret参数
-        String secretInDB = this.findTokenFromZhCorpInfoDB(paramType, zhCorpInfo);
+        String secretInDB = this.findSecretFromZhCorpInfoDB(paramType, zhCorpInfo);
         log.info("WecomRequestServiceImpl###getTokenFromQiweApi###SECRET: " + secretInDB);
         ExceptionAssert.isTrue(secretInDB.isEmpty(), ExceptionCode.PARAMETER_SECRET_ERROR);
 

@@ -3,7 +3,6 @@
 <mapper namespace="tech.wedev.wecom.dao.ZhCorpInfoMapper">
     <resultMap id="BaseResultMap" type="tech.wedev.wecom.entity.po.ZhCorpInfo">
         <id column="id" property="id" jdbcType="BIGINT"/>
-        <result column="id" property="id"/>
         <result column="corp_id" property="corpId"/>
         <result column="agent_application" property="agentApplication"/>
         <result column="agent_jsapi_ticket" property="agentJsapiTicket"/>

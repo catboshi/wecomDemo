@@ -58,7 +58,7 @@ public class GenParamServiceImpl extends BaseServiceImpl<GenParamPO, GenParamQO>
         genParamQO.setIsDeleted(BaseDeletedEnum.EXISTS.getCode());
         genParamQO.setParamValue(genParamPO.getParamValue());
         genParamQO.setGmtModified(new Date());
-        genParamQO.setCorpId(TokenContextHolder.getValue(JwtKeyEnum.CORP_ID, String.class));
+        genParamQO.setCorpId(genParamPO.getCorpId());
         return genParamMapper.updateWecomGenParam(genParamQO);
     }
 
