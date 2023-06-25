@@ -373,6 +373,9 @@ public class LowCodeUtils {
         mapperXml.append(xmlBlankChar).append("<resultMap ").append("id=\"BaseResultMap\" ").append("type=\"").append(poPackage).append(".").append(beanFileName).append("PO").append("\">").append(System.getProperty("line.separator"));
         mapperXml.append(xmlBlankChar).append(xmlBlankChar).append("<id column=\"id\" property=\"id\" jdbcType=\"BIGINT\"/>").append(System.getProperty("line.separator"));
         for (String columnName : columnNames) {
+            if ("id".equals(columnName)) {
+                continue;
+            }
             mapperXml.append(xmlBlankChar).append(xmlBlankChar).append("<result column=\"").append(columnName).append("\" ").append("property=\"").append(StringUtils.columnNameToFieldName(columnName)).append("\"/>").append(System.getProperty("line.separator"));
         }
         mapperXml.append(xmlBlankChar).append("</resultMap>").append(System.getProperty("line.separator"));

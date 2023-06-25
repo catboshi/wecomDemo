@@ -238,20 +238,20 @@ public class WXBizMsgCrypt {
 	 * @param msgSignature 签名串，对应URL参数的msg_signature
 	 * @param timeStamp 时间戳，对应URL参数的timestamp
 	 * @param nonce 随机串，对应URL参数的nonce
-	 * @param postData 密文，对应POST请求的数据
+	 * @param encryptStr 密文，对应POST请求的数据
 	 * 
 	 * @return 解密后的原文
 	 * @throws AesException 执行失败，请查看该异常的错误码和具体的错误信息
 	 */
-	public String DecryptMsg(String msgSignature, String timeStamp, String nonce, String postData)
+	public String DecryptMsg(String msgSignature, String timeStamp, String nonce, String encryptStr)
 			throws AesException {
 
 		// 密钥，公众账号的app secret
 		// 提取密文
-		Object[] encrypt = XMLParse.extract(postData);
+
 
 		// 验证安全签名
-		String signature = SHA1.getSHA1(token, timeStamp, nonce, encrypt[1].toString());
+		String signature = SHA1.getSHA1(token, timeStamp, nonce, encryptStr);
 
 		// 和URL中的签名比较是否相等
 		// System.out.println("第三方收到URL中的签名：" + msg_sign);
@@ -261,7 +261,7 @@ public class WXBizMsgCrypt {
 		}
 
 		// 解密
-		String result = decrypt(encrypt[1].toString());
+		String result = decrypt(encryptStr);
 		return result;
 	}
 

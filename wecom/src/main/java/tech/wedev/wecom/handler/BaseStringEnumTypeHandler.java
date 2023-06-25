@@ -22,16 +22,12 @@ public class BaseStringEnumTypeHandler<E extends BaseStringEnum> extends BaseTyp
         this.type = enumType;
     }
 
-    public BaseStringEnumTypeHandler() {
-
-    }
-
     @Override
     public void setNonNullParameter(PreparedStatement ps, int i, E parameter, JdbcType jdbcType) throws SQLException {
         ps.setString(i, parameter.getCode());
     }
 
-    private E getBaseIntegerEnum(int code, boolean wasNull) {
+    private E getBaseIntegerEnum(String code, boolean wasNull) {
         if (wasNull || type == null) {
             return null;
         }
@@ -47,16 +43,16 @@ public class BaseStringEnumTypeHandler<E extends BaseStringEnum> extends BaseTyp
 
     @Override
     public E getNullableResult(ResultSet rs, String columnName) throws SQLException {
-        return getBaseIntegerEnum(rs.getInt(columnName), rs.wasNull());
+        return getBaseIntegerEnum(rs.getString(columnName), rs.wasNull());
     }
 
     @Override
     public E getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
-        return getBaseIntegerEnum(rs.getInt(columnIndex), rs.wasNull());
+        return getBaseIntegerEnum(rs.getString(columnIndex), rs.wasNull());
     }
 
     @Override
     public E getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
-        return getBaseIntegerEnum(cs.getInt(columnIndex), cs.wasNull());
+        return getBaseIntegerEnum(cs.getString(columnIndex), cs.wasNull());
     }
 }

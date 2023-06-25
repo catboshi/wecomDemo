@@ -44,7 +44,7 @@ public class ZhWelcomeMessageCfgPO extends BasicPO {
     /**
     * 类型名称
     */
-    private Integer typeName;
+    private String typeName;
     /**
     * 欢迎语名称
     */

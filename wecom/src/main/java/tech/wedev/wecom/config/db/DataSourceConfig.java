@@ -1,6 +1,7 @@
 package tech.wedev.wecom.config.db;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import org.springframework.context.annotation.Configuration;
 import tech.wedev.wecom.utils.SM4Util;
 import tech.wedev.wecom.utils.StringUtils;
 import lombok.Data;
@@ -15,16 +16,9 @@ import javax.sql.DataSource;
 
 @Data
 @Slf4j
-@Configurable
+@Configuration
 @PropertySource(value = "classpath:META-INF/global-config.properties")
 public class DataSourceConfig {
-    /**
-     * 密钥
-     */
-    @Value("${sm4.key}")
-    private String key;
-    @Value("${sm4.switch}")
-    private String keySwitch;
 
     @Value("${spring.datasource.url}")
     private String url;

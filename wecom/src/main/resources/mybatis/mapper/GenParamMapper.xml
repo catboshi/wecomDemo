@@ -21,7 +21,7 @@
     <resultMap id="paramValidCount" type="java.lang.Integer">
         <id column="total" property="total" jdbcType="INTEGER"/>
     </resultMap>
-    <select id="select" resultMap="BaseResultMap.paramValidCount"
+    <select id="select" resultMap="BaseResultMap,paramValidCount"
             parameterType="tech.wedev.wecom.entity.qo.GenParamQO">
         select
         <if test="pageSize!=null and pageNum!=null">
@@ -154,31 +154,31 @@
         update zh_gen_param
         <set>
             <if test="paramType!=null">
-                and `param_type`=#{paramType},
+                `param_type`=#{paramType},
             </if>
             <if test="paramCode!=null">
-                and `param_code`=#{paramCode},
+                `param_code`=#{paramCode},
             </if>
             <if test="paramValue!=null">
-                and `param_value`=#{paramValue},
+                `param_value`=#{paramValue},
             </if>
             <if test="paramDesc!=null">
-                and `param_desc`=#{paramDesc},
+                `param_desc`=#{paramDesc},
             </if>
             <if test="gmtCreate!=null">
-                and `gmt_create`=#{gmtCreate},
+                `gmt_create`=#{gmtCreate},
             </if>
             <if test="createId!=null">
-                and `create_id`=#{createId},
+                `create_id`=#{createId},
             </if>
             <if test="gmtModified!=null">
-                and `gmt_modified`=#{gmtModified},
+                `gmt_modified`=#{gmtModified},
             </if>
             <if test="modifiedId!=null">
-                and `modified_id`=#{modifiedId},
+                `modified_id`=#{modifiedId},
             </if>
             <if test="isDeleted!=null">
-                and `is_deleted`=#{isDeleted},
+                `is_deleted`=#{isDeleted},
             </if>
         </set>
         <where>
@@ -195,7 +195,7 @@
                 and `corp_id`=#{corpId}
             </if>
             <if test="isDeleted!=null">
-                and `is_deleted`=#{isDeleted},
+                and `is_deleted`=#{isDeleted}
             </if>
         </where>
     </update>

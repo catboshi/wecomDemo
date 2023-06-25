@@ -6,7 +6,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import tech.wedev.wecom.constants.ParamsConstant;
@@ -46,7 +48,13 @@ public class WecomRequestServiceImpl implements WecomRequestService {
     @Autowired
     private ZhCorpInfoMapper zhCorpInfoMapper;
 
-    //    @Value("${wecom.api.url.prefix}")
+    @Autowired
+    RedisTemplate redisTemplate;
+
+    @Autowired
+    private RedisUtils redisUtils;
+
+    @Value("${wecom.api.url.prefix}")
     private String wecomApiUrlPrefix;
 
     @Override
@@ -93,32 +101,19 @@ public class WecomRequestServiceImpl implements WecomRequestService {
         String corpId = command.getCorpId();
         String interfaceIdentifyUrl = command.getInterfaceIdentifyUrl();
 
-        JnosRedisPool jnosRedisPool = null;
-        try {
-            jnosRedisPool = NosUtil.getInstance();
-        } catch (Exception e) {
-            //NOS异常不可影响应用
-            log.error("WecomRequestServiceImpl###generateAccessToken###获取nos连接异常: "
-                    + APIErrorMsgEnum.NOS.GET_INSTANCE.getCode(), "", e);
-        }
-        //从nos缓存读取token
+
+        //从redis缓存读取token
         String tokenKey = Joiner.on("_").join(corpId, ParamsConstant.TOKEN_NOS_KEY, command.getInterfaceIdentifyUrl());
-        try {
-            if (jnosRedisPool != null) {
-                token = jnosRedisPool.get(tokenKey);
-            }
-            if (StringUtils.isNotBlank(token)) {
-                //缓存中存在token，直接返回
-                log.info("WecomRequestServiceImpl###generateAccessToken###nos缓存token: " + token);
-                return token;
-            }
-        } catch (Exception e) {
-            //NOS异常不可影响应用
-            log.error("WecomRequestServiceImpl###generateAccessToken###nos异常，从数据库读取token: "
-                    + getNOSErrorCode(this.paramTypeMatch(interfaceIdentifyUrl)));
+
+        token = (String) redisUtils.get(tokenKey);
+        if (StringUtils.isNotBlank(token)) {
+            //缓存中存在token，直接返回
+            log.info("WecomRequestServiceImpl###generateAccessToken###redis缓存token: " + token);
+            return token;
         }
 
-        //nos缓存token不存在或nos异常，从数据库读取token
+
+        //redis缓存token不存在或redis异常，从数据库读取token
         GenParamEnum paramType = this.paramTypeMatch(interfaceIdentifyUrl);
         log.info("WecomRequestServiceImpl###generateAccessToken###匹配类型: " + paramType);
         List<ZhCorpInfo> tokenInDB = zhCorpInfoMapper.findByCorpId(corpId);
@@ -150,8 +145,8 @@ public class WecomRequestServiceImpl implements WecomRequestService {
         token = this.getTokenFromQiweApi(paramType, tokenInDB.get(0));
         log.info("WecomRequestServiceImpl###generateAccessToken###新token: " + token);
 
-        //更新数据库token，设置nos缓存
-        updateDbTokenOrTicket(paramType, ParamsConstant.TYPE_TOKEN, token, corpId, jnosRedisPool, interfaceIdentifyUrl);
+        //更新数据库token，设置redis缓存
+        updateDbTokenOrTicket(paramType, ParamsConstant.TYPE_TOKEN, token, corpId, interfaceIdentifyUrl);
         return token;
     }
 
@@ -242,6 +237,26 @@ public class WecomRequestServiceImpl implements WecomRequestService {
     }
 
     /**
+     * 根据paramType匹配ZhCorpInfo对应Secret值
+     * @param paramType
+     * @param zhCorpInfo
+     * @return
+     */
+    private String findSecretFromZhCorpInfoDB(GenParamEnum paramType, ZhCorpInfo zhCorpInfo) {
+        if (AccessCredentialsEnum.UrlParamType.APPLICATION.getCode().equals(paramType.getName())) {
+            return zhCorpInfo.getSecretApplication();
+        } else if (AccessCredentialsEnum.UrlParamType.MSG_AUDIT.getCode().equals(paramType.getName())) {
+            return zhCorpInfo.getSecretMsgAudit();
+        } else if (AccessCredentialsEnum.UrlParamType.COMMUNICATION.getCode().equals(paramType.getName())) {
+            return zhCorpInfo.getSecretCommunication();
+        } else if (AccessCredentialsEnum.UrlParamType.EXTERNAL_CONTACT.getCode().equals(paramType.getName())) {
+            return zhCorpInfo.getSecretExternalContact();
+        }
+        return "";
+    }
+
+
+    /**
      * 从企业微信获取token
      *
      * @param paramType
@@ -296,7 +311,7 @@ public class WecomRequestServiceImpl implements WecomRequestService {
 
     private String getTokenFromQiweApi(GenParamEnum paramType, ZhCorpInfo zhCorpInfo) {
         //查询secret参数
-        String secretInDB = this.findTokenFromZhCorpInfoDB(paramType, zhCorpInfo);
+        String secretInDB = this.findSecretFromZhCorpInfoDB(paramType, zhCorpInfo);
         log.info("WecomRequestServiceImpl###getTokenFromQiweApi###SECRET: " + secretInDB);
         ExceptionAssert.isTrue(secretInDB.isEmpty(), ExceptionCode.PARAMETER_SECRET_ERROR);
 
@@ -355,16 +370,9 @@ public class WecomRequestServiceImpl implements WecomRequestService {
         List<ZhCorpInfo> tokenInDB = zhCorpInfoMapper.findByCorpId(corpId);
         ExceptionAssert.isTrue(CollectionUtils.isEmpty(tokenInDB), ExceptionCode.PARAMETER_CORP_ID_ERROR);
 
-        JnosRedisPool jnosRedisPool = null;
-        try {
-            jnosRedisPool = NosUtil.getInstance();
-        } catch (Exception e) {
-            //NOS异常不可影响应用
-            log.error("WecomRequestServiceImpl###refreshTokenFromZhCorpInfo###nos连接异常: ", e);
-        }
 
-        //更新数据库token，设置nos缓存
-        this.updateDbTokenOrTicket(paramType, ParamsConstant.TYPE_TOKEN, token, corpId, jnosRedisPool, interfaceIdentifyUrl);
+        //更新数据库token，设置redis缓存
+        this.updateDbTokenOrTicket(paramType, ParamsConstant.TYPE_TOKEN, token, corpId, interfaceIdentifyUrl);
         return token;
     }
 
@@ -376,35 +384,33 @@ public class WecomRequestServiceImpl implements WecomRequestService {
      * @param tokenTicketType
      * @param tokenOrTicket
      * @param corpId
-     * @param jnosRedisPool
      * @param context
      */
-    private void updateDbTokenOrTicket(GenParamEnum paramType, String tokenTicketType, String tokenOrTicket, String corpId, JnosRedisPool jnosRedisPool, String context) {
-        //更新数据token，设置nos缓存
+    private void updateDbTokenOrTicket(GenParamEnum paramType, String tokenTicketType, String tokenOrTicket, String corpId, String context) {
+        //更新数据token，设置redis缓存
         List<ZhCorpInfo> tokenInDB = zhCorpInfoMapper.findByCorpId(corpId);
-        this.updateTokenFromZhCorpInfo(paramType, tokenTicketType, tokenOrTicket, tokenInDB.get(0), jnosRedisPool, context);
+        this.updateTokenFromZhCorpInfo(paramType, tokenTicketType, tokenOrTicket, tokenInDB.get(0), context);
 
-        //更新参数表token，设置nos缓存
+        //更新参数表token，设置redis缓存
 //        List<GenParamPO> tokenInDBParam = this.getParamFromDB(tokenTicketType, paramType);
         List<GenParamBasicPO> tokenInDBParam = genParamBasicService.select(GenParamBasicQO.builder().isDeleted(BaseDeletedEnum.EXISTS).paramType(EnumUtils.getByStringCode(GenParamBasicParamTypeEnum.class, paramType.getParamTypeEnum().getName()))
                 .paramCode(EnumUtils.getByStringCode(GenParamBasicParamCodeEnum.class, paramType.getName())).orderBys(ArrayUtils.asArrayList("id_0")).corpIds(ArrayUtils.asArrayNotNull(corpId, "SYSTEM")).build());
 
-        this.updateTokenFromWecom(corpId, paramType, tokenTicketType, tokenOrTicket, tokenInDBParam, jnosRedisPool, context);
+        this.updateTokenFromWecom(corpId, paramType, tokenTicketType, tokenOrTicket, tokenInDBParam, context);
     }
 
     /**
-     * 更新数据库，NOS缓存TOKEN
+     * 更新数据库，redis缓存TOKEN
      * 多租户
      *
      * @param paramType
      * @param tokenTicketType
      * @param tokenOrTicket
      * @param zhCorpInfo
-     * @param jnosRedisPool
      * @param interfaceIdentifyUrl
      */
     private void updateTokenFromZhCorpInfo(GenParamEnum paramType, String tokenTicketType, String tokenOrTicket, ZhCorpInfo zhCorpInfo,
-                                           JnosRedisPool jnosRedisPool, String interfaceIdentifyUrl) {
+                                           String interfaceIdentifyUrl) {
         String corpId = zhCorpInfo.getCorpId();
 
         ZhCorpInfo zhCorpInfoUpd = new ZhCorpInfo();
@@ -422,37 +428,34 @@ public class WecomRequestServiceImpl implements WecomRequestService {
         int modify = zhCorpInfoMapper.updateByPrimaryKeySelective(zhCorpInfoUpd);
 
         if (modify != 0) {
-            //数据库token更新成功，更新nos缓存
+            //数据库token更新成功，更新redis缓存
             //NX: 只在键不存在时，才对键进行设置操作
             //XX: 只在键存在时，才对键进行设置操作
             //EX: 设置键的过期单位为 second 秒
             try {
-                if (jnosRedisPool != null) {
-                    if (ParamsConstant.TYPE_TICKET.equals(tokenTicketType)) {
-                        jnosRedisPool.set(corpId + ParamsConstant.NOS_KEY_SEPARATE + paramType.getName(), tokenOrTicket, "NX", "EX", ParamsConstant.TOKEN_TIME_OUT);
-                    } else {
-                        String tokenKey = Joiner.on(ParamsConstant.NOS_KEY_SEPARATE).join(corpId, ParamsConstant.TOKEN_NOS_KEY, interfaceIdentifyUrl);
-                        jnosRedisPool.set(tokenKey, tokenOrTicket, "NX", "EX", ParamsConstant.TOKEN_TIME_OUT);
-                    }
+                if (ParamsConstant.TYPE_TICKET.equals(tokenTicketType)) {
+                    redisUtils.set(corpId + ParamsConstant.NOS_KEY_SEPARATE + paramType.getName(), tokenOrTicket, ParamsConstant.TOKEN_TIME_OUT);
+                } else {
+                    String tokenKey = Joiner.on(ParamsConstant.NOS_KEY_SEPARATE).join(corpId, ParamsConstant.TOKEN_NOS_KEY, interfaceIdentifyUrl);
+                    redisUtils.set(tokenKey, tokenOrTicket, ParamsConstant.TOKEN_TIME_OUT);
                 }
             } catch (Exception e) {
-                log.error("WecomRequestServiceImpl###updateTokenFromZhCorpInfo###设置nos缓存异常");
+                log.error("WecomRequestServiceImpl###updateTokenFromZhCorpInfo###设置redis缓存异常");
             }
         }
     }
 
     /**
-     * 更新数据库，NOS缓存TOKEN
+     * 更新数据库，redis缓存TOKEN
      *
      * @param corpId
      * @param paramType
      * @param tokenTicketType
      * @param tokenOrTicket
      * @param tokenInDB
-     * @param jnosRedisPool
      * @param context
      */
-    private void updateTokenFromWecom(String corpId, GenParamEnum paramType, String tokenTicketType, String tokenOrTicket, List<GenParamBasicPO> tokenInDB, JnosRedisPool jnosRedisPool, String context) {
+    private void updateTokenFromWecom(String corpId, GenParamEnum paramType, String tokenTicketType, String tokenOrTicket, List<GenParamBasicPO> tokenInDB, String context) {
         GenParamPO tokenSaveToDB = new GenParamPO();
         tokenSaveToDB.setParamType(paramType.getParamTypeEnum().getName());
         if (ParamsConstant.TYPE_TICKET.equals(tokenTicketType)) {
@@ -473,20 +476,18 @@ public class WecomRequestServiceImpl implements WecomRequestService {
             modify = genParamService.updateWecomGenParam(tokenSaveToDB);
         }
         if (modify != 0) {
-            //数据库token更新成功，更新nos缓存
+            //数据库token更新成功，更新redis缓存
             //NX: 只在键不存在时，才对键进行设置操作
             //XX: 只在键存在时，才对键进行设置操作
             //EX: 设置键的过期单位为 second 秒
             try {
-                if (jnosRedisPool != null) {
-                    if (ParamsConstant.TYPE_TICKET.equals(tokenTicketType)) {
-                        jnosRedisPool.set(paramType.getName(), tokenOrTicket, "NX", "EX", ParamsConstant.TOKEN_TIME_OUT);
-                    } else {
-                        jnosRedisPool.set(ParamsConstant.TOKEN_NOS_KEY_PREFIX + context, tokenOrTicket, "NX", "EX", ParamsConstant.TOKEN_TIME_OUT);
-                    }
+                if (ParamsConstant.TYPE_TICKET.equals(tokenTicketType)) {
+                    redisUtils.set(paramType.getName(), tokenOrTicket, ParamsConstant.TOKEN_TIME_OUT);
+                } else {
+                    redisUtils.set(ParamsConstant.TOKEN_NOS_KEY_PREFIX + context, tokenOrTicket, ParamsConstant.TOKEN_TIME_OUT);
                 }
             } catch (Exception e) {
-                log.error("WecomRequestServiceImpl###updateTokenFromWecom设置nos缓存异常");
+                log.error("WecomRequestServiceImpl###updateTokenFromWecom设置redis缓存异常");
             }
         }
     }

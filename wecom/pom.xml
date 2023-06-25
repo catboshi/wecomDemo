@@ -8,13 +8,18 @@
 		<version>2.3.5.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>tech.wedev</groupId>
-	<artifactId>wecomDemo</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>wecomDemo</name>
-	<description>wecomDemo</description>
+	<groupId>tech.wedev.wecom</groupId>
+	<artifactId>wecom</artifactId>
+	<version>0.0.1.RELEASE</version>
+	<packaging>jar</packaging>
+	<name>wecom</name>
+	<description>wecom</description>
 	<properties>
 		<java.version>8</java.version>
+		<!--设置时间戳-->
+		<maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
+		<!--设置docker image 前缀-->
+		<docker.prefix>wecom</docker.prefix>
 	</properties>
 	<dependencies>
 		<!--<dependency>
@@ -251,14 +256,51 @@
 			<version>4.1.5</version>
 		</dependency>
 
+		<!--异步框架-->
+		<dependency>
+			<groupId>tech.wedev.autm</groupId>
+			<artifactId>autm-asyntask</artifactId>
+			<version>1.0.8.RELEASE</version>
+		</dependency>
 
+		<!--雪花算法-->
+		<dependency>
+			<groupId>tech.wedev</groupId>
+			<artifactId>snowflake</artifactId>
+			<version>0.0.1.RELEASE</version>
+		</dependency>
+
+		<!--Spring boot Redis-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+		</dependency>
+
+		<!--spring boot 集成redis所需common-pool2-->
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-pool2 -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-pool2</artifactId>
+			<version>${commons-pool2.version}</version>
+		</dependency>
 
 	</dependencies>
 
-
 	<build>
 		<plugins>
-			<plugin>
+			<plugin><!--springboot的打包插件-->
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!--<plugin>
 				<groupId>org.asciidoctor</groupId>
 				<artifactId>asciidoctor-maven-plugin</artifactId>
 				<version>2.2.1</version>
@@ -275,8 +317,45 @@
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>-->
+			<!-- docker插件 -->
+			<plugin>
+				<groupId>com.spotify</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>1.2.2</version>
+				<!--将插件绑定在某个phase执行-->
+				<executions>
+					<execution>
+						<id>build-image</id>
+						<!--将插件绑定在package这个phase上。也就是说，用户只需执行mvn package ，就会自动执行mvn docker:build-->
+						<phase>package</phase>
+						<goals>
+							<goal>build</goal>
+						</goals>
+					</execution>
+				</executions>
+
+				<configuration>
+					<!--设置镜像名称-->
+					<imageName>${docker.prefix}/${project.artifactId}_${maven.build.timestamp}</imageName>
+					<imageTags>
+						<imageTag>1.0.0</imageTag>
+					</imageTags>
+					<!-- docker远程服务器地址 -->
+					<dockerHost>http://43.142.158.6:2375</dockerHost>
+					<!--设置目录，该目录下放dockerfile-->
+					<dockerDirectory>${project.basedir}</dockerDirectory>
+					<resources>
+						<resource>
+							<targetPath>/</targetPath>
+							<directory>${project.build.directory}</directory>
+							<include>${project.build.finalName}.jar</include>
+						</resource>
+					</resources>
+				</configuration>
 			</plugin>
-<!--			<plugin>
+			<!--
+			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
@@ -287,7 +366,8 @@
 						</exclude>
 					</excludes>
 				</configuration>
-			</plugin>-->
+			</plugin>
+			-->
 		</plugins>
 	</build>
 

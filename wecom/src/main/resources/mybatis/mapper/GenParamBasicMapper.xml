@@ -3,7 +3,6 @@
 <mapper namespace="tech.wedev.wecom.dao.GenParamBasicMapper">
     <resultMap id="BaseResultMap" type="tech.wedev.wecom.entity.po.GenParamBasicPO">
         <id column="id" property="id" jdbcType="BIGINT"/>
-        <result column="id" property="id"/>
         <result column="corp_id" property="corpId"/>
         <result column="param_type" property="paramType"/>
         <result column="param_code" property="paramCode"/>
@@ -13,7 +12,7 @@
         <result column="create_id" property="createId"/>
         <result column="gmt_modified" property="gmtModified"/>
         <result column="modified_id" property="modifiedId"/>
-        <result column="is_deleted" property="isDeleted" typeHandler="tech.wedev.wecom.handler.BaseIntegerEnumTypeHandler"/>
+        <result column="is_deleted" property="isDeleted"/>
     </resultMap>
      <sql id="Base_Column_List">
             `id`,`corp_id`,`param_type`,`param_code`,`param_value`,`param_desc`,`gmt_create`,`create_id`,`gmt_modified`,`modified_id`,`is_deleted`

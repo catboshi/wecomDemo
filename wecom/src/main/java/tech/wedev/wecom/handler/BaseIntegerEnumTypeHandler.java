@@ -22,10 +22,6 @@ public class BaseIntegerEnumTypeHandler<E extends BaseIntegerEnum> extends BaseT
         this.type = enumType;
     }
 
-    public BaseIntegerEnumTypeHandler() {
-
-    }
-
     @Override
     public void setNonNullParameter(PreparedStatement ps, int i, E parameter, JdbcType jdbcType) throws SQLException {
         ps.setInt(i, parameter.getCode());
