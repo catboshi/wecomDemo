@@ -228,4 +228,14 @@ public class WecomDemoTests {
 //		System.out.println(SM4Util.decryptEcb(SM4Util.hexKey, redis_password));
 	}
 
+	@Test
+	public void test12() {
+		String ip = "fe80:0:0:0:4f11:1554:4711:419%utun4";
+		int hash = ip.hashCode();
+		int machineId = 255 & ((hash ^ (hash >>> 16)) & 0x8fffffff);
+
+		machineId = (machineId > 31 || machineId < 0) ? 1 : machineId;
+		System.out.println(String.format("The machine Id is %d", machineId));
+	}
+
 }

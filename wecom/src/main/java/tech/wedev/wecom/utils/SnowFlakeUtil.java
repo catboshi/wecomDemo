@@ -19,13 +19,19 @@ public class SnowFlakeUtil {
         private static SnowFlake INSTANCE;
 
         static {
-            String ip = getRealIp();
-            int hash = ip.hashCode();
-            int machineId = 255 & ((hash ^ (hash >>> 16)) & 0x7fffffff);
+            try {
+                String ip = getRealIp();
+                log.info(String.format("The real ip is %s", ip));
+                int hash = ip.hashCode();
+                int machineId = 255 & ((hash ^ (hash >>> 16)) & 0x7fffffff);
 
-            machineId = (machineId > 255 || machineId < 0) ? 1 : machineId;
+                machineId = (machineId > 31 || machineId < 0) ? 1 : machineId;
+                log.info(String.format("The machine Id is %d", machineId));
 
-            INSTANCE = new SnowFlake(1L, machineId);
+                INSTANCE = new SnowFlake(machineId, 1L);
+            } catch (Exception e) {
+                log.error("初始化SnowFlake错误: ", e);
+            }
         }
     }
 
@@ -78,5 +84,4 @@ public class SnowFlakeUtil {
         System.out.println(SnowFlakeHolder.INSTANCE.nextLongId());
         System.out.println(SnowFlakeUtil.getNextLongId());
     }
-
 }

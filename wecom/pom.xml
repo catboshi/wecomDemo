@@ -19,7 +19,7 @@
 		<!--设置时间戳-->
 		<maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
 		<!--设置docker image 前缀-->
-		<docker.prefix>wecom</docker.prefix>
+		<docker.prefix>wedev</docker.prefix>
 	</properties>
 	<dependencies>
 		<!--<dependency>
@@ -291,33 +291,8 @@
 			<plugin><!--springboot的打包插件-->
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>repackage</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 
-			<!--<plugin>
-				<groupId>org.asciidoctor</groupId>
-				<artifactId>asciidoctor-maven-plugin</artifactId>
-				<version>2.2.1</version>
-				<executions>
-					<execution>
-						<id>generate-docs</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>process-asciidoc</goal>
-						</goals>
-						<configuration>
-							<backend>html</backend>
-							<doctype>book</doctype>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>-->
 			<!-- docker插件 -->
 			<plugin>
 				<groupId>com.spotify</groupId>
@@ -337,10 +312,20 @@
 
 				<configuration>
 					<!--设置镜像名称-->
-					<imageName>${docker.prefix}/${project.artifactId}_${maven.build.timestamp}</imageName>
+					<!--<imageName>${docker.prefix}/${project.artifactId}_${maven.build.timestamp}</imageName>-->
+					<imageName>${docker.prefix}/${project.artifactId}</imageName>
 					<imageTags>
-						<imageTag>1.0.0</imageTag>
+						<!--<imageTag>1.0.0</imageTag>-->
+						<imageTag>latest</imageTag>
 					</imageTags>
+					<env>
+						<TZ>Asia/Shanghai</TZ>
+					</env>
+					<!--时区配置-->
+					<runs>
+						<run>ln -sf /usr/share/zoneinfo/{TZ} /etc/localtime</run>
+						<run>echo "{TZ}" > /etc/timezone</run>
+					</runs>
 					<!-- docker远程服务器地址 -->
 					<dockerHost>http://43.142.158.6:2375</dockerHost>
 					<!--设置目录，该目录下放dockerfile-->
@@ -354,20 +339,6 @@
 					</resources>
 				</configuration>
 			</plugin>
-			<!--
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<excludes>
-						<exclude>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-						</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
-			-->
 		</plugins>
 	</build>
 
