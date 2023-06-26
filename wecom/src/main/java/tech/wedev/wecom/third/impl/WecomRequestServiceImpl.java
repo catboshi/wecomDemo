@@ -278,7 +278,7 @@ public class WecomRequestServiceImpl implements WecomRequestService {
             JSONObject accessToken = HttpRequestUtils.getAccessResult(String.format(url, corpIdInDB.get(0).getParamValue(), secretInDB.get(0).getParamValue()));
             int errCode = accessToken.getIntValue("errcode");
             String errMsg = accessToken.getString("errmsg");
-            log.info("调用企微接口获取access_token失败，errcode=" + errCode + "##errmsg=" + errMsg);
+            log.info("调用企微接口获取access_token返回结果，errcode=" + errCode + "##errmsg=" + errMsg);
             ExceptionAssert.isTrue(errCode != 0, "调用企微接口获取access_token失败，错误码: " + errCode);
             token = accessToken.getString("access_token");
         } catch (Exception e) {
@@ -323,7 +323,7 @@ public class WecomRequestServiceImpl implements WecomRequestService {
             JSONObject accessToken = HttpRequestUtils.getAccessResult(String.format(url, corpIdInDB, secretInDB));
             int errCode = accessToken.getIntValue("errcode");
             String errMsg = accessToken.getString("errmsg");
-            log.info("调用企微接口获取access_token失败，errcode=" + errCode + "##errmsg=" + errMsg);
+            log.info("调用企微接口获取access_token返回结果，errcode=" + errCode + "##errmsg=" + errMsg);
             ExceptionAssert.isTrue(errCode != 0, "调用企微接口获取access_token失败，错误码: " + errCode);
             token = accessToken.getString("access_token");
         } catch (Exception e) {
