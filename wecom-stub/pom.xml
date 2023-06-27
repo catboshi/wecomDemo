@@ -4,10 +4,10 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>tech.wedev.dubbo</groupId>
-	<artifactId>wecom</artifactId>
-	<version>1.0.0.RELEASE</version>
+	<artifactId>wecom-stub</artifactId>
+	<version>1.0.1.RELEASE</version>
 	<packaging>jar</packaging>
-	<name>dubbo-wecom</name>
+	<name>wecom-stub</name>
 	<description>公共dubbo服务API</description>
 	<url>http://maven.apache.org</url>
 	<properties>
@@ -27,7 +27,7 @@
 		<repository>
 			<id>github</id>
 			<name>GitHub CATBOSHI Apache Maven Packages</name>
-			<url>https://maven.pkg.github.com/catboshi/wecomDemo/dubbo-wecom</url>
+			<url>https://maven.pkg.github.com/catboshi/wecomDemo</url>
 		</repository>
 	</distributionManagement>
 
