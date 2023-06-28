@@ -1,16 +1,15 @@
 package tech.wedev.wecom.config.db;
 
 import com.alibaba.druid.pool.DruidDataSource;
-import org.springframework.context.annotation.Configuration;
-import tech.wedev.wecom.utils.SM4Util;
-import tech.wedev.wecom.utils.StringUtils;
 import lombok.Data;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import tech.wedev.wecom.utils.SM4Util;
+import tech.wedev.wecom.utils.StringUtils;
 
 import javax.sql.DataSource;
 

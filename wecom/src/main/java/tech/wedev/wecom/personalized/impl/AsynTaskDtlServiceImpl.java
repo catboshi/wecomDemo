@@ -29,14 +29,6 @@ public class AsynTaskDtlServiceImpl implements IAsynTaskDtlService {
     @Resource
     private IAsynTaskDtlHisMapper asynTaskDtlHisMapper;
 
-    public void setAsynTaskDtlMapper(IAsynTaskDtlMapper asynTaskDtlMapper) {
-        this.asynTaskDtlMapper = asynTaskDtlMapper;
-    }
-
-    public void setAsynTaskDtlHisMapper(IAsynTaskDtlHisMapper asynTaskDtlHisMapper) {
-        this.asynTaskDtlHisMapper = asynTaskDtlHisMapper;
-    }
-
     static AsynTaskBean convertDOtoEntity(AsynTaskDtl asynTaskDtlDO) {
         AsynTaskBean result = new AsynTaskBean();
         result.setTaskId(asynTaskDtlDO.getTaskId());

@@ -44,12 +44,13 @@
 			<artifactId>flyway-core</artifactId>
 		</dependency>-->
 
-		<dependency>
+		<!--解决SpringBoot 整合 Dubbo 泛型报错：java.lang.ClassCastException-->
+		<!--<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<scope>runtime</scope>
 			<optional>true</optional>
-		</dependency>
+		</dependency>-->
 
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -270,6 +271,13 @@
 			<version>0.0.1.RELEASE</version>
 		</dependency>
 
+		<!--公共dubbo服务-->
+		<dependency>
+			<groupId>tech.wedev.dubbo</groupId>
+			<artifactId>wecom-stub</artifactId>
+			<version>1.0.1.RELEASE</version>
+		</dependency>
+
 		<!--Spring boot Redis-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -282,6 +290,12 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-pool2</artifactId>
 			<version>${commons-pool2.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.alibaba.boot</groupId>
+			<artifactId>dubbo-spring-boot-starter</artifactId>
+			<version>0.2.0</version>
 		</dependency>
 
 	</dependencies>

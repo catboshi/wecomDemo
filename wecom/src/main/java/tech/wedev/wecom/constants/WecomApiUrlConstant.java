@@ -9,6 +9,29 @@ public class WecomApiUrlConstant {
 
     /**
      * POST
+     * 客户联系-客户管理-批量获取客户详情
+     */
+    public static final String BATCH_GET_BY_USER_CONTEXT = "/cgi-bin/externalcontact/batch/get_by_user";
+    public static final String BATCH_GET_BY_USER = "/cgi-bin/externalcontact/batch/get_by_user?access_token=%1$s";
+
+    /**
+     * GET
+     * 客户联系-客户管理-获取客户列表
+     */
+
+    public static final String EXTERNAL_CONTACT_LIST_CONTEXT = "/cgi-bin/externalcontact/list";
+    public static final String EXTERNAL_CONTACT_LIST = "/cgi-bin/externalcontact/list?access_token=%1$s&userid=%2$s";
+
+    /**
+     * GET
+     * 客户联系-客户管理-获取客户详情
+     */
+    public static final String EXTERNAL_CONTACT_GET_CONTEXT = "/cgi-bin/externalcontact/get";
+    public static final String EXTERNAL_CONTACT_GET = "/cgi-bin/externalcontact/get?access_token=%1$s&external_userid=%2$s";
+
+
+    /**
+     * POST
      * 客户联系-消息推送-发送新客户欢迎语
      */
     public static final String SEND_WELCOME_MSG_CONTEXT = "/cgi-bin/externalcontact/send_welcome_msg";
