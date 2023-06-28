@@ -44,12 +44,12 @@ public class GenParamBasicServiceImpl extends BasicServiceImpl<GenParamBasicPO, 
 
     @Override
     public String queryWecomGenParamValue(GenParamBasicParamTypeEnum paramType, GenParamBasicParamCodeEnum paramCode) {
-        List<GenParamBasicPO> genParamBasicPOS = genParamBasicMapper.select(GenParamBasicQO.builder().paramCode(paramCode).paramType(paramType)
+        List<GenParamBasicPO> params = genParamBasicMapper.select(GenParamBasicQO.builder().paramCode(paramCode).paramType(paramType)
                 .orderBys(ArrayUtils.asArrayList("id_0")).corpIds(TokenContextHolder.getCorpIds()).build());
-        if (genParamBasicPOS.isEmpty()) {
+        if (params.isEmpty()) {
             return "";
         }
-        return genParamBasicPOS.get(0).getParamValue();
+        return params.get(0).getParamValue();
     }
 
 

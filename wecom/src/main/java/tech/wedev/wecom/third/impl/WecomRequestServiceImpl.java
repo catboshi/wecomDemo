@@ -30,10 +30,7 @@ import tech.wedev.wecom.standard.GenParamService;
 import tech.wedev.wecom.third.WecomRequestService;
 import tech.wedev.wecom.utils.*;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -150,16 +147,24 @@ public class WecomRequestServiceImpl implements WecomRequestService {
         return token;
     }
 
-    private String getNOSErrorCode(GenParamEnum paramType) {
+    @Override
+    public Map<String, Object> externalContactGet(String corpId, String externalUserId) {
+        log.info("WecomRequestServiceImpl.externalContactGet###企微API入参: \"corpId\": " + corpId + ", \"externalUserId\": " + externalUserId);
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("external_userid", externalUserId);
+        return ((JSONObject) generalCallQiWeApi(corpId, ParamsConstant.METHOD_GET, requestBody, WecomApiUrlConstant.EXTERNAL_CONTACT_GET)).getInnerMap();
+    }
+
+    private String getRedisErrorCode(GenParamEnum paramType) {
         String errCode = "";
         if (AccessCredentialsEnum.UrlParamType.APPLICATION.getCode().equals(paramType.getName())) {
-            errCode = APIErrorMsgEnum.NOS.APPLICATION.getCode();
+            errCode = APIErrorMsgEnum.REDIS.APPLICATION.getCode();
         } else if (AccessCredentialsEnum.UrlParamType.MSG_AUDIT.getCode().equals(paramType.getName())) {
-            errCode = APIErrorMsgEnum.NOS.MSG_AUDIT.getCode();
+            errCode = APIErrorMsgEnum.REDIS.MSG_AUDIT.getCode();
         } else if (AccessCredentialsEnum.UrlParamType.COMMUNICATION.getCode().equals(paramType.getName())) {
-            errCode = APIErrorMsgEnum.NOS.COMMUNICATION.getCode();
+            errCode = APIErrorMsgEnum.REDIS.COMMUNICATION.getCode();
         } else if (AccessCredentialsEnum.UrlParamType.EXTERNAL_CONTACT.getCode().equals(paramType.getName())) {
-            errCode = APIErrorMsgEnum.NOS.EXTERNAL_CONTACT.getCode();
+            errCode = APIErrorMsgEnum.REDIS.EXTERNAL_CONTACT.getCode();
         }
         return errCode;
     }
@@ -497,8 +502,8 @@ public class WecomRequestServiceImpl implements WecomRequestService {
     }
 
     private String getParam(String url, Map<String, Object> map) {
-        String rep = "";
-        int ind = 0;
+        String rep;
+        int ind;
         for (String key : map.keySet()) {
             if (url.indexOf(key) != 0) {
                 ind = url.indexOf(key);

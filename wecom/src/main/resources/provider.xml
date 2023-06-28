@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans.xsd 
+     http://code.alibabatech.com/schema/dubbo
+	 http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+
+	<!--用于配置当前应用信息，不管该应用是提供者还是消费者 -->
+	<dubbo:application name="provider" />
+
+	<!-- 用于配置连接注册中心相关信息 -->
+	<dubbo:registry address="zookeeper://43.142.158.6:2181" />
+	<!-- 用于配置提供服务的协议信息，协议由提供方指定，消费方被动接受 -->
+	<dubbo:protocol name="dubbo" port="20880" accesslog="true" />
+
+	<!--用于暴露一个服务，定义服务的元信息，一个服务可以用多个协议暴露，一个服务也可以注册到多个注册中心 -->
+	<!--每个接口都应定义版本号，为后续不兼容升级提供可能 -->
+	<!--ref：服务的真正实现类 -->
+	<dubbo:service interface="tech.wedev.dubbo.wecom.service.dubboWecomRpcService" ref="dubboWecomService" version="1.0.0" />
+
+	<!--监控中心配置 监控中心协议，如果为protocol="registry"，表示从注册中心发现监控中心地址，否则直连监控中心。 -->
+	<!--<dubbo:monitor protocol="registry"></dubbo:monitor>-->
+	<!-- 直连监控中心服务器地址 -->
+	<!-- <dubbo:monitor address="localhost:6379"></dubbo:monitor> -->
+
+</beans>

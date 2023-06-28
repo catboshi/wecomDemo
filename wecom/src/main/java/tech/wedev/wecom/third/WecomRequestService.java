@@ -23,4 +23,12 @@ public interface WecomRequestService {
      * @return
      */
     String generateAccessToken(AccessCredentialsCommand command);
+
+    /**
+     * 客户联系-客户管理-获取客户详情
+     * @param externalUserId
+     * @param corpId
+     * @return 参考企业微信官方文档
+     */
+    Map<String, Object> externalContactGet(String corpId, String externalUserId);
 }

@@ -5,7 +5,7 @@
 
 	<groupId>tech.wedev.dubbo</groupId>
 	<artifactId>wecom-stub</artifactId>
-	<version>1.0.1.RELEASE</version>
+	<version>0.0.1.SNATSHOT</version>
 	<packaging>jar</packaging>
 	<name>wecom-stub</name>
 	<description>公共dubbo服务API</description>

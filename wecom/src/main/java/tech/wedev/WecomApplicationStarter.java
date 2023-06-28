@@ -7,11 +7,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Slf4j
 @MapperScan("tech.wedev.wecom.dao")
-@SpringBootApplication
+@ImportResource(locations = "classpath:provider.xml")
+@SpringBootApplication(scanBasePackages = "tech.wedev")
 @EnableTransactionManagement
 public class WecomApplicationStarter extends SpringBootServletInitializer {
 
