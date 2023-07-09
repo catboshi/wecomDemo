@@ -25,7 +25,7 @@ public enum ExceptionCode implements ErrorCode{
     /**
      * 企微API封装异常
      */
-    NOS_CONNECT_ERROR(404,"NOS连接异常"),
+    REDIS_CONNECT_ERROR(404,"REDIS连接异常"),
     PARAMETER_SECRET_ERROR(403,"SECRET参数配置异常"),
     PARAMETER_CORP_ID_ERROR(403,"CORP_ID参数配置异常"),
     REQUEST_ERROR(500,"请求企业微信API异常"),

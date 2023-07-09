@@ -12,7 +12,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName("zh_wecom_market_article")
-public class ZhWecomMarketArticleQO extends BasicQO {
+public class WecomMarketArticleQO extends BasicQO {
     /**
     * 接入应用
     */

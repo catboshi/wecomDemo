@@ -18,7 +18,7 @@
 	<!--用于暴露一个服务，定义服务的元信息，一个服务可以用多个协议暴露，一个服务也可以注册到多个注册中心 -->
 	<!--每个接口都应定义版本号，为后续不兼容升级提供可能 -->
 	<!--ref：服务的真正实现类 -->
-	<dubbo:service interface="tech.wedev.dubbo.wecom.service.dubboWecomRpcService" ref="dubboWecomService" version="1.0.0" />
+	<dubbo:service interface="tech.wedev.dubbo.wecom.service.DubboWecomRpcService" ref="dubboWecomService" version="1.0.0" />
 
 	<!--监控中心配置 监控中心协议，如果为protocol="registry"，表示从注册中心发现监控中心地址，否则直连监控中心。 -->
 	<!--<dubbo:monitor protocol="registry"></dubbo:monitor>-->

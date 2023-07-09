@@ -1,15 +1,6 @@
 package tech.wedev.wecom;
 
 import lombok.var;
-import tech.wedev.wecom.api.entity.BaseFunctional;
-import tech.wedev.wecom.entity.po.ZhWecomMarketArticlePO;
-import tech.wedev.wecom.enums.AttachmentsMsgTypeEnum;
-import tech.wedev.wecom.monad.Try;
-import tech.wedev.wecom.request.RequestV1Private;
-import tech.wedev.wecom.standard.TestAopService;
-import tech.wedev.wecom.utils.ObjectUtils;
-import tech.wedev.wecom.utils.SM4Util;
-import tech.wedev.wecom.utils.StringUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -19,8 +10,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import tech.wedev.wecom.api.entity.BaseFunctional;
+import tech.wedev.wecom.entity.po.WecomMarketArticlePO;
+import tech.wedev.wecom.enums.AttachmentsMsgTypeEnum;
+import tech.wedev.wecom.monad.Try;
+import tech.wedev.wecom.request.RequestV1Private;
+import tech.wedev.wecom.standard.TestAopService;
+import tech.wedev.wecom.utils.ObjectUtils;
+import tech.wedev.wecom.utils.SM4Util;
+import tech.wedev.wecom.utils.StringUtils;
 
-import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -113,7 +112,7 @@ public class WecomDemoTests {
 	@Test
 	public void test6() throws Throwable {
 		String msgType = "link";
-		ZhWecomMarketArticlePO article = new ZhWecomMarketArticlePO();
+		WecomMarketArticlePO article = new WecomMarketArticlePO();
 		article.setArticleTitle("我是标题");
 		article.setArticleAbstract("我是摘要");
 		article.setArticleLink("我是链接");
@@ -139,7 +138,7 @@ public class WecomDemoTests {
 
 	@Test
 	public void test8() throws Exception {
-		ZhWecomMarketArticlePO article = new ZhWecomMarketArticlePO();
+		WecomMarketArticlePO article = new WecomMarketArticlePO();
 		article.setArticleTitle("我是标题");
 		article.setArticleAbstract("我是摘要");
 		article.setArticleLink("我是链接");

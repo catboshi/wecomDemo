@@ -8,7 +8,7 @@ import tech.wedev.autm.asyntask.AsynTaskBean;
 import tech.wedev.autm.asyntask.AsynTaskEnum.TaskPriorityType;
 import tech.wedev.wecom.api.entity.BaseFunctional;
 import tech.wedev.wecom.constants.WecomApiUrlConstant;
-import tech.wedev.wecom.entity.po.ZhWecomMarketArticlePO;
+import tech.wedev.wecom.entity.po.WecomMarketArticlePO;
 import tech.wedev.wecom.entity.po.ZhWelcomeMessageCfgPO;
 import tech.wedev.wecom.entity.qo.ClientShareUploadQO;
 import tech.wedev.wecom.enums.*;
@@ -18,11 +18,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import tech.wedev.wecom.api.entity.WechatEventCallBack;
 import tech.wedev.wecom.api.utils.WXBizMsgCrypt;
-import tech.wedev.wecom.dao.ZhCustMgrMapMapper;
+import tech.wedev.wecom.dao.CustMgrMapMapper;
 import tech.wedev.wecom.dao.ZhOrgMapper;
-import tech.wedev.wecom.dao.ZhWecomMarketArticleMapper;
+import tech.wedev.wecom.dao.WecomMarketArticleMapper;
 import tech.wedev.wecom.dao.ZhWelcomeMessageCfgMapper;
-import tech.wedev.wecom.entity.po.ZhCustMgrMapPO;
+import tech.wedev.wecom.entity.po.CustMgrMapPO;
 import tech.wedev.wecom.entity.po.ZhOrgPO;
 import tech.wedev.wecom.entity.qo.GenParamBasicQO;
 import tech.wedev.wecom.entity.qo.ZhQywxContactConfigInfoQO;
@@ -34,7 +34,7 @@ import tech.wedev.wecom.personalized.impl.AsynTaskDtlServiceImpl;
 import tech.wedev.wecom.request.RequestV1Private;
 import tech.wedev.wecom.standard.GenParamBasicService;
 import tech.wedev.wecom.standard.ZhQywxContactConfigInfoService;
-import tech.wedev.wecom.standard.ZhWecomMarketArticleService;
+import tech.wedev.wecom.standard.WecomMarketArticleService;
 import tech.wedev.wecom.third.WecomRequestService;
 import tech.wedev.wecom.utils.*;
 
@@ -71,13 +71,13 @@ public class WechatEventCallBackController {
     @Autowired
     private ZhWelcomeMessageCfgMapper welcomeMessageCfgMapper;
     @Autowired
-    private ZhWecomMarketArticleMapper wecomMarketArticleMapper;
+    private WecomMarketArticleMapper wecomMarketArticleMapper;
     @Autowired
     private ZhOrgMapper orgMapper;
     @Autowired
-    private ZhCustMgrMapMapper custMgrMapMapper;
+    private CustMgrMapMapper custMgrMapMapper;
     @Autowired
-    private ZhWecomMarketArticleService wecomMarketArticleService;
+    private WecomMarketArticleService wecomMarketArticleService;
 
     @GetMapping("/eventcallback/V1")
     public String eventCallBackGet(@RequestParam("qywxcorpid") String qywxCorpId,
@@ -221,7 +221,7 @@ public class WechatEventCallBackController {
             //获取默认欢迎语
             log.error("发送默认欢迎语", ex);
             var parentCode = orgMapper.selectParentNodeInfoByCode(Optional.ofNullable(custMgrMapMapper.selectByQywxMgrIdAndQywxCorpId(userID, corpID))
-                            .map(ZhCustMgrMapPO::getOrgCode)
+                            .map(CustMgrMapPO::getOrgCode)
                             .orElseThrow(() -> new WecomException(ExceptionCode.CUSTMGR_ACCOUNT_ERROR)))
                     .stream()
                     .filter(Objects::nonNull)
@@ -271,7 +271,7 @@ public class WechatEventCallBackController {
         }
     }
 
-    private Map<String, Object> assembleJsonField(String welcomeCode, ZhWelcomeMessageCfgPO cfgPO, ZhWecomMarketArticlePO article, String corpID) {
+    private Map<String, Object> assembleJsonField(String welcomeCode, ZhWelcomeMessageCfgPO cfgPO, WecomMarketArticlePO article, String corpID) {
         //region 组装报文发送
         Map<String, Object> requestMap = new HashMap<>();
         //后续发送其他附件类型请前往AttachmentsMsgTypeEnum枚举类中维护
@@ -293,7 +293,7 @@ public class WechatEventCallBackController {
         //endregion
     }
 
-    private RequestV1Private.Attachments getAttachments(ZhWecomMarketArticlePO article, String msgType, String corpID) {
+    private RequestV1Private.Attachments getAttachments(WecomMarketArticlePO article, String msgType, String corpID) {
         return Optional.ofNullable(article).map(a -> {
             ExceptionAssert.isTrue(!(Objects.equals(a.getSourceFormat(), ZhWelcomeMessageCfgEnum.TypeENUM.H5.getCode())
                     || Objects.equals(a.getSourceFormat(), ZhWelcomeMessageCfgEnum.TypeENUM.IMAGE_TEXT.getCode())

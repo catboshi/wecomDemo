@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="tech.wedev.wecom.dao.ZhWecomMarketArticleMapper">
-    <resultMap id="BaseResultMap" type="tech.wedev.wecom.entity.po.ZhWecomMarketArticlePO">
+<mapper namespace="tech.wedev.wecom.dao.WecomMarketArticleMapper">
+    <resultMap id="BaseResultMap" type="tech.wedev.wecom.entity.po.WecomMarketArticlePO">
         <id column="id" property="id" jdbcType="BIGINT"/>
         <result column="article_app" property="articleApp"/>
         <result column="article_visible" property="articleVisible"/>
@@ -45,9 +45,19 @@
         <result column="media_id" property="mediaId"/>
         <result column="media_created_time" property="mediaCreatedTime"/>
     </resultMap>
-     <sql id="Base_Column_List">
-            `id`,`article_app`,`article_visible`,`article_source`,`article_link`,`article_title`,`article_abstract`,`release_time`,`article_create_time`,`create_time`,`modify_time`,`article_thumbnail`,`source_format`,`source_format_name`,`business_code`,`business_name`,`source_type`,`source_type_name`,`is_delete`,`apply_mgr_id`,`apply_corp_id`,`start_time`,`end_time`,`status`,`orgin_url_id`,`is_top`,`is_carousel`,`corp_id`,`applicant_name`,`areacode`,`content_id`,`suffix`,`langcode`,`thumbnail`,`thumbnail_format`,`video_id`,`video_link`,`video_name`,`appid`,`app_link`,`media_id`,`media_created_time`
-     </sql>
+
+    <sql id="Base_Column_List">
+        `id`,`article_app`,`article_visible`,`article_source`,`article_link`,`article_title`,`article_abstract`,`release_time`,`article_create_time`,`create_time`,`modify_time`,`article_thumbnail`,`source_format`,`source_format_name`,`business_code`,`business_name`,`source_type`,`source_type_name`,`is_delete`,`apply_mgr_id`,`apply_corp_id`,`start_time`,`end_time`,`status`,`orgin_url_id`,`is_top`,`is_carousel`,`corp_id`,`applicant_name`,`areacode`,`content_id`,`suffix`,`langcode`,`thumbnail`,`thumbnail_format`,`video_id`,`video_link`,`video_name`,`appid`,`app_link`,`media_id`,`media_created_time`
+    </sql>
+
+    <select id="selectOneByArticleSource" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"></include>
+        from zh_wecom_market_article
+        where 1=1
+        and article_source = #{articleSource}
+    </select>
+
     <update id="updateByArticleSourceAndArticleApp" parameterType="tech.wedev.wecom.entity.qo.ClientShareUploadQO">
         update zh_wecom_market_article
         <set>
