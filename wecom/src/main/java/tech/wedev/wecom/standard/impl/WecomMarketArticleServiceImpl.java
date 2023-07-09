@@ -8,11 +8,11 @@ import tech.wedev.wecom.context.TokenContextHolder;
 import tech.wedev.wecom.entity.qo.ClientShareUploadQO;
 import tech.wedev.wecom.entity.vo.ResponseVO;
 import tech.wedev.wecom.enums.JwtKeyEnum;
-import tech.wedev.wecom.standard.ZhWecomMarketArticleService;
-import tech.wedev.wecom.entity.po.ZhWecomMarketArticlePO;
-import tech.wedev.wecom.entity.qo.ZhWecomMarketArticleQO;
+import tech.wedev.wecom.standard.WecomMarketArticleService;
+import tech.wedev.wecom.entity.po.WecomMarketArticlePO;
+import tech.wedev.wecom.entity.qo.WecomMarketArticleQO;
 import tech.wedev.wecom.dao.BasicMapper;
-import tech.wedev.wecom.dao.ZhWecomMarketArticleMapper;
+import tech.wedev.wecom.dao.WecomMarketArticleMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tech.wedev.wecom.third.WecomRequestService;
@@ -29,10 +29,10 @@ import java.util.Optional;
 
 @Slf4j
 @Service
-public class ZhWecomMarketArticleServiceImpl extends BasicServiceImpl<ZhWecomMarketArticlePO, ZhWecomMarketArticleQO> implements ZhWecomMarketArticleService {
+public class WecomMarketArticleServiceImpl extends BasicServiceImpl<WecomMarketArticlePO, WecomMarketArticleQO> implements WecomMarketArticleService {
 
     @Autowired
-    private ZhWecomMarketArticleMapper zhWecomMarketArticleMapper;
+    private WecomMarketArticleMapper wecomMarketArticleMapper;
     @Autowired
     private WecomRequestService wecomRequestService;
 
@@ -45,8 +45,8 @@ public class ZhWecomMarketArticleServiceImpl extends BasicServiceImpl<ZhWecomMar
     private String oaasContent;
 
     @Override
-    public BasicMapper<ZhWecomMarketArticlePO, ZhWecomMarketArticleQO> getBasicMapper() {
-        return zhWecomMarketArticleMapper;
+    public BasicMapper<WecomMarketArticlePO, WecomMarketArticleQO> getBasicMapper() {
+        return wecomMarketArticleMapper;
     }
 
     @Override
@@ -80,7 +80,7 @@ public class ZhWecomMarketArticleServiceImpl extends BasicServiceImpl<ZhWecomMar
             }
             //拉取OAAS文件
             String url = "http://" + oaasAddress + "/api/v1/chunkserver/" + oaasContent + "/_/" + contentId;
-            log.info("ZhWecomMarketArticleServiceImpl.uploadQiweArticle url:" + url);
+            log.info("WecomMarketArticleServiceImpl.uploadQiweArticle url:" + url);
             byte[] fileStream = HttpProxyTools.getFileByHttpUrl(url);
             //校验文件大小
             long fileSize = fileStream.length;
@@ -109,7 +109,7 @@ public class ZhWecomMarketArticleServiceImpl extends BasicServiceImpl<ZhWecomMar
             Long a = Long.valueOf(createdAt);
             String currentTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(a);
             Date date = DateUtils.formatStrToDate(currentTime);
-            int update = zhWecomMarketArticleMapper.updateByArticleSourceAndArticleApp(clientShareUploadQO, mediaId, date);
+            int update = wecomMarketArticleMapper.updateByArticleSourceAndArticleApp(clientShareUploadQO, mediaId, date);
 
             Map<String, Object> resultMap = new HashMap<>();
             resultMap.put("mediaId", mediaId);

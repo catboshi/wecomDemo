@@ -12,7 +12,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName("zh_wecom_market_article")
-public class ZhWecomMarketArticlePO extends BasicPO {
+public class WecomMarketArticlePO extends BasicPO {
     /**
     * 接入应用
     */
@@ -81,10 +81,6 @@ public class ZhWecomMarketArticlePO extends BasicPO {
     * 资源类型名称
     */
     private String sourceTypeName;
-    /**
-    * 是否有效标志；0有效，1无效
-    */
-    private Integer isDelete;
     /**
     * 申请人
     */

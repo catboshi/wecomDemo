@@ -44,7 +44,7 @@ public class RequestV1Private {
     @AllArgsConstructor
     public static class Text {
         /**
-         *消息文本内容，不超过498日个字苷
+         *消息文本内容，不超过4000个字节
          */
         @JSONField(name = "content")
         private String content;

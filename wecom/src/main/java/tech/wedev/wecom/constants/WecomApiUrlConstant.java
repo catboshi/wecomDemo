@@ -29,6 +29,27 @@ public class WecomApiUrlConstant {
     public static final String EXTERNAL_CONTACT_GET_CONTEXT = "/cgi-bin/externalcontact/get";
     public static final String EXTERNAL_CONTACT_GET = "/cgi-bin/externalcontact/get?access_token=%1$s&external_userid=%2$s";
 
+    /**
+     * GET
+     * 身份验证-网页授权登录-获取访问用户身份
+     */
+    public static final String AUTH_GET_USER_INFO_CONTEXT = "/cgi-bin/auth/getuserinfo";
+    public static final String AUTH_GET_USER_INFO = "/cgi-bin/auth/getuserinfo?access_token=%1$s&code=%2$s";
+
+    /**
+     * GET
+     * 通讯录管理-成员管理-二次验证
+     */
+    public static final String USER_AUTH_SUCC_CONTEXT = "/cgi-bin/user/authsucc";
+    public static final String USER_AUTH_SUCC = "/cgi-bin/user/authsucc?access_token=%1$s&userid=%2$s";
+
+    /**
+     * POST
+     * 消息推送-发送应用消息
+     */
+    public static final String SEND_MESSAGE_APIURL_CONTEXT = "/cgi-bin/message/send";
+    public static final String SEND_MESSAGE_APIURL = "/cgi-bin/message/send?access_token=%1$s";
+
 
     /**
      * POST

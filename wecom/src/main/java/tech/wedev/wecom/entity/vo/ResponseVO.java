@@ -102,7 +102,7 @@ public class ResponseVO<T> implements Serializable {
     /**
      * 空内容成功，响应码200
      */
-    public static <T> ResponseVO<T> success(String msg) {
+    public static <T> ResponseVO<T> success() {
         return new ResponseVO<T>(ExceptionCode.SUCCESS.getCode(),
                 ExceptionCode.SUCCESS.getMsg(), null);
     }

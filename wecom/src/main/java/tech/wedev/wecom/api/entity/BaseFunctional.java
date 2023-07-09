@@ -1,18 +1,14 @@
 package tech.wedev.wecom.api.entity;
 
 import lombok.var;
+import tech.wedev.wecom.entity.po.WecomMarketArticlePO;
+import tech.wedev.wecom.enums.AttachmentsMsgTypeEnum;
 import tech.wedev.wecom.exception.ExceptionCode;
 import tech.wedev.wecom.exception.WecomException;
-import tech.wedev.wecom.monad.Try;
-import tech.wedev.wecom.entity.po.ZhWecomMarketArticlePO;
-import tech.wedev.wecom.enums.AttachmentsMsgTypeEnum;
 import tech.wedev.wecom.request.RequestV1Private;
-import tech.wedev.wecom.utils.ObjectUtils;
 import tech.wedev.wecom.utils.StringUtils;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.Optional;
 
 //自定义函数&反射封装 <T> mapping <R>
 public class BaseFunctional<T> {
@@ -35,7 +31,7 @@ public class BaseFunctional<T> {
 //        public static Try<Object> transform (Class clazzT, Object ... objects) throws Throwable {
         public static Object transform (Object ... objects) {
             var msgType = (String) Arrays.stream(objects).filter(o -> o.getClass() == String.class).filter(o->StringUtils.isNotBlank(String.valueOf(o))).findFirst().orElseThrow(()->new WecomException(ExceptionCode.INVALID_PARAMETER));
-            var article = (ZhWecomMarketArticlePO) Arrays.stream(objects).filter(o -> o.getClass() == ZhWecomMarketArticlePO.class).findFirst().orElseThrow(()->new WecomException(ExceptionCode.INVALID_PARAMETER));
+            var article = (WecomMarketArticlePO) Arrays.stream(objects).filter(o -> o.getClass() == WecomMarketArticlePO.class).findFirst().orElseThrow(()->new WecomException(ExceptionCode.INVALID_PARAMETER));
             var enum0 = Arrays.stream(AttachmentsMsgTypeEnum.values()).filter(a -> a.getDesc().equals(msgType)).findFirst().orElseThrow(() -> new WecomException(ExceptionCode.UNSUPPORT_MSGTYPE));
             switch (msgType){
                 case "link":
@@ -69,7 +65,7 @@ public class BaseFunctional<T> {
                     return null;
             }
             /*var msgType = (String) Arrays.stream(objects).filter(o -> o.getClass() == String.class).findFirst().orElse("");
-            var article = (ZhWecomMarketArticlePO) Arrays.stream(objects).filter(o -> o.getClass() == ZhWecomMarketArticlePO.class).findFirst().orElse(null);
+            var article = (WecomMarketArticlePO) Arrays.stream(objects).filter(o -> o.getClass() == WecomMarketArticlePO.class).findFirst().orElse(null);
             var clazzR = Class.forName(clazzT.getName());
             var clazzA = Class.forName(clazzT.getName() + "$" + "Attachments");
             var clazzV = Class.forName(clazzT.getName() + "$" + StringUtils.capitalizeFirstLetter(msgType));

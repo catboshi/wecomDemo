@@ -1,10 +1,10 @@
 package tech.wedev.wecom.entity.po;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import tech.wedev.wecom.annos.TableName;
-import java.util.Date;
 
 
 @Data
@@ -12,7 +12,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName("zh_cust_mgr_map")
-public class ZhCustMgrMapPO extends BasicPO {
+public class CustMgrMapPO extends BasicPO {
     /**
     * 统一认证号
     */

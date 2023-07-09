@@ -275,7 +275,7 @@
 		<dependency>
 			<groupId>tech.wedev.dubbo</groupId>
 			<artifactId>wecom-stub</artifactId>
-			<version>1.0.1.RELEASE</version>
+			<version>1.0.2.RELEASE</version>
 		</dependency>
 
 		<!--Spring boot Redis-->

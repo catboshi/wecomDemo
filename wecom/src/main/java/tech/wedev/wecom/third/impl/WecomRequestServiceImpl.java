@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -100,7 +101,7 @@ public class WecomRequestServiceImpl implements WecomRequestService {
 
 
         //从redis缓存读取token
-        String tokenKey = Joiner.on("_").join(corpId, ParamsConstant.TOKEN_NOS_KEY, command.getInterfaceIdentifyUrl());
+        String tokenKey = Joiner.on("_").join(corpId, ParamsConstant.TOKEN_CACHE_KEY, command.getInterfaceIdentifyUrl());
 
         token = (String) redisUtils.get(tokenKey);
         if (StringUtils.isNotBlank(token)) {
@@ -148,11 +149,49 @@ public class WecomRequestServiceImpl implements WecomRequestService {
     }
 
     @Override
+    public JSONObject authGetUserInfo(String code) {
+        log.info("WecomRequestServiceImpl###authGetUserInfo###企微API入参: " + code);
+        //获取请求的token
+        AccessCredentialsCommand accessTokenCommand = AccessCredentialsCommand.builder().corpId("System")
+                .interfaceIdentifyUrl(getContextConstant(WecomApiUrlConstant.AUTH_GET_USER_INFO)).build();
+        String token = this.generateAccessToken(accessTokenCommand);
+        String url = String.format(wecomApiUrlPrefix + WecomApiUrlConstant.AUTH_GET_USER_INFO, token, code);
+        log.info("WecomRequestServiceImpl###authGetUserInfo###企微API URL: " + url);
+        JSONObject httpResult;
+        try {
+            httpResult = HttpRequestUtils.getAccessResult(url);
+        } catch (Exception e) {
+            log.error("WecomRequestServiceImpl###authGetUserInfo###企微API调用异常" + e.getMessage());
+            throw new WecomException(ExceptionCode.REQUEST_ERROR);
+        }
+        log.info("WecomRequestServiceImpl###authGetUserInfo###企微API返回: " + JSON.toJSONString(httpResult));
+        int errCode = httpResult.getIntValue("errcode");
+        if (errCode == 0) {
+            return httpResult;
+        } else if (errCode == 42001) {
+            //token失效，重新调用获取token
+            this.refreshTokenFromZhCorpInfo("System", getContextConstant(WecomApiUrlConstant.AUTH_GET_USER_INFO));
+            return this.authGetUserInfo(code);
+        } else {
+            throw new WecomException(errCode, "调用企微API返回错误");
+        }
+    }
+
+    @Override
     public Map<String, Object> externalContactGet(String corpId, String externalUserId) {
         log.info("WecomRequestServiceImpl.externalContactGet###企微API入参: \"corpId\": " + corpId + ", \"externalUserId\": " + externalUserId);
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("external_userid", externalUserId);
         return ((JSONObject) generalCallQiWeApi(corpId, ParamsConstant.METHOD_GET, requestBody, WecomApiUrlConstant.EXTERNAL_CONTACT_GET)).getInnerMap();
+    }
+
+    @Override
+    public Map<String, Object> sendApplicationMessage(Map<String, Object> requestMap) {
+        log.info("WecomRequestServiceImpl.sendWelcomeMessage###企微API入参: " + JSONObject.toJSONString(requestMap));
+        Map<String, Object> publicBody = MapUtils.getMap(requestMap, "Public");
+        Map<String, Object> privateBody = MapUtils.getMap(requestMap, "Private");
+        String corpId = MapUtils.getString(publicBody, "corpId");
+        return ((JSONObject) generalCallQiWeApi(corpId, ParamsConstant.METHOD_POST, privateBody, WecomApiUrlConstant.SEND_MESSAGE_APIURL)).getInnerMap();
     }
 
     private String getRedisErrorCode(GenParamEnum paramType) {
@@ -439,9 +478,9 @@ public class WecomRequestServiceImpl implements WecomRequestService {
             //EX: 设置键的过期单位为 second 秒
             try {
                 if (ParamsConstant.TYPE_TICKET.equals(tokenTicketType)) {
-                    redisUtils.set(corpId + ParamsConstant.NOS_KEY_SEPARATE + paramType.getName(), tokenOrTicket, ParamsConstant.TOKEN_TIME_OUT);
+                    redisUtils.set(corpId + ParamsConstant.CACHE_KEY_SEPARATE + paramType.getName(), tokenOrTicket, ParamsConstant.TOKEN_TIME_OUT);
                 } else {
-                    String tokenKey = Joiner.on(ParamsConstant.NOS_KEY_SEPARATE).join(corpId, ParamsConstant.TOKEN_NOS_KEY, interfaceIdentifyUrl);
+                    String tokenKey = Joiner.on(ParamsConstant.CACHE_KEY_SEPARATE).join(corpId, ParamsConstant.TOKEN_CACHE_KEY, interfaceIdentifyUrl);
                     redisUtils.set(tokenKey, tokenOrTicket, ParamsConstant.TOKEN_TIME_OUT);
                 }
             } catch (Exception e) {
@@ -489,7 +528,7 @@ public class WecomRequestServiceImpl implements WecomRequestService {
                 if (ParamsConstant.TYPE_TICKET.equals(tokenTicketType)) {
                     redisUtils.set(paramType.getName(), tokenOrTicket, ParamsConstant.TOKEN_TIME_OUT);
                 } else {
-                    redisUtils.set(ParamsConstant.TOKEN_NOS_KEY_PREFIX + context, tokenOrTicket, ParamsConstant.TOKEN_TIME_OUT);
+                    redisUtils.set(ParamsConstant.TOKEN_CACHE_KEY_PREFIX + context, tokenOrTicket, ParamsConstant.TOKEN_TIME_OUT);
                 }
             } catch (Exception e) {
                 log.error("WecomRequestServiceImpl###updateTokenFromWecom设置redis缓存异常");
