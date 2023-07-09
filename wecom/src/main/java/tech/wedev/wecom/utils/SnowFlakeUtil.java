@@ -1,7 +1,7 @@
 package tech.wedev.wecom.utils;
 
 import lombok.extern.slf4j.Slf4j;
-import tech.wedev.snowflake.SnowFlake;
+import tech.wedev.util.snowflake.SnowFlake;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;

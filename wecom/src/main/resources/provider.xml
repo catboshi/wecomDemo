@@ -11,7 +11,7 @@
 	<dubbo:application name="provider" />
 
 	<!-- 用于配置连接注册中心相关信息 -->
-	<dubbo:registry address="zookeeper://43.142.158.6:2181" />
+	<dubbo:registry address="zookeeper://10.0.4.4:2181" />
 	<!-- 用于配置提供服务的协议信息，协议由提供方指定，消费方被动接受 -->
 	<dubbo:protocol name="dubbo" port="20880" accesslog="true" />
 

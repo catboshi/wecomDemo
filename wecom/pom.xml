@@ -261,14 +261,14 @@
 		<dependency>
 			<groupId>tech.wedev.autm</groupId>
 			<artifactId>autm-asyntask</artifactId>
-			<version>1.0.8.RELEASE</version>
+			<version>1.0.9.RELEASE</version>
 		</dependency>
 
 		<!--雪花算法-->
 		<dependency>
-			<groupId>tech.wedev</groupId>
+			<groupId>tech.wedev.util</groupId>
 			<artifactId>snowflake</artifactId>
-			<version>0.0.1.RELEASE</version>
+			<version>1.0.0.RELEASE</version>
 		</dependency>
 
 		<!--公共dubbo服务-->
