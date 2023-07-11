@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="tech.wedev.wecom.dao.ZhCorpInfoMapper">
-    <resultMap id="BaseResultMap" type="tech.wedev.wecom.entity.po.ZhCorpInfo">
+<mapper namespace="tech.wedev.wecom.dao.CorpInfoMapper">
+    <resultMap id="BaseResultMap" type="tech.wedev.wecom.entity.po.CorpInfo">
         <id column="id" property="id" jdbcType="BIGINT"/>
         <result column="corp_id" property="corpId"/>
         <result column="agent_application" property="agentApplication"/>
@@ -31,7 +31,7 @@
      <sql id="Base_Column_List">
             `id`,`corp_id`,`agent_application`,`agent_jsapi_ticket`,`corp_jsapi_ticket`,`secret_application`,`secret_communication`,`secret_external_contact`,`secret_msg_audit`,`token_application`,`token_communication`,`token_external_contact`,`token_msg_audit`,`token_application_modified`,`token_communication_modified`,`token_external_contact_modified`,`token_msg_audit_modified`,`agent_jsapi_ticket_modified`,`corp_jsapi_ticket_modified`,`chat_save_pri_key`,`gmt_create`,`create_id`,`gmt_modified`,`modified_id`,`is_deleted`
      </sql>
-    <update id="updateByPrimaryKeySelective" parameterType="tech.wedev.wecom.entity.po.ZhCorpInfo">
+    <update id="updateByPrimaryKeySelective" parameterType="tech.wedev.wecom.entity.po.CorpInfo">
         update zh_corp_info
         <set>
             <if test="corpId !=null">

@@ -1,10 +1,10 @@
 package tech.wedev.wecom.entity.qo;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import tech.wedev.wecom.annos.TableName;
-import java.util.Date;
 
 
 @Data
@@ -12,7 +12,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName("zh_qywx_contact_config_info")
-public class ZhQywxContactConfigInfoQO extends BasicQO {
+public class QywxContactConfigInfoQO extends BasicQO {
     /**
     * 二维码ID，Snowflake生成
     */
@@ -26,7 +26,7 @@ public class ZhQywxContactConfigInfoQO extends BasicQO {
     */
     private String appName;
     /**
-    * 接入主体：1.总行，2。分行
+    * 接入主体：1.总公司，2。分公司
     */
     private String appFlag;
     /**

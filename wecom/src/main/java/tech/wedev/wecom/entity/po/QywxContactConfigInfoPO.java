@@ -1,4 +1,5 @@
 package tech.wedev.wecom.entity.po;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -6,15 +7,13 @@ import lombok.experimental.SuperBuilder;
 import tech.wedev.wecom.annos.TableName;
 import tech.wedev.wecom.enums.QywxContactConfigInfoQrTypeEnum;
 
-import java.util.Date;
-
 
 @Data
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName("zh_qywx_contact_config_info")
-public class ZhQywxContactConfigInfoPO extends BasicPO {
+public class QywxContactConfigInfoPO extends BasicPO {
     /**
     * 二维码ID，Snowflake生成
     */
@@ -28,7 +27,7 @@ public class ZhQywxContactConfigInfoPO extends BasicPO {
     */
     private String appName;
     /**
-    * 接入主体：1.总行，2。分行
+    * 接入主体：1.总公司，2。分公司
     */
     private String appFlag;
     /**

@@ -3,29 +3,30 @@ package tech.wedev.wecom.api.client;
 import cn.hutool.core.util.XmlUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import lombok.extern.slf4j.Slf4j;
+import lombok.var;
 import org.apache.commons.collections.MapUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.*;
 import tech.wedev.autm.asyntask.AsynTaskBean;
 import tech.wedev.autm.asyntask.AsynTaskEnum.TaskPriorityType;
 import tech.wedev.wecom.api.entity.BaseFunctional;
-import tech.wedev.wecom.constants.WecomApiUrlConstant;
-import tech.wedev.wecom.entity.po.WecomMarketArticlePO;
-import tech.wedev.wecom.entity.po.ZhWelcomeMessageCfgPO;
-import tech.wedev.wecom.entity.qo.ClientShareUploadQO;
-import tech.wedev.wecom.enums.*;
-import lombok.extern.slf4j.Slf4j;
-import lombok.var;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 import tech.wedev.wecom.api.entity.WechatEventCallBack;
 import tech.wedev.wecom.api.utils.WXBizMsgCrypt;
+import tech.wedev.wecom.constants.WecomApiUrlConstant;
 import tech.wedev.wecom.dao.CustMgrMapMapper;
-import tech.wedev.wecom.dao.ZhOrgMapper;
 import tech.wedev.wecom.dao.WecomMarketArticleMapper;
-import tech.wedev.wecom.dao.ZhWelcomeMessageCfgMapper;
+import tech.wedev.wecom.dao.OrgMapper;
+import tech.wedev.wecom.dao.WelcomeMessageCfgMapper;
 import tech.wedev.wecom.entity.po.CustMgrMapPO;
-import tech.wedev.wecom.entity.po.ZhOrgPO;
+import tech.wedev.wecom.entity.po.WecomMarketArticlePO;
+import tech.wedev.wecom.entity.po.OrgPO;
+import tech.wedev.wecom.entity.po.WelcomeMessageCfgPO;
+import tech.wedev.wecom.entity.qo.ClientShareUploadQO;
 import tech.wedev.wecom.entity.qo.GenParamBasicQO;
-import tech.wedev.wecom.entity.qo.ZhQywxContactConfigInfoQO;
+import tech.wedev.wecom.entity.qo.QywxContactConfigInfoQO;
+import tech.wedev.wecom.enums.*;
 import tech.wedev.wecom.exception.BusinessException;
 import tech.wedev.wecom.exception.ExceptionAssert;
 import tech.wedev.wecom.exception.ExceptionCode;
@@ -33,8 +34,8 @@ import tech.wedev.wecom.exception.WecomException;
 import tech.wedev.wecom.personalized.impl.AsynTaskDtlServiceImpl;
 import tech.wedev.wecom.request.RequestV1Private;
 import tech.wedev.wecom.standard.GenParamBasicService;
-import tech.wedev.wecom.standard.ZhQywxContactConfigInfoService;
 import tech.wedev.wecom.standard.WecomMarketArticleService;
+import tech.wedev.wecom.standard.QywxContactConfigInfoService;
 import tech.wedev.wecom.third.WecomRequestService;
 import tech.wedev.wecom.utils.*;
 
@@ -50,30 +51,30 @@ import java.util.stream.Stream;
 public class WechatEventCallBackController {
     private static final String HEADQUARTER_CODE = "0010100000";
 
-    //调用图文封面url前缀
-//    @Value("${wecom.smsb.picurl.prefix}")
-    private String wecomSmsbPicurlPrefix;
-    //调用eiop缩略图Url前缀
-//    @Value ("${wecom.eiop.picurl.prefix}")
-    private String wecomEiopPicUrlPrefix;
-    //OAAS的domain内容
-//    @Value ("S{oaas.Content}")
-    private String oaasContent;
+    //调用阿里云oss缩略图url前缀
+    @Value("${wecom.aliyun.picurl.prefix}")
+    private String wecomAliyunPicUrlPrefix;
+    //调用腾讯云oss缩略图url前缀
+    @Value ("${wecom.tencentyun.picurl.prefix}")
+    private String wecomTencentyunPicUrlPrefix;
+    //oss的domain内容
+    @Value ("${oss.domain}")
+    private String ossDomain;
 
     @Autowired
     private GenParamBasicService genParamBasicService;
     @Autowired
     private AsynTaskDtlServiceImpl asynTaskDtlService;
     @Autowired
-    private ZhQywxContactConfigInfoService contactConfigInfoService;
+    private QywxContactConfigInfoService contactConfigInfoService;
     @Autowired
     private WecomRequestService wecomRequestService;
     @Autowired
-    private ZhWelcomeMessageCfgMapper welcomeMessageCfgMapper;
+    private WelcomeMessageCfgMapper welcomeMessageCfgMapper;
     @Autowired
     private WecomMarketArticleMapper wecomMarketArticleMapper;
     @Autowired
-    private ZhOrgMapper orgMapper;
+    private OrgMapper orgMapper;
     @Autowired
     private CustMgrMapMapper custMgrMapMapper;
     @Autowired
@@ -207,7 +208,7 @@ public class WechatEventCallBackController {
             ExceptionAssert.isTrue(Arrays.stream(WechatEventCallBackChangeTypeEnum.values()).noneMatch(e -> e.name().equals(changeType)), "非添加外部联系人事件");
             var welcomeCode = Optional.ofNullable(map.get("WelcomeCode")).map(String::valueOf).orElseThrow(() -> new WecomException(ExceptionCode.LACK_WELCOMECODE));
             var state = Optional.ofNullable(map.get("State")).map(String::valueOf).orElseThrow(() -> new BusinessException("缺少联系我state参数"));
-            contactConfigInfoService.select(ZhQywxContactConfigInfoQO.builder()
+            contactConfigInfoService.select(QywxContactConfigInfoQO.builder()
                     //state唯一,peek里的函数只执行一次或不执行
                     .state(state).build()).stream().filter(Objects::nonNull).peek(a -> {
                 ExceptionAssert.ifTrue(!Objects.equals(a.getQrType().getCode(), QrTypeEnum.REMARK_CODE.getCode()), "非备注码添加");
@@ -219,6 +220,7 @@ public class WechatEventCallBackController {
             }).findAny().orElseThrow(() -> new BusinessException("二维码配置信息不存在或被删除"));
         } catch (BusinessException ex) {
             //获取默认欢迎语
+            //机构隔离，不同机构可设置发送不同的欢迎语
             log.error("发送默认欢迎语", ex);
             var parentCode = orgMapper.selectParentNodeInfoByCode(Optional.ofNullable(custMgrMapMapper.selectByQywxMgrIdAndQywxCorpId(userID, corpID))
                             .map(CustMgrMapPO::getOrgCode)
@@ -226,37 +228,37 @@ public class WechatEventCallBackController {
                     .stream()
                     .filter(Objects::nonNull)
                     .filter(a -> Objects.equals(a.getParentCode(), HEADQUARTER_CODE))
-                    .map(ZhOrgPO::getCode)
-                    .peek(a -> log.info("一级分行机构号: ", a))
+                    .map(OrgPO::getCode)
+                    .peek(a -> log.info("一级分司机构号: " + a))
                     .findAny()
                     .orElseGet(() -> {
-                        log.info("找不到一级分行机构号，更换总行机构号");
+                        log.info("找不到一级分司机构号，更换总司机构号");
                         return HEADQUARTER_CODE;
                     });
             var defaultCfg = Optional.ofNullable(welcomeMessageCfgMapper.selectDefaultWelcomMessage("", corpID, parentCode))
                     .orElseGet(() -> {
-                        log.info("分行默认欢迎语不存在或未配置，发送总行默认欢迎语");
+                        log.info("分司默认欢迎语不存在或未配置，发送总司默认欢迎语");
                         return welcomeMessageCfgMapper.selectDefaultWelcomMessage("", corpID, HEADQUARTER_CODE);
                     });
             sendWelcomeMessage(corpID, externalUserID, String.valueOf(map.get("WelcomeCode")), defaultCfg);
         }
     }
 
-    private void sendWelcomeMessage(String corpID, String externalUserID, String welcomeCode, ZhWelcomeMessageCfgPO cfgPO) {
+    private void sendWelcomeMessage(String corpID, String externalUserID, String welcomeCode, WelcomeMessageCfgPO cfgPO) {
         Optional.ofNullable(cfgPO).orElseThrow(() -> new WecomException(ExceptionCode.NOT_EXIST_DEFAULT_WECOMEMESSAGE));
         ExceptionAssert.isTrue(LongUtil.isEmpty(cfgPO.getArticleId()) &&
                 StringUtils.isBlank(cfgPO.getWelcomeWord()), "欢迎语文字和资讯不能同时为空");
         ExceptionAssert.isTrue(LongUtil.isEmpty(cfgPO.getArticleId()) &&
-                !Objects.equals(cfgPO.getType(), ZhWelcomeMessageCfgEnum.TypeENUM.TEXT.getCode()), "缺少article_id参数");
+                !Objects.equals(cfgPO.getType(), WelcomeMessageCfgEnum.TypeENUM.TEXT.getCode()), "缺少article_id参数");
         var article = wecomMarketArticleMapper.checkIsValid(cfgPO.getArticleId());
 
         //非仅文本模式校验
-        if (!Objects.equals(cfgPO.getType(), ZhWelcomeMessageCfgEnum.TypeENUM.TEXT.getCode())) {
+        if (!Objects.equals(cfgPO.getType(), WelcomeMessageCfgEnum.TypeENUM.TEXT.getCode())) {
             ExceptionAssert.isTrue(Objects.isNull(article), "资讯已失效或被删除");
         }
 
         //仅文本模式，不支持同时发送附件
-        article = Objects.equals(cfgPO.getType(), ZhWelcomeMessageCfgEnum.TypeENUM.TEXT.getCode()) ? null : article;
+        article = Objects.equals(cfgPO.getType(), WelcomeMessageCfgEnum.TypeENUM.TEXT.getCode()) ? null : article;
 
         ExceptionAssert.isTrue(Objects.isNull(article) &&
                 StringUtils.isBlank(cfgPO.getWelcomeWord()), "缺少欢迎语文字");
@@ -271,7 +273,7 @@ public class WechatEventCallBackController {
         }
     }
 
-    private Map<String, Object> assembleJsonField(String welcomeCode, ZhWelcomeMessageCfgPO cfgPO, WecomMarketArticlePO article, String corpID) {
+    private Map<String, Object> assembleJsonField(String welcomeCode, WelcomeMessageCfgPO cfgPO, WecomMarketArticlePO article, String corpID) {
         //region 组装报文发送
         Map<String, Object> requestMap = new HashMap<>();
         //后续发送其他附件类型请前往AttachmentsMsgTypeEnum枚举类中维护
@@ -295,19 +297,19 @@ public class WechatEventCallBackController {
 
     private RequestV1Private.Attachments getAttachments(WecomMarketArticlePO article, String msgType, String corpID) {
         return Optional.ofNullable(article).map(a -> {
-            ExceptionAssert.isTrue(!(Objects.equals(a.getSourceFormat(), ZhWelcomeMessageCfgEnum.TypeENUM.H5.getCode())
-                    || Objects.equals(a.getSourceFormat(), ZhWelcomeMessageCfgEnum.TypeENUM.IMAGE_TEXT.getCode())
-                    || Objects.equals(a.getSourceFormat(), ZhWelcomeMessageCfgEnum.TypeENUM.APP.getCode())), "暂不支持H5、图文、小程序以外其他附件类型");
+            ExceptionAssert.isTrue(!(Objects.equals(a.getSourceFormat(), WelcomeMessageCfgEnum.TypeENUM.H5.getCode())
+                    || Objects.equals(a.getSourceFormat(), WelcomeMessageCfgEnum.TypeENUM.IMAGE_TEXT.getCode())
+                    || Objects.equals(a.getSourceFormat(), WelcomeMessageCfgEnum.TypeENUM.APP.getCode())), "暂不支持H5、图文、小程序以外其他附件类型");
 
-            //F-EIOP -> ~/wecom/eiop F-SMSB -> ~/wecom/smsb
-            var picUrl = Objects.equals("F_EIOP", a.getArticleApp()) ?
-                    (wecomEiopPicUrlPrefix + "/" + oaasContent + "/_/" + a.getThumbnail()) :
+            //offiaccount -> ~/wecom/offiaccount oplatform -> ~/wecom/oplatform
+            var picUrl = Objects.equals("offiaccount", a.getArticleApp()) ?
+                    (wecomTencentyunPicUrlPrefix + "/" + ossDomain + "/_/" + a.getThumbnail()) :
                     a.getArticleThumbnail().indexOf("/") == 0 ?
-                            wecomSmsbPicurlPrefix + a.getArticleThumbnail() :
-                            wecomSmsbPicurlPrefix + "/" + a.getArticleThumbnail();
+                            wecomAliyunPicUrlPrefix + a.getArticleThumbnail() :
+                            wecomAliyunPicUrlPrefix + "/" + a.getArticleThumbnail();
 
             //仅判断小程序mediaId是否过期
-            var mediaId = Objects.equals(a.getSourceFormat(), ZhWelcomeMessageCfgEnum.TypeENUM.APP.getCode()) ? (Objects.isNull(a.getMediaCreatedTime()) ||
+            var mediaId = Objects.equals(a.getSourceFormat(), WelcomeMessageCfgEnum.TypeENUM.APP.getCode()) ? (Objects.isNull(a.getMediaCreatedTime()) ||
                     ObjectUtils.strToType(DateUtils.printDays(a.getMediaCreatedTime(), DateUtils.currentDate()), Integer.class) >= 3 ? null : a.getMediaId()) : "";
 
             var pic_media_id = Optional.ofNullable(mediaId).orElseGet(() -> {

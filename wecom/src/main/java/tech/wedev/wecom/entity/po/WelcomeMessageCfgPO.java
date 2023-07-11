@@ -1,10 +1,10 @@
 package tech.wedev.wecom.entity.po;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import tech.wedev.wecom.annos.TableName;
-import java.util.Date;
 
 
 @Data
@@ -12,9 +12,9 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName("zh_welcome_message_cfg")
-public class ZhWelcomeMessageCfgPO extends BasicPO {
+public class WelcomeMessageCfgPO extends BasicPO {
     /**
-    * 总行营销推文表ID
+    * 营销推文表ID
     */
     private Long articleId;
     /**

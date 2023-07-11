@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="tech.wedev.wecom.dao.ZhOrgMapper">
-    <resultMap id="BaseResultMap" type="tech.wedev.wecom.entity.po.ZhOrgPO">
+<mapper namespace="tech.wedev.wecom.dao.OrgMapper">
+    <resultMap id="BaseResultMap" type="tech.wedev.wecom.entity.po.OrgPO">
         <id column="id" property="id" jdbcType="BIGINT"/>
         <result column="code" property="code"/>
         <result column="parent_code" property="parentCode"/>
@@ -20,7 +20,7 @@
      <sql id="Base_Column_List">
             `id`,`code`,`parent_code`,`name`,`level`,`type`,`sign`,`sort`,`qywx_department`,`gmt_create`,`create_id`,`gmt_modified`,`modified_id`,`is_deleted`
      </sql>
-    <select id="selectParentNodeInfoByCode" resultType="tech.wedev.wecom.entity.po.ZhOrgPO">
+    <select id="selectParentNodeInfoByCode" resultType="tech.wedev.wecom.entity.po.OrgPO">
         SELECT T2.code, T2.parent_code AS parentCode, T2.name FROM(
             SELECT
                 @R AS _CODE,

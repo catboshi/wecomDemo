@@ -426,7 +426,7 @@ public class LowCodeUtils {
 //        controller.append("import").append(blankChar).append("com.icbc.cfbi.wecom.online.controller.BasicController").append(";").append(System.getProperty("line.separator"));
         controller.append("import").append(blankChar).append(org.apache.commons.lang3.StringUtils.replace(servicePath.substring(servicePathRoot.length()), "/", ".").substring(1)).append(".").append(StringUtils.capitalizeFirstLetter(beanFileName)).append("Service").append(";").append(System.getProperty("line.separator"));
         controller.append("import").append(blankChar).append(org.apache.commons.lang3.StringUtils.replace(servicePath.substring(servicePathRoot.length()), "/", ".").substring(1)).append(".").append("BasicService").append(";").append(System.getProperty("line.separator"));
-        controller.append("import").append(blankChar).append(poPackage).append(" . ").append(StringUtils.capitalizeFirstLetter(beanFileName)).append("PO").append(";").append(System.getProperty("line.separator"));
+        controller.append("import").append(blankChar).append(poPackage).append(".").append(StringUtils.capitalizeFirstLetter(beanFileName)).append("PO").append(";").append(System.getProperty("line.separator"));
         controller.append("import").append(blankChar).append(org.apache.commons.lang3.StringUtils.replace(qoPath.substring(commonPathRoot.length()), "/", ".").substring(1)).append(".").append(StringUtils.capitalizeFirstLetter(beanFileName)).append("QO").append(";").append(System.getProperty("line.separator"));
         controller.append(System.getProperty("line.separator"));
         controller.append(System.getProperty("line.separator"));

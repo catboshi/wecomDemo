@@ -15,11 +15,11 @@ import org.springframework.util.CollectionUtils;
 import tech.wedev.wecom.constants.ParamsConstant;
 import tech.wedev.wecom.constants.WecomApiUrlConstant;
 import tech.wedev.wecom.context.TokenContextHolder;
-import tech.wedev.wecom.dao.ZhCorpInfoMapper;
+import tech.wedev.wecom.dao.CorpInfoMapper;
 import tech.wedev.wecom.entity.bo.AccessCredentialsCommand;
 import tech.wedev.wecom.entity.po.GenParamBasicPO;
 import tech.wedev.wecom.entity.po.GenParamPO;
-import tech.wedev.wecom.entity.po.ZhCorpInfo;
+import tech.wedev.wecom.entity.po.CorpInfo;
 import tech.wedev.wecom.entity.qo.GenParamBasicQO;
 import tech.wedev.wecom.entity.qo.GenParamQO;
 import tech.wedev.wecom.enums.*;
@@ -44,7 +44,7 @@ public class WecomRequestServiceImpl implements WecomRequestService {
     private GenParamBasicService genParamBasicService;
 
     @Autowired
-    private ZhCorpInfoMapper zhCorpInfoMapper;
+    private CorpInfoMapper corpInfoMapper;
 
     @Autowired
     RedisTemplate redisTemplate;
@@ -85,7 +85,7 @@ public class WecomRequestServiceImpl implements WecomRequestService {
             return createReturnInfo(resultObject, urlConstant);
         } else if (errCode == 42001) {
             //TOKEN失败，获取TOKEN后重新调用
-            this.refreshTokenFromZhCorpInfo(corpId, getContextConstant(urlConstant));
+            this.refreshTokenFromCorpInfo(corpId, getContextConstant(urlConstant));
             return this.generalCallQiWeApi(corpId, methodType, body, urlConstant);
         } else {
             throw new WecomException(errCode, "调用企业微信API返回错误");
@@ -114,10 +114,10 @@ public class WecomRequestServiceImpl implements WecomRequestService {
         //redis缓存token不存在或redis异常，从数据库读取token
         GenParamEnum paramType = this.paramTypeMatch(interfaceIdentifyUrl);
         log.info("WecomRequestServiceImpl###generateAccessToken###匹配类型: " + paramType);
-        List<ZhCorpInfo> tokenInDB = zhCorpInfoMapper.findByCorpId(corpId);
+        List<CorpInfo> tokenInDB = corpInfoMapper.findByCorpId(corpId);
         //数据库存在token且token有效，直接返回
         if (tokenInDB == null || tokenInDB.isEmpty()) {
-            log.error("WecomRequestServiceImpl###generateAccessToken###zhCorpInfo异常，无该corpId相关配置");
+            log.error("WecomRequestServiceImpl###generateAccessToken###corpInfo异常，无该corpId相关配置");
             return null;
         }
 
@@ -134,9 +134,9 @@ public class WecomRequestServiceImpl implements WecomRequestService {
         }
 
         if (!CollectionUtils.isEmpty(tokenInDB) && tokenTimeOut < ParamsConstant.TOKEN_TIME_OUT
-                && StringUtils.isNotEmpty(findTokenFromZhCorpInfoDB(paramType, tokenInDB.get(0)))) {
+                && StringUtils.isNotEmpty(findTokenFromCorpInfoDB(paramType, tokenInDB.get(0)))) {
             log.info("WecomRequestServiceImpl###generateAccessToken###数据库缓存token:" + JSONObject.toJSONString(tokenInDB.get(0)));
-            return findTokenFromZhCorpInfoDB(paramType, tokenInDB.get(0));
+            return findTokenFromCorpInfoDB(paramType, tokenInDB.get(0));
         }
 
         //数据库token不存在或失效，重新获取token
@@ -170,7 +170,7 @@ public class WecomRequestServiceImpl implements WecomRequestService {
             return httpResult;
         } else if (errCode == 42001) {
             //token失效，重新调用获取token
-            this.refreshTokenFromZhCorpInfo("System", getContextConstant(WecomApiUrlConstant.AUTH_GET_USER_INFO));
+            this.refreshTokenFromCorpInfo("System", getContextConstant(WecomApiUrlConstant.AUTH_GET_USER_INFO));
             return this.authGetUserInfo(code);
         } else {
             throw new WecomException(errCode, "调用企微API返回错误");
@@ -261,40 +261,40 @@ public class WecomRequestServiceImpl implements WecomRequestService {
     }
 
     /**
-     * 根据paramType匹配ZhCorpInfo对应Token值
+     * 根据paramType匹配CorpInfo对应Token值
      *
      * @param paramType
-     * @param zhCorpInfo
+     * @param corpInfo
      * @return
      */
-    private String findTokenFromZhCorpInfoDB(GenParamEnum paramType, ZhCorpInfo zhCorpInfo) {
+    private String findTokenFromCorpInfoDB(GenParamEnum paramType, CorpInfo corpInfo) {
         if (AccessCredentialsEnum.UrlParamType.APPLICATION.getCode().equals(paramType.getName())) {
-            return zhCorpInfo.getTokenApplication();
+            return corpInfo.getTokenApplication();
         } else if (AccessCredentialsEnum.UrlParamType.MSG_AUDIT.getCode().equals(paramType.getName())) {
-            return zhCorpInfo.getTokenMsgAudit();
+            return corpInfo.getTokenMsgAudit();
         } else if (AccessCredentialsEnum.UrlParamType.COMMUNICATION.getCode().equals(paramType.getName())) {
-            return zhCorpInfo.getTokenCommunication();
+            return corpInfo.getTokenCommunication();
         } else if (AccessCredentialsEnum.UrlParamType.EXTERNAL_CONTACT.getCode().equals(paramType.getName())) {
-            return zhCorpInfo.getTokenExternalContact();
+            return corpInfo.getTokenExternalContact();
         }
         return "";
     }
 
     /**
-     * 根据paramType匹配ZhCorpInfo对应Secret值
+     * 根据paramType匹配CorpInfo对应Secret值
      * @param paramType
-     * @param zhCorpInfo
+     * @param corpInfo
      * @return
      */
-    private String findSecretFromZhCorpInfoDB(GenParamEnum paramType, ZhCorpInfo zhCorpInfo) {
+    private String findSecretFromCorpInfoDB(GenParamEnum paramType, CorpInfo corpInfo) {
         if (AccessCredentialsEnum.UrlParamType.APPLICATION.getCode().equals(paramType.getName())) {
-            return zhCorpInfo.getSecretApplication();
+            return corpInfo.getSecretApplication();
         } else if (AccessCredentialsEnum.UrlParamType.MSG_AUDIT.getCode().equals(paramType.getName())) {
-            return zhCorpInfo.getSecretMsgAudit();
+            return corpInfo.getSecretMsgAudit();
         } else if (AccessCredentialsEnum.UrlParamType.COMMUNICATION.getCode().equals(paramType.getName())) {
-            return zhCorpInfo.getSecretCommunication();
+            return corpInfo.getSecretCommunication();
         } else if (AccessCredentialsEnum.UrlParamType.EXTERNAL_CONTACT.getCode().equals(paramType.getName())) {
-            return zhCorpInfo.getSecretExternalContact();
+            return corpInfo.getSecretExternalContact();
         }
         return "";
     }
@@ -353,13 +353,13 @@ public class WecomRequestServiceImpl implements WecomRequestService {
         return genParamService.select(genParamQO);
     }
 
-    private String getTokenFromQiweApi(GenParamEnum paramType, ZhCorpInfo zhCorpInfo) {
+    private String getTokenFromQiweApi(GenParamEnum paramType, CorpInfo corpInfo) {
         //查询secret参数
-        String secretInDB = this.findSecretFromZhCorpInfoDB(paramType, zhCorpInfo);
+        String secretInDB = this.findSecretFromCorpInfoDB(paramType, corpInfo);
         log.info("WecomRequestServiceImpl###getTokenFromQiweApi###SECRET: " + secretInDB);
         ExceptionAssert.isTrue(secretInDB.isEmpty(), ExceptionCode.PARAMETER_SECRET_ERROR);
 
-        String corpIdInDB = zhCorpInfo.getCorpId();
+        String corpIdInDB = corpInfo.getCorpId();
         //调用企微API
         String url = wecomApiUrlPrefix + WecomApiUrlConstant.GET_TOKEN;
         String token;
@@ -377,19 +377,19 @@ public class WecomRequestServiceImpl implements WecomRequestService {
         return token;
     }
 
-    private Date findTokenModified(GenParamEnum paramType, ZhCorpInfo zhCorpInfo) {
+    private Date findTokenModified(GenParamEnum paramType, CorpInfo corpInfo) {
         if (AccessCredentialsEnum.UrlParamType.APPLICATION.getCode().equals(paramType.getName())) {
-            return zhCorpInfo.getTokenApplicationModified();
+            return corpInfo.getTokenApplicationModified();
         } else if (AccessCredentialsEnum.UrlParamType.MSG_AUDIT.getCode().equals(paramType.getName())) {
-            return zhCorpInfo.getTokenMsgAuditModified();
+            return corpInfo.getTokenMsgAuditModified();
         } else if (AccessCredentialsEnum.UrlParamType.COMMUNICATION.getCode().equals(paramType.getName())) {
-            return zhCorpInfo.getTokenCommunicationModified();
+            return corpInfo.getTokenCommunicationModified();
         } else if (AccessCredentialsEnum.UrlParamType.EXTERNAL_CONTACT.getCode().equals(paramType.getName())) {
-            return zhCorpInfo.getTokenExternalContactModified();
+            return corpInfo.getTokenExternalContactModified();
         } else if (AccessCredentialsEnum.UrlParamType.AGENT_JSAPI_TICKET.getCode().equals(paramType.getName())) {
-            return zhCorpInfo.getAgentJsapiTicketModified();
+            return corpInfo.getAgentJsapiTicketModified();
         } else if (AccessCredentialsEnum.UrlParamType.CORP_JSAPI_TICKET.getCode().equals(paramType.getName())) {
-            return zhCorpInfo.getCorpJsapiTicketModified();
+            return corpInfo.getCorpJsapiTicketModified();
         }
         return null;
     }
@@ -402,16 +402,16 @@ public class WecomRequestServiceImpl implements WecomRequestService {
      * @param interfaceIdentifyUrl
      * @return
      */
-    private String refreshTokenFromZhCorpInfo(String corpId, String interfaceIdentifyUrl) {
+    private String refreshTokenFromCorpInfo(String corpId, String interfaceIdentifyUrl) {
         log.info(interfaceIdentifyUrl + "###access_token失败，重新获取");
         //根据URL获取API类型
         GenParamEnum paramType = this.paramTypeMatch(interfaceIdentifyUrl);
         //调用企微API获取TOKEN
         AccessCredentialsCommand accessTokenCommand = AccessCredentialsCommand.builder().corpId(corpId)
                 .interfaceIdentifyUrl(interfaceIdentifyUrl).build();
-        log.info("WecomRequestServiceImpl###refreshTokenFromZhCorpInfo###accessTokenCommand info: " + JSONObject.toJSONString(accessTokenCommand));
+        log.info("WecomRequestServiceImpl###refreshTokenFromCorpInfo###accessTokenCommand info: " + JSONObject.toJSONString(accessTokenCommand));
         String token = this.generateAccessToken(accessTokenCommand);
-        List<ZhCorpInfo> tokenInDB = zhCorpInfoMapper.findByCorpId(corpId);
+        List<CorpInfo> tokenInDB = corpInfoMapper.findByCorpId(corpId);
         ExceptionAssert.isTrue(CollectionUtils.isEmpty(tokenInDB), ExceptionCode.PARAMETER_CORP_ID_ERROR);
 
 
@@ -422,7 +422,7 @@ public class WecomRequestServiceImpl implements WecomRequestService {
 
 
     /**
-     * token更新后更新参数表和zhCorpInfo表token
+     * token更新后更新参数表和corpInfo表token
      *
      * @param paramType
      * @param tokenTicketType
@@ -432,8 +432,8 @@ public class WecomRequestServiceImpl implements WecomRequestService {
      */
     private void updateDbTokenOrTicket(GenParamEnum paramType, String tokenTicketType, String tokenOrTicket, String corpId, String context) {
         //更新数据token，设置redis缓存
-        List<ZhCorpInfo> tokenInDB = zhCorpInfoMapper.findByCorpId(corpId);
-        this.updateTokenFromZhCorpInfo(paramType, tokenTicketType, tokenOrTicket, tokenInDB.get(0), context);
+        List<CorpInfo> tokenInDB = corpInfoMapper.findByCorpId(corpId);
+        this.updateTokenFromCorpInfo(paramType, tokenTicketType, tokenOrTicket, tokenInDB.get(0), context);
 
         //更新参数表token，设置redis缓存
 //        List<GenParamPO> tokenInDBParam = this.getParamFromDB(tokenTicketType, paramType);
@@ -450,26 +450,26 @@ public class WecomRequestServiceImpl implements WecomRequestService {
      * @param paramType
      * @param tokenTicketType
      * @param tokenOrTicket
-     * @param zhCorpInfo
+     * @param corpInfo
      * @param interfaceIdentifyUrl
      */
-    private void updateTokenFromZhCorpInfo(GenParamEnum paramType, String tokenTicketType, String tokenOrTicket, ZhCorpInfo zhCorpInfo,
+    private void updateTokenFromCorpInfo(GenParamEnum paramType, String tokenTicketType, String tokenOrTicket, CorpInfo corpInfo,
                                            String interfaceIdentifyUrl) {
-        String corpId = zhCorpInfo.getCorpId();
+        String corpId = corpInfo.getCorpId();
 
-        ZhCorpInfo zhCorpInfoUpd = new ZhCorpInfo();
-        zhCorpInfoUpd.setId(zhCorpInfo.getId());
+        CorpInfo corpInfoUpd = new CorpInfo();
+        corpInfoUpd.setId(corpInfo.getId());
         if (ParamsConstant.TYPE_TICKET.equals(tokenTicketType)) {
             //更新对应ticket字段值
-            setZhCorpInfoTicket(zhCorpInfoUpd, tokenOrTicket, paramType);
+            setCorpInfoTicket(corpInfoUpd, tokenOrTicket, paramType);
         } else {
             //更新对应token字段值
-            setZhCorpInfoToken(zhCorpInfoUpd, tokenOrTicket, paramType);
+            setCorpInfoToken(corpInfoUpd, tokenOrTicket, paramType);
         }
-        zhCorpInfoUpd.setGmtModified(new Date());
-        zhCorpInfoUpd.setCorpId(zhCorpInfo.getCorpId());
-        zhCorpInfoUpd.setModifiedId(0L);
-        int modify = zhCorpInfoMapper.updateByPrimaryKeySelective(zhCorpInfoUpd);
+        corpInfoUpd.setGmtModified(new Date());
+        corpInfoUpd.setCorpId(corpInfo.getCorpId());
+        corpInfoUpd.setModifiedId(0L);
+        int modify = corpInfoMapper.updateByPrimaryKeySelective(corpInfoUpd);
 
         if (modify != 0) {
             //数据库token更新成功，更新redis缓存
@@ -484,7 +484,7 @@ public class WecomRequestServiceImpl implements WecomRequestService {
                     redisUtils.set(tokenKey, tokenOrTicket, ParamsConstant.TOKEN_TIME_OUT);
                 }
             } catch (Exception e) {
-                log.error("WecomRequestServiceImpl###updateTokenFromZhCorpInfo###设置redis缓存异常");
+                log.error("WecomRequestServiceImpl###updateTokenFromCorpInfo###设置redis缓存异常");
             }
         }
     }
@@ -553,29 +553,29 @@ public class WecomRequestServiceImpl implements WecomRequestService {
         return url;
     }
 
-    private void setZhCorpInfoTicket(ZhCorpInfo zhCorpInfoUpd, String ticket, GenParamEnum paramType) {
+    private void setCorpInfoTicket(CorpInfo corpInfoUpd, String ticket, GenParamEnum paramType) {
         if (AccessCredentialsEnum.UrlParamType.CORP_JSAPI_TICKET.getCode().equals(paramType.getName())) {
-            zhCorpInfoUpd.setCorpJsapiTicket(ticket);
-            zhCorpInfoUpd.setCorpJsapiTicketModified(new Date());
+            corpInfoUpd.setCorpJsapiTicket(ticket);
+            corpInfoUpd.setCorpJsapiTicketModified(new Date());
         } else {
-            zhCorpInfoUpd.setAgentJsapiTicket(ticket);
-            zhCorpInfoUpd.setAgentJsapiTicketModified(new Date());
+            corpInfoUpd.setAgentJsapiTicket(ticket);
+            corpInfoUpd.setAgentJsapiTicketModified(new Date());
         }
     }
 
-    private void setZhCorpInfoToken(ZhCorpInfo zhCorpInfoUpd, String token, GenParamEnum paramType) {
+    private void setCorpInfoToken(CorpInfo corpInfoUpd, String token, GenParamEnum paramType) {
         if (AccessCredentialsEnum.UrlParamType.APPLICATION.getCode().equals(paramType.getName())) {
-            zhCorpInfoUpd.setTokenApplication(token);
-            zhCorpInfoUpd.setTokenApplicationModified(new Date());
+            corpInfoUpd.setTokenApplication(token);
+            corpInfoUpd.setTokenApplicationModified(new Date());
         } else if (AccessCredentialsEnum.UrlParamType.COMMUNICATION.getCode().equals(paramType.getName())) {
-            zhCorpInfoUpd.setTokenCommunication(token);
-            zhCorpInfoUpd.setTokenCommunicationModified(new Date());
+            corpInfoUpd.setTokenCommunication(token);
+            corpInfoUpd.setTokenCommunicationModified(new Date());
         } else if (AccessCredentialsEnum.UrlParamType.EXTERNAL_CONTACT.getCode().equals(paramType.getName())) {
-            zhCorpInfoUpd.setTokenExternalContact(token);
-            zhCorpInfoUpd.setTokenExternalContactModified(new Date());
+            corpInfoUpd.setTokenExternalContact(token);
+            corpInfoUpd.setTokenExternalContactModified(new Date());
         } else if (AccessCredentialsEnum.UrlParamType.MSG_AUDIT.getCode().equals(paramType.getName())) {
-            zhCorpInfoUpd.setTokenMsgAudit(token);
-            zhCorpInfoUpd.setTokenMsgAuditModified(new Date());
+            corpInfoUpd.setTokenMsgAudit(token);
+            corpInfoUpd.setTokenMsgAuditModified(new Date());
         }
     }
 

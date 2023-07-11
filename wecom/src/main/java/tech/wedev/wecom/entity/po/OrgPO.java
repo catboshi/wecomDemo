@@ -1,10 +1,10 @@
-package tech.wedev.wecom.entity.qo;
+package tech.wedev.wecom.entity.po;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import tech.wedev.wecom.annos.TableName;
-import java.util.Date;
 
 
 @Data
@@ -12,7 +12,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName("zh_org")
-public class ZhOrgQO extends BasicQO {
+public class OrgPO extends BasicPO {
     /**
     * 机构编号
     */
