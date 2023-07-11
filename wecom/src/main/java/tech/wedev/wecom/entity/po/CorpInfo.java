@@ -12,7 +12,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName("zh_corp_info")
-public class ZhCorpInfo extends BasicPO {
+public class CorpInfo extends BasicPO {
     /**
     * 自建应用agentId
     */

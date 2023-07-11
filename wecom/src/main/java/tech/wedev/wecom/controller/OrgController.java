@@ -3,20 +3,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import lombok.extern.slf4j.Slf4j;
-import tech.wedev.wecom.standard.ZhOrgService;
+import tech.wedev.wecom.standard.OrgService;
 import tech.wedev.wecom.standard.BasicService;
-import tech.wedev.wecom.entity.po . ZhOrgPO;
-import tech.wedev.wecom.entity.qo.ZhOrgQO;
+import tech.wedev.wecom.entity.po.OrgPO;
+import tech.wedev.wecom.entity.qo.OrgQO;
 
 
 @RestController
-@RequestMapping("zh_zh_org")
+@RequestMapping("zh_org")
 @Slf4j
-public class ZhOrgController extends BasicController<ZhOrgPO, ZhOrgQO> {
+public class OrgController extends BasicController<OrgPO, OrgQO> {
     @Autowired
-    private ZhOrgService zhOrgService;
+    private OrgService orgService;
     @Override
-    public BasicService<ZhOrgPO,ZhOrgQO> getBasicService(){
-        return zhOrgService;
+    public BasicService<OrgPO,OrgQO> getBasicService(){
+        return orgService;
     }
 }

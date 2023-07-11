@@ -1,6 +1,6 @@
 package tech.wedev.wecom.enums;
 
-public enum ZhWelcomeMessageCfgEnum{
+public enum WelcomeMessageCfgEnum{
     ;
     public enum TypeENUM implements BaseStringEnum{
         H5("0","H5"),
