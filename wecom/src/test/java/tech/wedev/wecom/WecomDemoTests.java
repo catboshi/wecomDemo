@@ -22,7 +22,6 @@ import tech.wedev.wecom.utils.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @SpringBootTest
@@ -36,28 +35,6 @@ public class WecomDemoTests {
 
 	@Value("${spring.redis.password}")
 	private String redis_password;
-
-	@Test
-	public void test0() {
-		var random = new Random();
-		var list = IntStream.range(0, 1_00).filter(x -> x < 5).map(x -> random.nextInt(1_00)).boxed().collect(Collectors.toList());
-		var result = list.parallelStream().max(Comparator.comparingInt(x -> x)).orElse(0);
-		var result1 = list.parallelStream().reduce(0, Math::max);
-		System.out.println(result);
-	}
-
-	@Test
-	public void test1() {
-		Optional<Integer> x = Optional.empty();
-		var y = x.map(a -> a * a);
-		System.out.println(y);
-	}
-
-	@Test
-	public void test2() {
-		var result = Stream.of("123", "55555").map(String::length).reduce(0, Integer::sum);
-		System.out.println(result);
-	}
 
 	@Test
 	public void test3() {
@@ -92,21 +69,10 @@ public class WecomDemoTests {
 		});
 	}
 
-
-	@Test
-	public void test4() {
-		new Random(1)
-				.ints(5, 20)
-				.distinct()
-				.limit(7)
-				.sorted()
-				.forEach(System.out::println);
-	}
-
 	@Test
 	public void test5() {
 		System.out.println(ObjectUtils.strToType("100", Integer.class) + 1);
-		ListUtils.partition(new ArrayList<>(), 200).stream().filter(CollectionUtils::isNotEmpty).forEach(a -> System.out.println(a));
+		ListUtils.partition(new ArrayList<>(), 200).stream().filter(CollectionUtils::isNotEmpty).forEach(System.out::println);
 	}
 
 	@Test
