@@ -12,7 +12,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import tech.wedev.wecom.controller.AopEncapsulationController;
+import tech.wedev.wecom.controller.EncapsulationController;
 
 
 @RunWith(PowerMockRunner.class)
@@ -29,7 +29,7 @@ public class StopWatchAopTest {
     @Test
     public void doAroundTest() throws Throwable {
         ProceedingJoinPoint mock = Mockito.mock(ProceedingJoinPoint.class);
-        PowerMockito.when(mock.getTarget()).thenReturn(AopEncapsulationController.class);
+        PowerMockito.when(mock.getTarget()).thenReturn(EncapsulationController.class);
         PowerMockito.when(mock.getSignature()).thenReturn(signature);
         PowerMockito.when(mock.proceed()).thenReturn("pjp");
         Assert.assertNotNull(stopWatchAop.doAround(mock));

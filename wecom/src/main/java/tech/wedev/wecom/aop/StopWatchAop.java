@@ -8,6 +8,11 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 
+/**
+ * 内存使用情况及执行耗时统计切面
+ *
+ * 仅排查问题时作为参考，具体分析请使用jConsole或VisualVM
+ */
 @Slf4j
 @Aspect
 @Component
@@ -37,8 +42,8 @@ public class StopWatchAop {
         long end = System.nanoTime();
         var afterRAM = runtime.freeMemory() / 1024 / 1024;
         var heapSize = runtime.maxMemory() / 1024 / 1024;
-        log.info("应用类名：" + className + "，方法名：" + methodName + "，duration耗时：" + String.format("%.2fs", (end - start) * 1e-9));
-        log.info("测试RAM结束，测试占用内存空间约为 : " + (beforeRAM - afterRAM) + "M" + "，Java Heap Size: " + heapSize + "M");
+        log.info("应用类名：" + className + "，方法名：" + methodName + "，线程名：" + Thread.currentThread().getName() + "，duration耗时：" + String.format("%.2fs", (end - start) * 1e-9));
+        log.info("测试RAM结束，堆占用内存空间约为 : " + (beforeRAM - afterRAM) + "M" + "，Java Heap Size: " + heapSize + "M");
         return proceed;
     }
 

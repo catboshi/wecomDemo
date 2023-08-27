@@ -14,13 +14,13 @@ import javax.validation.Valid;
 @Slf4j
 @RestController
 @RequestMapping("/aop")
-public class AopEncapsulationController {
+public class EncapsulationController {
 
     @StopWatch
     @RequestMapping(value = { "/a" }, method = {RequestMethod.POST})
     public Object getSignInAuthCode(@Valid @RequestBody AuthCodeReqVO authCodeReqVO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return bindingResult.getFieldErrors().stream().map(a->a.getField()+": "+a.getDefaultMessage()).reduce((a,b)->a+" "+b);
+            return bindingResult.getFieldErrors().stream().map(a -> a.getField() + ": " + a.getDefaultMessage()).reduce((a, b) -> a + " " + b);
         }
         return authCodeReqVO;
     }

@@ -1,11 +1,18 @@
 package tech.wedev.wecom.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import tech.wedev.wecom.annos.StopWatch;
+import tech.wedev.wecom.entity.vo.AuthCodeReqVO;
+import tech.wedev.wecom.entity.vo.ResponseVO;
+import tech.wedev.wecom.exception.ExceptionCode;
 import tech.wedev.wecom.third.WecomRequestService;
+import tech.wedev.wecom.tools.ValidatorGroup;
+import tech.wedev.wecom.tools.ValidatorTools;
 import tech.wedev.wecom.utils.RedisUtils;
 
 import java.util.Map;
@@ -18,6 +25,9 @@ public class TestController {
 
     @Autowired
     private WecomRequestService wecomRequestService;
+
+    @Autowired
+    private ValidatorTools validatorTools;
 
     @RequestMapping("/redis/set")
     public String setRedis() {
@@ -54,5 +64,15 @@ public class TestController {
     public String testJrebelRemote() {
         System.out.println("testJrebelRemote");
         return "testJrebelRemote";
+    }
+
+    @RequestMapping("/test/validator/tool")
+    public ResponseVO testValidatorTool(@RequestBody @Validated(ValidatorGroup.QywxStatisticsControllerQueryListPageQuery.class) AuthCodeReqVO authVO) {
+        /*ResponseVO paramValid = validatorTools.isValid(authVO);*/ //"" 失败
+        ResponseVO paramValid = validatorTools.isValid(authVO, ValidatorGroup.Select.class);//"" 成功
+        if (!ExceptionCode.SUCCESS.getCode().equals(paramValid.getRetCode())) {
+            return ResponseVO.error(ExceptionCode.INVALID_PARAMETER, paramValid.getData());
+        }
+        return ResponseVO.success();
     }
 }
