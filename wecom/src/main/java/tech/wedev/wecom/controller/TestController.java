@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import tech.wedev.wecom.annos.StopWatch;
+import tech.wedev.wecom.entity.po.OrgPO;
 import tech.wedev.wecom.entity.vo.AuthCodeReqVO;
 import tech.wedev.wecom.entity.vo.ResponseVO;
 import tech.wedev.wecom.exception.ExceptionCode;
@@ -68,11 +69,16 @@ public class TestController {
 
     @RequestMapping("/test/validator/tool")
     public ResponseVO testValidatorTool(@RequestBody @Validated(ValidatorGroup.QywxStatisticsControllerQueryListPageQuery.class) AuthCodeReqVO authVO) {
-        /*ResponseVO paramValid = validatorTools.isValid(authVO);*/ //"" 失败
-        ResponseVO paramValid = validatorTools.isValid(authVO, ValidatorGroup.Select.class);//"" 成功
+        /*ResponseVO paramValid = validatorTools.isValid(authVO);*/ //"" -> 失败
+        ResponseVO paramValid = validatorTools.isValid(authVO, ValidatorGroup.Select.class);//"" -> 成功
         if (!ExceptionCode.SUCCESS.getCode().equals(paramValid.getRetCode())) {
             return ResponseVO.error(ExceptionCode.INVALID_PARAMETER, paramValid.getData());
         }
+        return ResponseVO.success();
+    }
+
+    @RequestMapping("/test/validator/literal")
+    public ResponseVO testValidatorLiteral(@RequestBody @Validated(ValidatorGroup.Update.class) OrgPO po) {
         return ResponseVO.success();
     }
 }
