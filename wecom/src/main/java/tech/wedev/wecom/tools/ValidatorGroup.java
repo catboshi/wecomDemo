@@ -1,5 +1,8 @@
 package tech.wedev.wecom.tools;
 
+/**
+ * @see <a href="https://juejin.cn/post/7090327624970895397">Java中的三种校验注解的使用说明！分析@Valid和@Validated以及@PathVariable的的具体使用</a>
+ */
 public interface ValidatorGroup {
     interface Insert{}
     interface Update{}
