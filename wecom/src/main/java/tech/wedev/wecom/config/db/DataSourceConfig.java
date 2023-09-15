@@ -36,9 +36,8 @@ public class DataSourceConfig {
         dataSource.setUrl(url);
         dataSource.setUsername(userName);
         dataSource.setQueryTimeout(60);
-        String decryptPassword;
         dataSource.setFilters("!stat");
-        decryptPassword = SM4Util.decryptEcb(SM4Util.hexKey, password);
+        String decryptPassword = SM4Util.decryptEcb(SM4Util.hexKey, password);
         if (StringUtils.isBlank(decryptPassword)) {
             log.error("decrypt dataaSource cypher result null");
             throw new IllegalArgumentException("decrypt dataSource cypher result null, please check argument is correct");

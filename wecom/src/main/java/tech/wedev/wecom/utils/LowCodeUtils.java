@@ -40,7 +40,7 @@ public class LowCodeUtils {
     private static final String servicePathRoot = servicePathClassRoot + "/" + "src/main/java";
     private static final String poPath = commonPathRoot + "/" + "tech/wedev/wecom/entity/po";
     private static final String qoPath = commonPathRoot + "/" + "tech/wedev/wecom/entity/qo";
-    private static final String mapperPath = servicePathRoot + "/" + "tech/wedev/wecom/dao";
+    private static final String mapperPath = servicePathRoot + "/" + "tech/wedev/wecom/mapper";
     private static final String mapperXmlPath = servicePathClassRoot + "/" + "src/main/resources/mybatis/mapper";
     private static final String servicePath = servicePathRoot + "/" + "tech/wedev/wecom/standard";
     private static final String controllerPath = servicePathRoot + "/" + "tech/wedev/wecom/controller";

@@ -21,9 +21,9 @@ public class OrgPO extends BasicPO {
     /**
     * 机构编号
     */
-    @NotBlank(message = "${code}字段不能为空", groups = ValidatorGroup.Update.class)
-    @Length(max = 1, message = "${code}字段长度过长，最大值为1", groups = {ValidatorGroup.Insert.class, ValidatorGroup.Update.class})
-    @Validator(strValues = {"0", "1"}, message = "${code}只能是0或者1", groups = {ValidatorGroup.Insert.class, ValidatorGroup.Update.class})
+    @NotBlank(message = "机构编号不能为空", groups = ValidatorGroup.Update.class)
+    @Length(max = 1, message = "机构编号长度过长，最大长度为1", groups = {ValidatorGroup.Insert.class, ValidatorGroup.Update.class})
+    @Validator(strValues = {"0", "1"}, message = "机构编号只能是0或者1", groups = {ValidatorGroup.Insert.class, ValidatorGroup.Update.class})
     private String code;
     /**
     * 父级机构编号

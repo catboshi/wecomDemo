@@ -1,4 +1,4 @@
-package tech.wedev.wecom.dao.provider;
+package tech.wedev.wecom.mapper.provider;
 
 import cn.hutool.core.collection.CollectionUtil;
 import lombok.SneakyThrows;
@@ -264,7 +264,7 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
         }
         String set = stringBuilder.toString();
         if (StringUtils.isNotEmpty(set)) {
-            set = " set ".substring(0, set.length() - commaSymbol.length());
+            set = " set " + set.substring(0, set.length() - commaSymbol.length());
         }
         return set;
     }

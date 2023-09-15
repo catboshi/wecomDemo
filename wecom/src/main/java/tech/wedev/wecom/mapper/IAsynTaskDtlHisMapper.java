@@ -1,4 +1,4 @@
-package tech.wedev.wecom.dao;
+package tech.wedev.wecom.mapper;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;

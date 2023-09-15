@@ -2,8 +2,8 @@ package tech.wedev.wecom.standard.impl;
 import tech.wedev.wecom.standard.CorpInfoService;
 import tech.wedev.wecom.entity.po.CorpInfo;
 import tech.wedev.wecom.entity.qo.CorpInfoQO;
-import tech.wedev.wecom.dao.BasicMapper;
-import tech.wedev.wecom.dao.CorpInfoMapper;
+import tech.wedev.wecom.mapper.BasicMapper;
+import tech.wedev.wecom.mapper.CorpInfoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

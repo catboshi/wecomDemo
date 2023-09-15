@@ -1,21 +1,22 @@
 package tech.wedev.wecom.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import tech.wedev.wecom.annos.StopWatch;
 import tech.wedev.wecom.entity.po.OrgPO;
+import tech.wedev.wecom.entity.qo.CorpInfoQO;
 import tech.wedev.wecom.entity.vo.AuthCodeReqVO;
 import tech.wedev.wecom.entity.vo.ResponseVO;
 import tech.wedev.wecom.exception.ExceptionCode;
+import tech.wedev.wecom.standard.CorpInfoMybatisPlusService;
 import tech.wedev.wecom.third.WecomRequestService;
 import tech.wedev.wecom.tools.ValidatorGroup;
 import tech.wedev.wecom.tools.ValidatorTools;
 import tech.wedev.wecom.utils.RedisUtils;
 
+import javax.validation.Valid;
 import java.util.Map;
 
 @RestController
@@ -26,6 +27,9 @@ public class TestController {
 
     @Autowired
     private WecomRequestService wecomRequestService;
+
+    @Autowired
+    private CorpInfoMybatisPlusService CorpInfoMybatisPlusService;
 
     @Autowired
     private ValidatorTools validatorTools;
@@ -77,8 +81,28 @@ public class TestController {
         return ResponseVO.success();
     }
 
-    @RequestMapping("/test/validator/literal")
+    @RequestMapping("/test/validator/customize")
     public ResponseVO testValidatorLiteral(@RequestBody @Validated(ValidatorGroup.Update.class) OrgPO po) {
+        return ResponseVO.success();
+    }
+
+    @StopWatch
+    @RequestMapping(value = { "/a" }, method = {RequestMethod.POST})
+    public Object getSignInAuthCode(@Valid @RequestBody AuthCodeReqVO authCodeReqVO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return bindingResult.getFieldErrors().stream().map(a -> a.getField() + ": " + a.getDefaultMessage()).reduce((a, b) -> a + " " + b);
+        }
+        return authCodeReqVO;
+    }
+
+    @GetMapping(value = { "/selectCorpInfo" })
+    public ResponseVO selectCorpInfo() {
+        return ResponseVO.success(CorpInfoMybatisPlusService.select());
+    }
+    
+    @PostMapping(value = { "/updateCorpInfo" })
+    public ResponseVO updateCorpInfo(@RequestBody CorpInfoQO corpInfoQO) {
+        CorpInfoMybatisPlusService.update(corpInfoQO);
         return ResponseVO.success();
     }
 }
