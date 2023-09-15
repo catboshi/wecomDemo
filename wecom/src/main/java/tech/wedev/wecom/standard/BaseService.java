@@ -1,7 +1,7 @@
 package tech.wedev.wecom.standard;
 
 import tech.wedev.wecom.bean.PageBean;
-import tech.wedev.wecom.dao.BaseMapper;
+import tech.wedev.wecom.mapper.BaseMapper;
 import tech.wedev.wecom.entity.po.BasePO;
 import tech.wedev.wecom.entity.qo.BaseQO;
 

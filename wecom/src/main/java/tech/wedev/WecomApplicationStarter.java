@@ -11,7 +11,7 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Slf4j
-@MapperScan("tech.wedev.wecom.dao")
+@MapperScan(value = {"tech.wedev.wecom.mapper", "tech.wedev.wecom.mybatisplus.mapper"})
 @ImportResource(locations = "classpath:provider.xml")
 @SpringBootApplication(scanBasePackages = "tech.wedev")
 @EnableTransactionManagement

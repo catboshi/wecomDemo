@@ -3,7 +3,6 @@ package tech.wedev.wecom.standard.impl;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import tech.wedev.wecom.bean.PageBean;
-import tech.wedev.wecom.dao.BaseMapper;
 import tech.wedev.wecom.entity.po.BasePO;
 import tech.wedev.wecom.entity.qo.BaseQO;
 import tech.wedev.wecom.enums.BaseDeletedEnum;

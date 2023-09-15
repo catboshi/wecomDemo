@@ -1,4 +1,4 @@
-package tech.wedev.wecom.dao;
+package tech.wedev.wecom.mapper;
 
 import org.apache.ibatis.annotations.Param;
 import tech.wedev.wecom.entity.po.WecomMarketArticlePO;
