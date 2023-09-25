@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.validator.constraints.Length;
 import tech.wedev.wecom.annos.TableName;
-import tech.wedev.wecom.annos.Validator;
+import tech.wedev.wecom.annos.RequiredLiteral;
 import tech.wedev.wecom.tools.ValidatorGroup;
 
 import javax.validation.constraints.NotBlank;
@@ -23,7 +23,7 @@ public class OrgPO extends BasicPO {
     */
     @NotBlank(message = "机构编号不能为空", groups = ValidatorGroup.Update.class)
     @Length(max = 1, message = "机构编号长度过长，最大长度为1", groups = {ValidatorGroup.Insert.class, ValidatorGroup.Update.class})
-    @Validator(strValues = {"0", "1"}, message = "机构编号只能是0或者1", groups = {ValidatorGroup.Insert.class, ValidatorGroup.Update.class})
+    @RequiredLiteral(strValues = {"0", "1"}, message = "机构编号只能是0或者1", groups = {ValidatorGroup.Insert.class, ValidatorGroup.Update.class})
     private String code;
     /**
     * 父级机构编号

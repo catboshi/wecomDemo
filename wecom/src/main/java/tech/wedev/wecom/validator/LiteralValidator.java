@@ -1,19 +1,19 @@
 package tech.wedev.wecom.validator;
 
-import tech.wedev.wecom.annos.Validator;
+import tech.wedev.wecom.annos.RequiredLiteral;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 /**
  * 自定义校验注解处理类
  */
-public class LiteralValidator implements ConstraintValidator<Validator, Object> {
+public class LiteralValidator implements ConstraintValidator<RequiredLiteral, Object> {
 
     private String[] strValues;
     private int[] intValues;
 
     @Override
-    public void initialize(Validator constraintAnnotation) {
+    public void initialize(RequiredLiteral constraintAnnotation) {
         strValues = constraintAnnotation.strValues();
         intValues = constraintAnnotation.intValues();
     }

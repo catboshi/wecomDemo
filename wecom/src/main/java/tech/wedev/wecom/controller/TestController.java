@@ -5,6 +5,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import tech.wedev.wecom.annos.StopWatch;
+import tech.wedev.wecom.entity.po.CorpInfo;
 import tech.wedev.wecom.entity.po.OrgPO;
 import tech.wedev.wecom.entity.qo.CorpInfoQO;
 import tech.wedev.wecom.entity.vo.AuthCodeReqVO;
@@ -104,5 +105,10 @@ public class TestController {
     public ResponseVO updateCorpInfo(@RequestBody CorpInfoQO corpInfoQO) {
         CorpInfoMybatisPlusService.update(corpInfoQO);
         return ResponseVO.success();
+    }
+
+    @PostMapping(value = {"/test/duplicateCheck"})
+    public ResponseVO saveCorpInfo(@RequestBody @Validated(ValidatorGroup.Insert.class) CorpInfo corpInfo) {
+        return ResponseVO.success("成功");
     }
 }

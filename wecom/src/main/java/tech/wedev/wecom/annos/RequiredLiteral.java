@@ -18,7 +18,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 @Documented
 @Constraint(validatedBy = {LiteralValidator.class})
-public @interface Validator {
+public @interface RequiredLiteral {
 
     // 默认错误消息
     String message() default "必须为指定值";
@@ -38,7 +38,7 @@ public @interface Validator {
     @Retention(RUNTIME)
     @Documented
     @interface List {
-        Validator[] value();
+        RequiredLiteral[] value();
     }
 }
 
