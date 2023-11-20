@@ -60,4 +60,21 @@ public class ExceptionAssert {
         }
     }
 
+    public static boolean isAnd(boolean... bs) {
+        for (boolean b : bs) {
+            if (!b) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean isOr(boolean... bs) {
+        for (boolean b : bs) {
+            if (b) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
