@@ -3,6 +3,7 @@ package tech.wedev.wecom.validator;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -13,9 +14,11 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.Objects;
 
+@RequiredArgsConstructor
+//@AllArgsConstructor
 public class DuplicateValidator implements ConstraintValidator<DuplicateCheck, Object>, ApplicationContextAware {
     private DuplicateCheck duplicateCheck;
-
+    private final JdbcTemplate jdbcTemplate;
     static ApplicationContext context;
 
     @Override
@@ -27,7 +30,7 @@ public class DuplicateValidator implements ConstraintValidator<DuplicateCheck, O
         Object propertyVal = jsonObject.get(property);
         //判断表中是否已有重复的记录
         String sql = StrUtil.format("select count(1) as duplicate from {} where {} = '{}'", table, field, propertyVal);
-        JdbcTemplate jdbcTemplate = context.getBean("jdbcTemplate", JdbcTemplate.class);
+        //JdbcTemplate jdbcTemplate = context.getBean("jdbcTemplate", JdbcTemplate.class);
         Integer duplicate = jdbcTemplate.queryForObject(sql, Integer.class);
         if (Objects.nonNull(duplicate) && duplicate != 0) {
             return false;

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.jdbc.core.JdbcTemplate;
 import tech.wedev.wecom.utils.SM4Util;
 import tech.wedev.wecom.utils.StringUtils;
 
@@ -30,7 +31,7 @@ public class DataSourceConfig {
 
     @Bean
     @SneakyThrows
-    public DataSource dataSourceConfigBean() {
+    public DataSource dataSource() {
         DruidDataSource dataSource = new DruidDataSource();
         dataSource.setDriverClassName(driverClassName);
         dataSource.setUrl(url);
@@ -47,4 +48,8 @@ public class DataSourceConfig {
         return dataSource;
     }
 
+    @Bean("wecomJdbcTemplate")
+    public JdbcTemplate wecomJdbcTemplate(){
+        return new JdbcTemplate(dataSource());
+    }
 }
