@@ -40,7 +40,7 @@ public class DataSourceConfig {
         dataSource.setFilters("!stat");
         String decryptPassword = SM4Util.decryptEcb(SM4Util.hexKey, password);
         if (StringUtils.isBlank(decryptPassword)) {
-            log.error("decrypt dataaSource cypher result null");
+            log.error("decrypt dataSource cypher result null");
             throw new IllegalArgumentException("decrypt dataSource cypher result null, please check argument is correct");
         }
 

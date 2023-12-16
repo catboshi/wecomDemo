@@ -15,7 +15,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * 自定义校验注解
  */
 @Documented
-@Target({ElementType.TYPE})
+@Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RUNTIME)
 @Constraint(validatedBy = {DuplicateValidator.class})
 public @interface DuplicateCheck {
