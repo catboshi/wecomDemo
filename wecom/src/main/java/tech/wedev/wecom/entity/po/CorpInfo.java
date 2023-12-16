@@ -1,9 +1,17 @@
 package tech.wedev.wecom.entity.po;
+import com.alibaba.excel.annotation.ExcelIgnore;
+import com.alibaba.excel.annotation.ExcelProperty;
+import com.alibaba.excel.annotation.write.style.ColumnWidth;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.springframework.format.annotation.DateTimeFormat;
 import tech.wedev.wecom.annos.DuplicateCheck;
+import tech.wedev.wecom.annos.NotWhere;
 import tech.wedev.wecom.annos.TableName;
 import tech.wedev.wecom.tools.ValidatorGroup;
 
@@ -17,10 +25,13 @@ import java.util.Date;
 @TableName("zh_corp_info")
 @DuplicateCheck(tableName = "zh_corp_info", field = "corp_id",
         property = "corpId", message = "租户主体ID不能重复", groups = ValidatorGroup.Insert.class)
+@ApiOperation(value = "租户信息")
 public class CorpInfo extends BasicPO {
     /**
      * 自建应用agentId
      */
+    @ExcelProperty(value = "自建应用agentId", index = 0)
+    @ColumnWidth(15)
     private String agentApplication;
     /**
      * 自建应用调用JSJDK凭证
@@ -61,14 +72,19 @@ public class CorpInfo extends BasicPO {
     /**
      * TOKEN（会话存档）
      */
+    @ExcelIgnore
     private String tokenMsgAudit;
     /**
      * TOKEN（自建应用）修改时间
      */
+    @ApiModelProperty(name = "TOKEN（自建应用）修改时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date tokenApplicationModified;
     /**
      * TOKEN（通讯录）修改时间
      */
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @ApiModelProperty(name = "TOKEN（通讯录）修改时间")
     private Date tokenCommunicationModified;
     /**
      * TOKEN（外部联系人）修改时间
@@ -91,7 +107,9 @@ public class CorpInfo extends BasicPO {
      */
     private String chatSavePriKey;
 
+    @NotWhere
     private Integer currentPage = 1;
 
+    @NotWhere
     private Integer pageSize = 10;
 }

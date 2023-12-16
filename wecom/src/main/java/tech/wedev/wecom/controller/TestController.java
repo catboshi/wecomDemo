@@ -1,5 +1,6 @@
 package tech.wedev.wecom.controller;
 
+import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -12,6 +13,7 @@ import tech.wedev.wecom.entity.vo.AuthCodeReqVO;
 import tech.wedev.wecom.entity.vo.ResponseVO;
 import tech.wedev.wecom.exception.ExceptionCode;
 import tech.wedev.wecom.standard.CorpInfoMybatisPlusService;
+import tech.wedev.wecom.standard.CorpInfoService;
 import tech.wedev.wecom.third.WecomRequestService;
 import tech.wedev.wecom.tools.ValidatorGroup;
 import tech.wedev.wecom.tools.ValidatorTools;
@@ -31,6 +33,9 @@ public class TestController {
 
     @Autowired
     private CorpInfoMybatisPlusService CorpInfoMybatisPlusService;
+
+    @Autowired
+    private CorpInfoService corpInfoService;
 
     @Autowired
     private ValidatorTools validatorTools;
@@ -88,7 +93,7 @@ public class TestController {
     }
 
     @StopWatch
-    @RequestMapping(value = { "/a" }, method = {RequestMethod.POST})
+    @RequestMapping(value = {"/a"}, method = {RequestMethod.POST})
     public Object getSignInAuthCode(@Valid @RequestBody AuthCodeReqVO authCodeReqVO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return bindingResult.getFieldErrors().stream().map(a -> a.getField() + ": " + a.getDefaultMessage()).reduce((a, b) -> a + " " + b);
@@ -96,12 +101,12 @@ public class TestController {
         return authCodeReqVO;
     }
 
-    @GetMapping(value = { "/selectCorpInfo" })
+    @GetMapping(value = {"/selectCorpInfo"})
     public ResponseVO selectCorpInfo() {
         return ResponseVO.success(CorpInfoMybatisPlusService.select());
     }
     
-    @PostMapping(value = { "/updateCorpInfo" })
+    @PostMapping(value = {"/updateCorpInfo"})
     public ResponseVO updateCorpInfo(@RequestBody CorpInfoQO corpInfoQO) {
         CorpInfoMybatisPlusService.update(corpInfoQO);
         return ResponseVO.success();
@@ -109,6 +114,7 @@ public class TestController {
 
     @PostMapping(value = {"/test/duplicateCheck"})
     public ResponseVO saveCorpInfo(@RequestBody @Validated(ValidatorGroup.Insert.class) CorpInfo corpInfo) {
+        corpInfoService.save(corpInfo);
         return ResponseVO.success("成功");
     }
 }

@@ -15,10 +15,11 @@ import javax.validation.ConstraintValidatorContext;
 import java.util.Objects;
 
 @RequiredArgsConstructor
-//@AllArgsConstructor
 public class DuplicateValidator implements ConstraintValidator<DuplicateCheck, Object>, ApplicationContextAware {
     private DuplicateCheck duplicateCheck;
+
     private final JdbcTemplate jdbcTemplate;
+
     static ApplicationContext context;
 
     @Override

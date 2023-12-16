@@ -8,11 +8,6 @@ public interface ValidatorGroup {
     interface Update{}
     interface Select{}
     interface Delete{}
-    interface WecomTxtMsg{}
-    interface WecomCardMsg{}
-    interface CustInfo{}
-    interface CustList{}
-    interface FriendAuth{}
 
     /**
      * QywxStatisticsController 层的 QueryListPage 方法的校验分组
