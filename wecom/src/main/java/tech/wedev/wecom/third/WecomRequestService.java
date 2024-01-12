@@ -2,6 +2,7 @@ package tech.wedev.wecom.third;
 
 import tech.wedev.wecom.entity.bo.AccessCredentialsCommand;
 
+import java.util.List;
 import java.util.Map;
 
 public interface WecomRequestService {
@@ -38,6 +39,9 @@ public interface WecomRequestService {
      * @return 参考企业微信官方文档
      */
     Map<String, Object> externalContactGet(String corpId, String externalUserId);
+
+
+    Map<String, Object> externalContactGetList(String corpId, List<String> externalUserId);
 
     /**
      * 消息推送-发送应用消息

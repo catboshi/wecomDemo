@@ -24,7 +24,7 @@ public class GenParamBasicServiceImpl extends BasicServiceImpl<GenParamBasicPO, 
 
     @Autowired
     private GenParamBasicMapper genParamBasicMapper;
-    public static Cache<String, String> wecomGenParamCache = CacheBuilder.newBuilder().expireAfterWrite(90, TimeUnit.SECONDS).build();//暂时改成90，原来900
+    public static Cache<String, String> wecomGenParamCache = CacheBuilder.newBuilder().expireAfterWrite(900, TimeUnit.SECONDS).build();
 
     @Override
     public BasicMapper<GenParamBasicPO, GenParamBasicQO> getBasicMapper() {
