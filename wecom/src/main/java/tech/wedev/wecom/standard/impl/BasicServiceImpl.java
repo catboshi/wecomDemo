@@ -9,10 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 import tech.wedev.wecom.bean.PageBean;
-import tech.wedev.wecom.mapper.BasicMapper;
 import tech.wedev.wecom.entity.po.BasicPO;
 import tech.wedev.wecom.entity.qo.BasicQO;
 import tech.wedev.wecom.enums.*;
+import tech.wedev.wecom.mapper.BasicMapper;
 import tech.wedev.wecom.standard.BasicService;
 import tech.wedev.wecom.utils.BeanUtils;
 
@@ -199,7 +199,7 @@ public abstract class BasicServiceImpl<P extends BasicPO, Q extends BasicQO> imp
         if (baseQO != null) {
             if (basePO != null) {
                 baseQO.setUpdateValPO(basePO);
-                basePO.setGmtModified(Optional.ofNullable(basePO).map(a -> a.getGmtModified()).orElse(new Date()));
+                basePO.setGmtModified(Optional.ofNullable(basePO).map(BasicPO::getGmtModified).orElse(new Date()));
                 basePO.setIsDeleted(BaseDeletedEnum.DEL.getCode());
             }
             baseQO.setIds(ids);
@@ -276,7 +276,7 @@ public abstract class BasicServiceImpl<P extends BasicPO, Q extends BasicQO> imp
     @Transactional
     public Integer batchInsert(List<P> ps) {
         Integer total = this.getBasicMapper().batchSave(ps, this.getpClass());
-        ps.stream().findFirst().map(a -> a.getId()).ifPresent(id -> {
+        ps.stream().findFirst().map(BasicPO::getId).ifPresent(id -> {
             for (int i = 1; i < ps.size(); i++) {
                 ps.get(i).setId(id + i);
             }

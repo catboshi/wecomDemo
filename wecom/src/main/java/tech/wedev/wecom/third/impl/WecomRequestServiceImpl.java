@@ -4,8 +4,11 @@ import cn.hutool.core.date.DateTime;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.MapUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -32,6 +35,9 @@ import tech.wedev.wecom.third.WecomRequestService;
 import tech.wedev.wecom.utils.*;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 @Slf4j
 @Service
@@ -57,7 +63,6 @@ public class WecomRequestServiceImpl implements WecomRequestService {
 
     @Override
     public Object generalCallQiWeApi(String corpId, String methodType, Map<String, Object> body, String urlConstant) {
-        JSONObject resultObject = new JSONObject();
         //获取请求的token
         AccessCredentialsCommand accessTokenCommand = AccessCredentialsCommand.builder().corpId(corpId)
                 .interfaceIdentifyUrl(getContextConstant(urlConstant)).build();
@@ -71,6 +76,7 @@ public class WecomRequestServiceImpl implements WecomRequestService {
         String url = getRequestQiWeUrl(methodType, body, urlConstant, token);
         log.info("WecomRequestServiceImpl###generalCallQiWeApi###企微API URL:" + url);
 
+        JSONObject resultObject;
         try {
             //根据请求类型发起请求
             resultObject = doHttpByMethodType(methodType, body, url);
@@ -99,7 +105,6 @@ public class WecomRequestServiceImpl implements WecomRequestService {
         String corpId = command.getCorpId();
         String interfaceIdentifyUrl = command.getInterfaceIdentifyUrl();
 
-
         //从redis缓存读取token
         String tokenKey = Joiner.on("_").join(corpId, ParamsConstant.TOKEN_CACHE_KEY, command.getInterfaceIdentifyUrl());
 
@@ -109,7 +114,6 @@ public class WecomRequestServiceImpl implements WecomRequestService {
             log.info("WecomRequestServiceImpl###generateAccessToken###redis缓存token: " + token);
             return token;
         }
-
 
         //redis缓存token不存在或redis异常，从数据库读取token
         GenParamEnum paramType = this.paramTypeMatch(interfaceIdentifyUrl);
@@ -121,16 +125,14 @@ public class WecomRequestServiceImpl implements WecomRequestService {
             return null;
         }
 
-        Integer tokenTimeOut = ParamsConstant.TOKEN_TIME_OUT;
-        if (!CollectionUtils.isEmpty(tokenInDB)) {
-            try {
-                Date tokenModified = findTokenModified(paramType, tokenInDB.get(0));
-                if (!Objects.isNull(tokenModified)) {
-                    tokenTimeOut = Integer.valueOf(DateUtils.printDiffer(tokenModified, DateTime.now()));
-                }
-            } catch (Exception e) {
-                log.error("WecomRequestServiceImpl###generateAccessToken###parse tokenTimeOut异常: ", "", e);
+        int tokenTimeOut = ParamsConstant.TOKEN_TIME_OUT;
+        try {
+            Date tokenModified = findTokenModified(paramType, tokenInDB.get(0));
+            if (!Objects.isNull(tokenModified)) {
+                tokenTimeOut = Integer.parseInt(DateUtils.printDiffer(tokenModified, DateTime.now()));
             }
+        } catch (Exception e) {
+            log.error("WecomRequestServiceImpl###generateAccessToken###parse tokenTimeOut异常: ", e);
         }
 
         if (!CollectionUtils.isEmpty(tokenInDB) && tokenTimeOut < ParamsConstant.TOKEN_TIME_OUT
@@ -183,6 +185,44 @@ public class WecomRequestServiceImpl implements WecomRequestService {
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("external_userid", externalUserId);
         return ((JSONObject) generalCallQiWeApi(corpId, ParamsConstant.METHOD_GET, requestBody, WecomApiUrlConstant.EXTERNAL_CONTACT_GET)).getInnerMap();
+    }
+
+    @Override
+    public Map<String, Object> externalContactGetList(String corpId, List<String> externalUserIdList) {
+        log.info("WecomRequestServiceImpl.externalContactGet###企微API入参: \"corpId\": " + corpId + ", \"externalUserId\": " + JSON.toJSONString(externalUserIdList));
+        HashMap<@Nullable String, @Nullable Object> resultMap = Maps.newHashMap();
+        CompletableFuture<Void> futures = CompletableFuture.allOf(externalUserIdList.stream()
+                .map(externalUserId -> CompletableFuture.supplyAsync(() -> invokeExternalContact(corpId, externalUserId))
+                        .whenComplete((v, e) -> {
+                            if (e == null) {
+                                resultMap.putAll(v);
+                            } else {
+                                log.error("企微外部用户ID：{}，调用获取企微用户详情接口异常：", externalUserId, e);
+                                resultMap.putIfAbsent(externalUserId, "企微API调用异常，请稍后重试");
+                            }
+                        })).toArray(CompletableFuture[]::new));
+
+        futures.whenComplete((v, e) -> {
+            if (e == null) {
+                log.info("调用获取企微用户详情接口成功{}", JSON.toJSONString(resultMap));
+            } else {
+                log.error("调用获取企微用户详情接口失败");
+            }
+        });
+        //获取结果上限时间
+        try {
+            futures.get(5, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            return ImmutableMap.of("errMsg", "获取企微用户详情任务结果超时，请稍后重试");
+        } catch (Exception ex) {
+            log.error("获取企微用户详情任务结果异常：", ex);
+            return ImmutableMap.of("errMsg", "获取企微用户详情任务结果异常，请稍后重试");
+        }
+        return resultMap;
+    }
+
+    private Map<String, Object> invokeExternalContact(String corpId, String externalUserId) {
+        return ((JSONObject) generalCallQiWeApi(corpId, ParamsConstant.METHOD_GET, ImmutableMap.of("external_userid", externalUserId), WecomApiUrlConstant.EXTERNAL_CONTACT_GET)).getInnerMap();
     }
 
     @Override

@@ -53,10 +53,10 @@ public class WechatEventCallBackController {
 
     //调用阿里云oss缩略图url前缀
     @Value("${wecom.aliyun.picurl.prefix}")
-    private String wecomAliyunPicUrlPrefix;
+    private String aliCloudPicUrlPrefix;
     //调用腾讯云oss缩略图url前缀
     @Value ("${wecom.tencentyun.picurl.prefix}")
-    private String wecomTencentyunPicUrlPrefix;
+    private String tencentCloudPicUrlPrefix;
     //oss的domain内容
     @Value ("${oss.domain}")
     private String ossDomain;
@@ -269,7 +269,7 @@ public class WechatEventCallBackController {
         } catch (WecomException wecomException) {
             log.info("send_welcome_message response message: {} ", wecomException.getCode() + wecomException.getMsg());
         } catch (Exception e) {
-            log.error("请求API服务异常: ", "", e);
+            log.error("请求API服务异常: ", e);
         }
     }
 
@@ -303,10 +303,10 @@ public class WechatEventCallBackController {
 
             //offiaccount -> ~/wecom/offiaccount oplatform -> ~/wecom/oplatform
             var picUrl = Objects.equals("offiaccount", a.getArticleApp()) ?
-                    (wecomTencentyunPicUrlPrefix + "/" + ossDomain + "/_/" + a.getThumbnail()) :
+                    (tencentCloudPicUrlPrefix + "/" + ossDomain + "/_/" + a.getThumbnail()) :
                     a.getArticleThumbnail().indexOf("/") == 0 ?
-                            wecomAliyunPicUrlPrefix + a.getArticleThumbnail() :
-                            wecomAliyunPicUrlPrefix + "/" + a.getArticleThumbnail();
+                            aliCloudPicUrlPrefix + a.getArticleThumbnail() :
+                            aliCloudPicUrlPrefix + "/" + a.getArticleThumbnail();
 
             //仅判断小程序mediaId是否过期
             var mediaId = Objects.equals(a.getSourceFormat(), WelcomeMessageCfgEnum.TypeENUM.APP.getCode()) ? (Objects.isNull(a.getMediaCreatedTime()) ||

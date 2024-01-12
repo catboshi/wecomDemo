@@ -6,7 +6,6 @@ import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -15,7 +14,6 @@ import tech.wedev.wecom.entity.po.WecomMarketArticlePO;
 import tech.wedev.wecom.enums.AttachmentsMsgTypeEnum;
 import tech.wedev.wecom.monad.Try;
 import tech.wedev.wecom.request.RequestV1Private;
-import tech.wedev.wecom.standard.TestAopService;
 import tech.wedev.wecom.utils.ObjectUtils;
 import tech.wedev.wecom.utils.SM4Util;
 import tech.wedev.wecom.utils.StringUtils;
@@ -28,8 +26,6 @@ import java.util.stream.Stream;
 @RunWith(SpringRunner.class)
 public class WecomDemoTests {
 
-	@Autowired
-	TestAopService testAopService;
 	@Value("${spring.datasource.password}")
 	private String datasource_password;
 
@@ -177,8 +173,7 @@ public class WecomDemoTests {
 	}
 
 	@Test
-	public void test10() throws Exception {
-		testAopService.testAop();
+	public void test10() {
 		String replace = "123a-11".replaceAll("(.*\\-)", "");//11
 		String className = "123$888";
 		className = className.indexOf("$") == -1 ? className : StringUtils.subString(className, 0, className.indexOf("$"));//123

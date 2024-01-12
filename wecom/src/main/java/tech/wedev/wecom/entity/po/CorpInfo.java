@@ -3,6 +3,7 @@ import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.write.style.ColumnWidth;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
@@ -79,6 +80,7 @@ public class CorpInfo extends BasicPO {
      */
     @ApiModelProperty(name = "TOKEN（自建应用）修改时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @JsonProperty("TokenApplicationModified")
     private Date tokenApplicationModified;
     /**
      * TOKEN（通讯录）修改时间
