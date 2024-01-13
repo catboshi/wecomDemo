@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="tech.wedev.wecom.mapper.OpLogMapper">
+<mapper namespace="tech.wedev.wecom.mybatis.mapper.OpLogMapper">
 
     <insert id="saveLog" parameterType="tech.wedev.wecom.entity.po.OpLogPO" keyColumn="id" keyProperty="id"
             useGeneratedKeys="true">

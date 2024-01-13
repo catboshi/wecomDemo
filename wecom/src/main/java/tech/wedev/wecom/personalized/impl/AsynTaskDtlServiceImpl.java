@@ -7,8 +7,8 @@ import tech.wedev.autm.asyntask.AsynTaskEnum.TaskPriorityType;
 import tech.wedev.autm.asyntask.AsynTaskEnum.TaskStateType;
 import tech.wedev.autm.asyntask.entity.AsynTaskDtl;
 import tech.wedev.autm.asyntask.service.IAsynTaskDtlService;
-import tech.wedev.wecom.mapper.IAsynTaskDtlHisMapper;
-import tech.wedev.wecom.mapper.IAsynTaskDtlMapper;
+import tech.wedev.wecom.mybatis.mapper.IAsynTaskDtlHisMapper;
+import tech.wedev.wecom.mybatis.mapper.IAsynTaskDtlMapper;
 import tech.wedev.wecom.utils.ValConvertUtils;
 
 import javax.annotation.Resource;

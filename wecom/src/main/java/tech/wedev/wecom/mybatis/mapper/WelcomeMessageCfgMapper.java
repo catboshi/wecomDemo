@@ -1,4 +1,4 @@
-package tech.wedev.wecom.mapper;
+package tech.wedev.wecom.mybatis.mapper;
 
 import tech.wedev.wecom.entity.po.WelcomeMessageCfgPO;
 import tech.wedev.wecom.entity.qo.WelcomeMessageCfgQO;

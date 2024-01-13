@@ -1,4 +1,4 @@
-package tech.wedev.wecom.mapper;
+package tech.wedev.wecom.mybatis.mapper;
 
 import org.apache.ibatis.annotations.*;
 import tech.wedev.autm.asyntask.AsynTaskBean;

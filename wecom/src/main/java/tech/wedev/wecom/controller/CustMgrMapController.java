@@ -13,8 +13,10 @@ import tech.wedev.wecom.entity.qo.CustMgrMapQO;
 @RequestMapping("zh_cust_mgr_map")
 @Slf4j
 public class CustMgrMapController extends BasicController<CustMgrMapPO, CustMgrMapQO> {
+
     @Autowired
     private CustMgrMapService custMgrMapService;
+
     @Override
     public BasicService<CustMgrMapPO,CustMgrMapQO> getBasicService(){
         return custMgrMapService;

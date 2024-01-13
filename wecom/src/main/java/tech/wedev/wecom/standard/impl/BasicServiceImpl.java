@@ -12,7 +12,7 @@ import tech.wedev.wecom.bean.PageBean;
 import tech.wedev.wecom.entity.po.BasicPO;
 import tech.wedev.wecom.entity.qo.BasicQO;
 import tech.wedev.wecom.enums.*;
-import tech.wedev.wecom.mapper.BasicMapper;
+import tech.wedev.wecom.mybatis.mapper.BasicMapper;
 import tech.wedev.wecom.standard.BasicService;
 import tech.wedev.wecom.utils.BeanUtils;
 

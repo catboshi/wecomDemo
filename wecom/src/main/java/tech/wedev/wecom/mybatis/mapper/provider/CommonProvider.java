@@ -1,4 +1,4 @@
-package tech.wedev.wecom.mapper.provider;
+package tech.wedev.wecom.mybatis.mapper.provider;
 
 import cn.hutool.core.collection.CollectionUtil;
 import lombok.SneakyThrows;

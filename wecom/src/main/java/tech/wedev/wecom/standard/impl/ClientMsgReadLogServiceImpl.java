@@ -7,6 +7,7 @@ import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.style.HorizontalCellStyleStrategy;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.page.PageMethod;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.poi.ss.usermodel.IndexedColors;
@@ -20,8 +21,8 @@ import tech.wedev.wecom.entity.po.WecomMarketArticlePO;
 import tech.wedev.wecom.entity.qo.WecomMarketArticleQO;
 import tech.wedev.wecom.entity.vo.ResponseVO;
 import tech.wedev.wecom.enums.OpTypeEnum;
-import tech.wedev.wecom.mapper.OpLogMapper;
-import tech.wedev.wecom.mapper.WecomMarketArticleMapper;
+import tech.wedev.wecom.mybatis.mapper.OpLogMapper;
+import tech.wedev.wecom.mybatis.mapper.WecomMarketArticleMapper;
 import tech.wedev.wecom.standard.ClientMsgReadLogService;
 import tech.wedev.wecom.third.WecomRequestService;
 import tech.wedev.wecom.utils.StringUtils;
@@ -67,6 +68,8 @@ public class ClientMsgReadLogServiceImpl implements ClientMsgReadLogService {
             caffeineCache.put(key, value);
         }
 
+        int pageNum = 1, pageSize = 1000;
+        PageMethod.startPage(pageNum, pageSize);
         WecomMarketArticlePO wecomMarketArticlePO = wecomMarketArticleMapper.selectOneByArticleSource(articleSource);
         if (wecomMarketArticlePO == null) {
             responseVO.setRetMsg("该资讯不存在");
