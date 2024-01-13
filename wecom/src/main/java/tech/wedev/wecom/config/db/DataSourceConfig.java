@@ -48,7 +48,7 @@ public class DataSourceConfig {
         return dataSource;
     }
 
-    @Bean("wecomJdbcTemplate")
+    @Bean("jdbcTemplate")
     public JdbcTemplate wecomJdbcTemplate(){
         return new JdbcTemplate(dataSource());
     }

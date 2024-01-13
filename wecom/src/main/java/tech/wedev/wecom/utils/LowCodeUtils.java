@@ -29,7 +29,7 @@ public class LowCodeUtils {
     private static final String poPath = commonPathRoot + "/" + "com/icbc/cfbi/wecom/common/basic/entity/po";
     private static final String qoPath = commonPathRoot + "/" + "com/icbc/cfbi/wecom/common/basic/entity/qo";
     private static final String mapperPath = servicePathRoot + "/" + "com/icbc/cfbi/wecom/online/dao/basic";
-    private static final String mapperXmlPath = servicePathClassRoot + "/" + "src/main/resources/mybatis/mapper/basic";
+    private static final String mapperXmlPath = servicePathClassRoot + "/" + "src/main/resources/mapper/basic";
     private static final String servicePath = servicePathRoot + "/" + "com/icbc/cfbi/wecom/online/standard";
     private static final String controllerPath = servicePathRoot + "/" + "com/icbc/cfbi/wecom/online/controller";
     private static final String enumPackage = "com.icbc.cfbi.wecom.common.enums";
@@ -40,8 +40,8 @@ public class LowCodeUtils {
     private static final String servicePathRoot = servicePathClassRoot + "/" + "src/main/java";
     private static final String poPath = commonPathRoot + "/" + "tech/wedev/wecom/entity/po";
     private static final String qoPath = commonPathRoot + "/" + "tech/wedev/wecom/entity/qo";
-    private static final String mapperPath = servicePathRoot + "/" + "tech/wedev/wecom/mapper";
-    private static final String mapperXmlPath = servicePathClassRoot + "/" + "src/main/resources/mybatis/mapper";
+    private static final String mapperPath = servicePathRoot + "/" + "tech/wedev/wecom/mybatis/mapper";
+    private static final String mapperXmlPath = servicePathClassRoot + "/" + "src/main/resources/mapper";
     private static final String servicePath = servicePathRoot + "/" + "tech/wedev/wecom/standard";
     private static final String controllerPath = servicePathRoot + "/" + "tech/wedev/wecom/controller";
     private static final String enumPackage = "tech.wedev.wecom.enums";

@@ -18,7 +18,7 @@ import org.springframework.util.CollectionUtils;
 import tech.wedev.wecom.constants.ParamsConstant;
 import tech.wedev.wecom.constants.WecomApiUrlConstant;
 import tech.wedev.wecom.context.TokenContextHolder;
-import tech.wedev.wecom.mapper.CorpInfoMapper;
+import tech.wedev.wecom.mybatis.mapper.CorpInfoMapper;
 import tech.wedev.wecom.entity.bo.AccessCredentialsCommand;
 import tech.wedev.wecom.entity.po.GenParamBasicPO;
 import tech.wedev.wecom.entity.po.GenParamPO;

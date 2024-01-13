@@ -1,9 +1,9 @@
-package tech.wedev.wecom.mapper;
+package tech.wedev.wecom.mybatis.mapper;
 
 import org.apache.ibatis.annotations.*;
 import tech.wedev.wecom.entity.po.BasicPO;
 import tech.wedev.wecom.entity.qo.BasicQO;
-import tech.wedev.wecom.mapper.provider.CommonProvider;
+import tech.wedev.wecom.mybatis.mapper.provider.CommonProvider;
 
 import java.math.BigDecimal;
 import java.util.List;
