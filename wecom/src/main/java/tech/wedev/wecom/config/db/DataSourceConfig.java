@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import tech.wedev.wecom.utils.SM4Util;
-import tech.wedev.wecom.utils.StringUtils;
+import tech.wedev.wecom.utils.StringUtil;
 
 import javax.sql.DataSource;
 
@@ -39,7 +39,7 @@ public class DataSourceConfig {
         dataSource.setQueryTimeout(60);
         dataSource.setFilters("!stat");
         String decryptPassword = SM4Util.decryptEcb(SM4Util.hexKey, password);
-        if (StringUtils.isBlank(decryptPassword)) {
+        if (StringUtil.isBlank(decryptPassword)) {
             log.error("decrypt dataSource cypher result null");
             throw new IllegalArgumentException("decrypt dataSource cypher result null, please check argument is correct");
         }

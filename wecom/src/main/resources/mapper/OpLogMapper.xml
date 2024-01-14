@@ -5,7 +5,37 @@
     <insert id="saveLog" parameterType="tech.wedev.wecom.entity.po.OpLogPO" keyColumn="id" keyProperty="id"
             useGeneratedKeys="true">
         insert into op_log (corp_id, org_code, op_content, op_user_id, op_tellerno, op_type, op_time, gmt_create, create_id, gmt_modified, modified_id, is_deleted)
-        values (#{corpId, jdbcType=VARCHAR}, #{orgCode, jdbcType=VARCHAR}, #{opContent, jdbcType=VARCHAR}, #{opUserId, jdbcType=VARCHAR}, #{opTellerno, jdbcType=VARCHAR}, #{opType, jdbcType=INTEGER}, sysdate(), sysdate(), #{createId, jdbcType=BIGINT}, sysdate(), #{modifiedId, jdbcType=BIGINT}, #{isDeleted, jdbcType=INTEGER})
+        values (#{corpId, jdbcType=VARCHAR}, #{orgCode, jdbcType=VARCHAR}, #{opContent, jdbcType=VARCHAR}, #{opUserId, jdbcType=VARCHAR}, #{opTellerNo, jdbcType=VARCHAR}, #{opType, jdbcType=INTEGER}, sysdate(), sysdate(), #{createId, jdbcType=BIGINT}, sysdate(), #{modifiedId, jdbcType=BIGINT}, #{isDeleted, jdbcType=INTEGER})
     </insert>
+
+    <select id="selectList" resultType="java.util.Map">
+        select
+            id as "id",
+            corp_id as "corpId",
+            org_code as "orgCode",
+            op_content as "opContent",
+            op_user_id as "opUserId",
+            op_tellerno as "opTellerNo",
+            op_type as "opType",
+            op_time as "opTime"
+        from op_log
+        where 1=1
+        and is_deleted=0
+    </select>
+
+    <update id="update" parameterType="java.util.Map">
+        update op_log
+        <set>
+            <if test="opContent != null and opContent != ''">
+                op_content = #{opContent},
+            </if>
+                gmt_modified = sysdate(),
+        </set>
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+        </where>
+    </update>
 
 </mapper>

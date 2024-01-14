@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
 
-public class OrgsPO {
+public class OrgPOList {
 
     @Valid
     @NotEmpty(message = "机构列表不能为空")

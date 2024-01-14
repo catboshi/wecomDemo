@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import tech.wedev.wecom.constants.ParamsConstant;
@@ -56,7 +57,10 @@ public class WecomRequestServiceImpl implements WecomRequestService {
     RedisTemplate redisTemplate;
 
     @Autowired
-    private RedisUtils redisUtils;
+    private SpringRedisUtil springRedisUtil;
+
+    @Autowired
+    ThreadPoolTaskExecutor asyncTaskExecutor;
 
     @Value("${wecom.api.url.prefix}")
     private String wecomApiUrlPrefix;
@@ -108,8 +112,8 @@ public class WecomRequestServiceImpl implements WecomRequestService {
         //从redis缓存读取token
         String tokenKey = Joiner.on("_").join(corpId, ParamsConstant.TOKEN_CACHE_KEY, command.getInterfaceIdentifyUrl());
 
-        token = (String) redisUtils.get(tokenKey);
-        if (StringUtils.isNotBlank(token)) {
+        token = (String) springRedisUtil.get(tokenKey);
+        if (StringUtil.isNotBlank(token)) {
             //缓存中存在token，直接返回
             log.info("WecomRequestServiceImpl###generateAccessToken###redis缓存token: " + token);
             return token;
@@ -136,7 +140,7 @@ public class WecomRequestServiceImpl implements WecomRequestService {
         }
 
         if (!CollectionUtils.isEmpty(tokenInDB) && tokenTimeOut < ParamsConstant.TOKEN_TIME_OUT
-                && StringUtils.isNotEmpty(findTokenFromCorpInfoDB(paramType, tokenInDB.get(0)))) {
+                && StringUtil.isNotEmpty(findTokenFromCorpInfoDB(paramType, tokenInDB.get(0)))) {
             log.info("WecomRequestServiceImpl###generateAccessToken###数据库缓存token:" + JSONObject.toJSONString(tokenInDB.get(0)));
             return findTokenFromCorpInfoDB(paramType, tokenInDB.get(0));
         }
@@ -192,7 +196,7 @@ public class WecomRequestServiceImpl implements WecomRequestService {
         log.info("WecomRequestServiceImpl.externalContactGet###企微API入参: \"corpId\": " + corpId + ", \"externalUserId\": " + JSON.toJSONString(externalUserIdList));
         HashMap<@Nullable String, @Nullable Object> resultMap = Maps.newHashMap();
         CompletableFuture<Void> futures = CompletableFuture.allOf(externalUserIdList.stream()
-                .map(externalUserId -> CompletableFuture.supplyAsync(() -> invokeExternalContact(corpId, externalUserId))
+                .map(externalUserId -> CompletableFuture.supplyAsync(() -> invokeExternalContact(corpId, externalUserId), asyncTaskExecutor)
                         .whenComplete((v, e) -> {
                             if (e == null) {
                                 resultMap.putAll(v);
@@ -518,10 +522,10 @@ public class WecomRequestServiceImpl implements WecomRequestService {
             //EX: 设置键的过期单位为 second 秒
             try {
                 if (ParamsConstant.TYPE_TICKET.equals(tokenTicketType)) {
-                    redisUtils.set(corpId + ParamsConstant.CACHE_KEY_SEPARATE + paramType.getName(), tokenOrTicket, ParamsConstant.TOKEN_TIME_OUT);
+                    springRedisUtil.set(corpId + ParamsConstant.CACHE_KEY_SEPARATE + paramType.getName(), tokenOrTicket, ParamsConstant.TOKEN_TIME_OUT);
                 } else {
                     String tokenKey = Joiner.on(ParamsConstant.CACHE_KEY_SEPARATE).join(corpId, ParamsConstant.TOKEN_CACHE_KEY, interfaceIdentifyUrl);
-                    redisUtils.set(tokenKey, tokenOrTicket, ParamsConstant.TOKEN_TIME_OUT);
+                    springRedisUtil.set(tokenKey, tokenOrTicket, ParamsConstant.TOKEN_TIME_OUT);
                 }
             } catch (Exception e) {
                 log.error("WecomRequestServiceImpl###updateTokenFromCorpInfo###设置redis缓存异常");
@@ -566,9 +570,9 @@ public class WecomRequestServiceImpl implements WecomRequestService {
             //EX: 设置键的过期单位为 second 秒
             try {
                 if (ParamsConstant.TYPE_TICKET.equals(tokenTicketType)) {
-                    redisUtils.set(paramType.getName(), tokenOrTicket, ParamsConstant.TOKEN_TIME_OUT);
+                    springRedisUtil.set(paramType.getName(), tokenOrTicket, ParamsConstant.TOKEN_TIME_OUT);
                 } else {
-                    redisUtils.set(ParamsConstant.TOKEN_CACHE_KEY_PREFIX + context, tokenOrTicket, ParamsConstant.TOKEN_TIME_OUT);
+                    springRedisUtil.set(ParamsConstant.TOKEN_CACHE_KEY_PREFIX + context, tokenOrTicket, ParamsConstant.TOKEN_TIME_OUT);
                 }
             } catch (Exception e) {
                 log.error("WecomRequestServiceImpl###updateTokenFromWecom设置redis缓存异常");

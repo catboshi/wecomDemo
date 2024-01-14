@@ -16,7 +16,7 @@ import tech.wedev.wecom.monad.Try;
 import tech.wedev.wecom.request.RequestV1Private;
 import tech.wedev.wecom.utils.ObjectUtils;
 import tech.wedev.wecom.utils.SM4Util;
-import tech.wedev.wecom.utils.StringUtils;
+import tech.wedev.wecom.utils.StringUtil;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -109,9 +109,9 @@ public class WecomDemoTests {
 //		var getDeclaredFields0 = Class.class.getDeclaredMethod("getDeclaredFields0", boolean.class);
 //		getDeclaredFields0.setAccessible(true);
 //		var invoke = getDeclaredFields0.invoke(Class.class, false);
-		var obj = ObjectUtils.strObjToType(Class.forName("tech.wedev.wecom.request.RequestV1Private$" + StringUtils.capitalizeFirstLetter("link")).newInstance(), RequestV1Private.Link.class);
+		var obj = ObjectUtils.strObjToType(Class.forName("tech.wedev.wecom.request.RequestV1Private$" + StringUtil.capitalizeFirstLetter("link")).newInstance(), RequestV1Private.Link.class);
 
-		var declaredFields1 = Class.forName("com.stream.streamdemo.request.RequestV1Private$" + StringUtils.capitalizeFirstLetter("link")).getDeclaredFields();
+		var declaredFields1 = Class.forName("com.stream.streamdemo.request.RequestV1Private$" + StringUtil.capitalizeFirstLetter("link")).getDeclaredFields();
 		/*for (Field field : declaredFields1) {
 			field.setAccessible(true);
 			var map = Arrays.stream(AttachmentsMsgTypeEnum.values()).filter(a -> a.getDesc().equals("link"))
@@ -176,8 +176,8 @@ public class WecomDemoTests {
 	public void test10() {
 		String replace = "123a-11".replaceAll("(.*\\-)", "");//11
 		String className = "123$888";
-		className = className.indexOf("$") == -1 ? className : StringUtils.subString(className, 0, className.indexOf("$"));//123
-		className = !className.contains("$") ? className : StringUtils.subString(className, 0, className.indexOf("$"));//123
+		className = className.indexOf("$") == -1 ? className : StringUtil.subString(className, 0, className.indexOf("$"));//123
+		className = !className.contains("$") ? className : StringUtil.subString(className, 0, className.indexOf("$"));//123
 		System.out.println("replace: " + replace + ", className:" + className);
 	}
 

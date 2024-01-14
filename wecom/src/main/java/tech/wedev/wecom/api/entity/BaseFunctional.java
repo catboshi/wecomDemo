@@ -6,7 +6,7 @@ import tech.wedev.wecom.enums.AttachmentsMsgTypeEnum;
 import tech.wedev.wecom.exception.ExceptionCode;
 import tech.wedev.wecom.exception.WecomException;
 import tech.wedev.wecom.request.RequestV1Private;
-import tech.wedev.wecom.utils.StringUtils;
+import tech.wedev.wecom.utils.StringUtil;
 
 import java.util.Arrays;
 
@@ -30,7 +30,7 @@ public class BaseFunctional<T> {
 //    public static class Transforms{
 //        public static Try<Object> transform (Class clazzT, Object ... objects) throws Throwable {
         public static Object transform (Object ... objects) {
-            var msgType = (String) Arrays.stream(objects).filter(o -> o.getClass() == String.class).filter(o->StringUtils.isNotBlank(String.valueOf(o))).findFirst().orElseThrow(()->new WecomException(ExceptionCode.INVALID_PARAMETER));
+            var msgType = (String) Arrays.stream(objects).filter(o -> o.getClass() == String.class).filter(o-> StringUtil.isNotBlank(String.valueOf(o))).findFirst().orElseThrow(()->new WecomException(ExceptionCode.INVALID_PARAMETER));
             var article = (WecomMarketArticlePO) Arrays.stream(objects).filter(o -> o.getClass() == WecomMarketArticlePO.class).findFirst().orElseThrow(()->new WecomException(ExceptionCode.INVALID_PARAMETER));
             var enum0 = Arrays.stream(AttachmentsMsgTypeEnum.values()).filter(a -> a.getDesc().equals(msgType)).findFirst().orElseThrow(() -> new WecomException(ExceptionCode.UNSUPPORT_MSGTYPE));
             switch (msgType){

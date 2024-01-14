@@ -73,7 +73,7 @@ public class SnowFlakeUtil {
                     }
                 }
             }
-            return StringUtils.isNotBlank(netIP) ? netIP : localIP;
+            return StringUtil.isNotBlank(netIP) ? netIP : localIP;
         } catch (Exception e) {
             log.error("解析IP错误: {}", e);
             return "127.0.0.1";

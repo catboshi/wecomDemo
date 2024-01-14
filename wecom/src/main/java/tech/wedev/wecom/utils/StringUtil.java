@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-public final class StringUtils {
-    private StringUtils() {
+public final class StringUtil {
+    private StringUtil() {
 
     }
 
@@ -57,7 +57,7 @@ public final class StringUtils {
     }
 
     public static String lefPad(String str, int size, String padChar) {
-        str = StringUtils.defaultVal(str, "");
+        str = StringUtil.defaultVal(str, "");
         if (str.length() >= size) {
             return str;
         }

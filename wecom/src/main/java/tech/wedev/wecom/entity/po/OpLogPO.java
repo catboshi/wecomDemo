@@ -1,5 +1,6 @@
 package tech.wedev.wecom.entity.po;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,7 +30,8 @@ public class OpLogPO extends BasicPO{
     /**
      * 操作人统一认证号
      */
-    private String opTellerno;
+    @TableField(value = "op_tellerno")
+    private String opTellerNo;
     /**
      * 操作时间
      */

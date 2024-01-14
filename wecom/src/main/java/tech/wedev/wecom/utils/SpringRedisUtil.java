@@ -19,11 +19,11 @@ import java.util.concurrent.TimeUnit;
 
 @Component
 @SuppressWarnings({"unchecked", "all"})
-public class RedisUtils {
-    private static final Logger log = LoggerFactory.getLogger(RedisUtils.class);
+public class SpringRedisUtil {
+    private static final Logger log = LoggerFactory.getLogger(SpringRedisUtil.class);
     private RedisTemplate<Object, Object> redisTemplate;
 
-    public RedisUtils(RedisTemplate<Object, Object> redisTemplate) {
+    public SpringRedisUtil(RedisTemplate<Object, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
         this.redisTemplate.setHashKeySerializer(new StringRedisSerializer());
         this.redisTemplate.setKeySerializer(new StringRedisSerializer());

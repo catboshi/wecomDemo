@@ -3,7 +3,7 @@ package tech.wedev.wecom.tools;
 import org.hibernate.validator.HibernateValidator;
 import org.springframework.stereotype.Component;
 import tech.wedev.wecom.entity.vo.ResponseVO;
-import tech.wedev.wecom.utils.StringUtils;
+import tech.wedev.wecom.utils.StringUtil;
 
 import javax.annotation.PostConstruct;
 import javax.validation.ConstraintViolation;
@@ -33,6 +33,6 @@ public class ValidatorTools {
         for (ConstraintViolation violation : violations) {
             sb.append(violation.getMessage()).append(",");
         }
-        return StringUtils.endsWith(sb.toString(), ",") ? ResponseVO.error(sb.substring(0, sb.length() - 1)) : ResponseVO.error(sb.toString());
+        return StringUtil.endsWith(sb.toString(), ",") ? ResponseVO.error(sb.substring(0, sb.length() - 1)) : ResponseVO.error(sb.toString());
     }
 }

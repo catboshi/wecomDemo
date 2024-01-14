@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 import tech.wedev.wecom.third.WecomRequestService;
 import tech.wedev.wecom.tools.HttpProxyTools;
 import tech.wedev.wecom.utils.DateUtils;
-import tech.wedev.wecom.utils.StringUtils;
+import tech.wedev.wecom.utils.StringUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -59,7 +59,7 @@ public class WecomMarketArticleServiceImpl extends BasicServiceImpl<WecomMarketA
             String contentId = clientShareUploadQO.getContentId();
             String articleTitle = clientShareUploadQO.getArticleTitle();
             String suffix = clientShareUploadQO.getSuffix();
-            if (StringUtils.isBlank(contentId) || StringUtils.isBlank(articleTitle) || StringUtils.isBlank(suffix)) {
+            if (StringUtil.isBlank(contentId) || StringUtil.isBlank(articleTitle) || StringUtil.isBlank(suffix)) {
                 return ResponseVO.error("上传文件参数为空！");
             }
             long MB = 1024 * 1024;
