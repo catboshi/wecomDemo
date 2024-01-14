@@ -168,7 +168,7 @@ public class WechatEventCallBackController {
             result = "回调异常:" + ex;
         }
         log.info("好友事件回调EventController响应报文:" + result);
-        return StringUtils.isEmpty(result) ? "成功" : result;
+        return StringUtil.isEmpty(result) ? "成功" : result;
     }
 
     private void eventCallBackAsyncTask(String wechatCallBackDataMap, String changeType, String externalUserID, String userID) {
@@ -184,7 +184,7 @@ public class WechatEventCallBackController {
                 .findFirst()
                 .orElse("");
 
-        if (StringUtils.isNotBlank(taskType)) {
+        if (StringUtil.isNotBlank(taskType)) {
             //回调事件异步任务
             AsynTaskBean taskBean = new AsynTaskBean();
             taskBean.setTaskId(SnowFlakeUtil.getNextLongId());
@@ -212,7 +212,7 @@ public class WechatEventCallBackController {
                     //state唯一,peek里的函数只执行一次或不执行
                     .state(state).build()).stream().filter(Objects::nonNull).peek(a -> {
                 ExceptionAssert.ifTrue(!Objects.equals(a.getQrType().getCode(), QrTypeEnum.REMARK_CODE.getCode()), "非备注码添加");
-                ExceptionAssert.ifTrue(StringUtils.isBlank(a.getWelcomeId()), "缺少welcome_id参数");
+                ExceptionAssert.ifTrue(StringUtil.isBlank(a.getWelcomeId()), "缺少welcome_id参数");
                 //获取备注码欢迎语
                 var cfg = welcomeMessageCfgMapper.selectByPrimaryKey(Long.valueOf(a.getWelcomeId()));
                 Optional.ofNullable(cfg).orElseThrow(() -> new BusinessException("欢迎语配置信息不存在或被删除"));
@@ -247,7 +247,7 @@ public class WechatEventCallBackController {
     private void sendWelcomeMessage(String corpID, String externalUserID, String welcomeCode, WelcomeMessageCfgPO cfgPO) {
         Optional.ofNullable(cfgPO).orElseThrow(() -> new WecomException(ExceptionCode.NOT_EXIST_DEFAULT_WECOMEMESSAGE));
         ExceptionAssert.isTrue(LongUtil.isEmpty(cfgPO.getArticleId()) &&
-                StringUtils.isBlank(cfgPO.getWelcomeWord()), "欢迎语文字和资讯不能同时为空");
+                StringUtil.isBlank(cfgPO.getWelcomeWord()), "欢迎语文字和资讯不能同时为空");
         ExceptionAssert.isTrue(LongUtil.isEmpty(cfgPO.getArticleId()) &&
                 !Objects.equals(cfgPO.getType(), WelcomeMessageCfgEnum.TypeENUM.TEXT.getCode()), "缺少article_id参数");
         var article = wecomMarketArticleMapper.checkIsValid(cfgPO.getArticleId());
@@ -261,7 +261,7 @@ public class WechatEventCallBackController {
         article = Objects.equals(cfgPO.getType(), WelcomeMessageCfgEnum.TypeENUM.TEXT.getCode()) ? null : article;
 
         ExceptionAssert.isTrue(Objects.isNull(article) &&
-                StringUtils.isBlank(cfgPO.getWelcomeWord()), "缺少欢迎语文字");
+                StringUtil.isBlank(cfgPO.getWelcomeWord()), "缺少欢迎语文字");
         try {
             wecomRequestService.generalCallQiWeApi(corpID, "POST", JSONObject.parseObject(JSON.toJSONString(assembleJsonField(welcomeCode, cfgPO, article, corpID)), HashMap.class), WecomApiUrlConstant.SEND_WELCOME_MSG);
             log.info("发送新客户欢迎语成功！{} ", externalUserID);

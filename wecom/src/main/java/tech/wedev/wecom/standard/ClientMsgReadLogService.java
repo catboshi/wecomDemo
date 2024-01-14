@@ -4,6 +4,7 @@ import tech.wedev.wecom.entity.vo.ResponseVO;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.Map;
 
 public interface ClientMsgReadLogService {
@@ -17,4 +18,6 @@ public interface ClientMsgReadLogService {
     ResponseVO saveLog(String articleSource, String code);
 
     void export(HttpServletRequest request, OutputStream out, Map<String, Object> param);
+
+    void deleteOpContentAfterProcess(List<String> list);
 }

@@ -1,7 +1,7 @@
 package tech.wedev.wecom.context;
 
 import tech.wedev.wecom.enums.JwtKeyEnum;
-import tech.wedev.wecom.utils.StringUtils;
+import tech.wedev.wecom.utils.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +33,7 @@ public class TokenContextHolder {
 
     public static List<String> getCorpIds() {
         String value = getValue(JwtKeyEnum.CORP_ID, String.class);
-        return Optional.ofNullable(value).filter(StringUtils::isNotBlank).map(a -> {
+        return Optional.ofNullable(value).filter(StringUtil::isNotBlank).map(a -> {
             List<String> corpIds = new ArrayList<>();
             corpIds.add(a);
             corpIds.add("SYSTEM");

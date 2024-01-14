@@ -28,19 +28,19 @@ public class ReflectUtils {
      * @return
      */
     public static <T> T getMethodByExpression(Object src, String getMethodNameExpression) {
-        RuntimeExceptionUtils.isTrue(StringUtils.isBlank(getMethodNameExpression), StringUtils.format("表达式不能为空，getMethodNameExpression{}", getMethodNameExpression));
-        RuntimeExceptionUtils.isTrue(src == null, StringUtils.format("对象不能为空"));
-        final List<String> methodNames = StringUtils.split(getMethodNameExpression, METHOD_SPLITER);
+        RuntimeExceptionUtils.isTrue(StringUtil.isBlank(getMethodNameExpression), StringUtil.format("表达式不能为空，getMethodNameExpression{}", getMethodNameExpression));
+        RuntimeExceptionUtils.isTrue(src == null, StringUtil.format("对象不能为空"));
+        final List<String> methodNames = StringUtil.split(getMethodNameExpression, METHOD_SPLITER);
         Object invokeObj = src;
         String getMethodName = methodNames.get(0);
-        if (StringUtils.matchOne(getMethodName, ARRAY_METHOD_REGEX).length() > 1) {
+        if (StringUtil.matchOne(getMethodName, ARRAY_METHOD_REGEX).length() > 1) {
             final String[] split = getMethodName.split(ARRAY_METHOD_SPLITER);
             invokeObj = invokeGet(invokeObj, split[1]);
             if (invokeObj == null) {
                 return null;
             }
             invokeObj = ((Object[]) invokeObj)[IntegerUtils.valueOf(split[0])];
-        } else if (StringUtils.matchOne(getMethodName, LIST_METHOD_REGEX).length() > 1) {
+        } else if (StringUtil.matchOne(getMethodName, LIST_METHOD_REGEX).length() > 1) {
             final String[] split = getMethodName.split(LIST_METHOD_SPLITER);
             invokeObj = invokeGet(invokeObj, split[1]);
             if (invokeObj == null) {
@@ -51,20 +51,20 @@ public class ReflectUtils {
             invokeObj = invokeGet(invokeObj, getMethodName);
         }
         if (methodNames.size() > 1 && invokeObj != null) {
-            return getMethodByExpression(invokeObj, StringUtils.join(methodNames.subList(1, methodNames.size()), "."));
+            return getMethodByExpression(invokeObj, StringUtil.join(methodNames.subList(1, methodNames.size()), "."));
         }
         return (T) invokeObj;
     }
 
     public static <T> void setMethodByExpression(Object src, String setMethodNameExpression, Class<T> parameterType, T parameter) {
-        RuntimeExceptionUtils.isTrue(StringUtils.isBlank(setMethodNameExpression), StringUtils.format("表达式不能为空，setMethodNameExpression{}", setMethodNameExpression));
-        RuntimeExceptionUtils.isTrue(src == null, StringUtils.format("对象不能为空"));
-        final List<String> methodNames = StringUtils.split(setMethodNameExpression, METHOD_SPLITER);
+        RuntimeExceptionUtils.isTrue(StringUtil.isBlank(setMethodNameExpression), StringUtil.format("表达式不能为空，setMethodNameExpression{}", setMethodNameExpression));
+        RuntimeExceptionUtils.isTrue(src == null, StringUtil.format("对象不能为空"));
+        final List<String> methodNames = StringUtil.split(setMethodNameExpression, METHOD_SPLITER);
         String getMethodName = methodNames.get(0);
         Object invokeObj = src;
-        if (StringUtils.matchOne(getMethodName, ARRAY_METHOD_REGEX).length() > 1) {
+        if (StringUtil.matchOne(getMethodName, ARRAY_METHOD_REGEX).length() > 1) {
             invokeObj = getObjectForArray(src, getMethodName, invokeObj);
-        } else if (StringUtils.matchOne(getMethodName, LIST_METHOD_REGEX).length() > 1) {
+        } else if (StringUtil.matchOne(getMethodName, LIST_METHOD_REGEX).length() > 1) {
             invokeObj = getObjectForList(src, getMethodName, invokeObj);
         } else {
             invokeObj = invokeGet(invokeObj, getMethodName);
@@ -74,7 +74,7 @@ public class ReflectUtils {
             invokeSet(src, getMethodName, (Class<Object>) invokeObj.getClass(), methodNames.size() > 1 ? invokeObj : parameter);
         }
         if (methodNames.size() > 1 && invokeObj != null) {
-            setMethodByExpression(invokeObj, StringUtils.join(methodNames.subList(1, methodNames.size()), "."), parameterType, parameter);
+            setMethodByExpression(invokeObj, StringUtil.join(methodNames.subList(1, methodNames.size()), "."), parameterType, parameter);
         }
     }
 
@@ -204,11 +204,11 @@ public class ReflectUtils {
     }
 
     private static Method getGetterMethod(Class clazz, String getMethodName) {
-        return getDeclaredMethod(clazz, GET_METHOD_PREFIX + StringUtils.capitalizeFirstLetter(getMethodName), null);
+        return getDeclaredMethod(clazz, GET_METHOD_PREFIX + StringUtil.capitalizeFirstLetter(getMethodName), null);
     }
 
     private static Method getSetterMethod(Class clazz, String getMethodName, Class<?> parameterTye) {
-        return getDeclaredMethod(clazz, SET_METHOD_PREFIX + StringUtils.capitalizeFirstLetter(getMethodName), parameterTye);
+        return getDeclaredMethod(clazz, SET_METHOD_PREFIX + StringUtil.capitalizeFirstLetter(getMethodName), parameterTye);
     }
 
     public static Method getDeclaredMethod(Class clazz, String methodName, Class<?>... parameterTypes) {

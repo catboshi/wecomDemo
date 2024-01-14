@@ -1,5 +1,6 @@
 package tech.wedev.wecom.standard.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.excel.EasyExcelFactory;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.write.metadata.WriteSheet;
@@ -10,6 +11,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.page.PageMethod;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.compress.utils.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.springframework.cache.Cache;
@@ -25,12 +27,13 @@ import tech.wedev.wecom.mybatis.mapper.OpLogMapper;
 import tech.wedev.wecom.mybatis.mapper.WecomMarketArticleMapper;
 import tech.wedev.wecom.standard.ClientMsgReadLogService;
 import tech.wedev.wecom.third.WecomRequestService;
-import tech.wedev.wecom.utils.StringUtils;
+import tech.wedev.wecom.utils.StringUtil;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.OutputStream;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * 资讯阅读日志记录服务实现
@@ -45,7 +48,7 @@ public class ClientMsgReadLogServiceImpl implements ClientMsgReadLogService {
     private OpLogMapper opLogMapper;
 
     @Resource
-    WecomMarketArticleMapper wecomMarketArticleMapper;
+    private WecomMarketArticleMapper wecomMarketArticleMapper;
 
     @Resource
     private CacheManager caffeineCacheManager;
@@ -53,7 +56,7 @@ public class ClientMsgReadLogServiceImpl implements ClientMsgReadLogService {
     @Override
     public ResponseVO saveLog(String articleSource, String code) {
         ResponseVO<Object> responseVO = ResponseVO.error();
-        if (StringUtils.isEmpty(code) || StringUtils.isEmpty(articleSource)) {
+        if (StringUtil.isEmpty(code) || StringUtil.isEmpty(articleSource)) {
             responseVO.setRetMsg("参数为空");
             return responseVO;
         }
@@ -68,8 +71,6 @@ public class ClientMsgReadLogServiceImpl implements ClientMsgReadLogService {
             caffeineCache.put(key, value);
         }
 
-        int pageNum = 1, pageSize = 1000;
-        PageMethod.startPage(pageNum, pageSize);
         WecomMarketArticlePO wecomMarketArticlePO = wecomMarketArticleMapper.selectOneByArticleSource(articleSource);
         if (wecomMarketArticlePO == null) {
             responseVO.setRetMsg("该资讯不存在");
@@ -84,7 +85,7 @@ public class ClientMsgReadLogServiceImpl implements ClientMsgReadLogService {
             responseVO.setRetMsg("该资讯已作废");
             return responseVO;
         }
-        if (StringUtils.isEmpty(wecomMarketArticlePO.getArticleLink())) {
+        if (StringUtil.isEmpty(wecomMarketArticlePO.getArticleLink())) {
             responseVO.setRetMsg("跳转失败，链接为空，请检查！");
             return responseVO;
         }
@@ -100,7 +101,7 @@ public class ClientMsgReadLogServiceImpl implements ClientMsgReadLogService {
         log.put("data", content);
         OpLogPO opLogPO = OpLogPO.builder()
                 .opUserId(userId)
-                .opTellerno("测试统一认证号")
+                .opTellerNo("测试统一认证号")
                 .isDeleted(0)
                 .createId(0L)
                 .gmtCreate(new Date())
@@ -135,5 +136,36 @@ public class ClientMsgReadLogServiceImpl implements ClientMsgReadLogService {
         param.keySet().forEach(a -> data.add(ExcelDatum.builder().sapNo(a).result(MapUtils.getString(param, a)).build()));
         excelWriter.write(data, ws);
         excelWriter.finish();
+    }
+
+    @Override
+    public void deleteOpContentAfterProcess(List<String> list) {
+        AtomicReference<String> poNos = new AtomicReference<>("");
+        list.forEach(a -> poNos.set(StringUtils.join(a, StrUtil.COMMA)));
+        int pageNum = 1, pageSize = 1000;
+        List<Map<String, Object>> opLogList;
+        do {
+            PageMethod.startPage(pageNum, pageSize);
+            opLogList = opLogMapper.selectList();
+
+            opLogList.forEach(a -> {
+                String opContent = MapUtils.getString(a, "opContent");
+                List<Map<String, Object>> flatSelTableData;
+                try {
+                    net.sf.json.JSONObject opContentObject = net.sf.json.JSONObject.fromObject(opContent);
+                    flatSelTableData = opContentObject.getJSONArray("flatSelTableData");
+                    for (String poNo : poNos.get().split(StrUtil.COMMA)) {
+                        if (opContentObject.getJSONArray("flatSelTableData").toString().contains(poNo)) {
+                            flatSelTableData.removeIf(opContentData -> poNo.contains(MapUtils.getString(opContentData, "sapNo", "")));
+                            a.replace("opContent", opContentObject.toString());
+                            opLogMapper.update(a);
+                        }
+                    }
+                } catch (Exception e) {
+                    return;//转换异常继续执行
+                }
+            });
+            pageNum++;
+        } while (opLogList.size() >= pageSize);
     }
 }

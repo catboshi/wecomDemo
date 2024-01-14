@@ -117,7 +117,7 @@ public class HttpRequestUtils {
     public static String httpRequestFileStream(String requestUrl, String fileName, Long fileLength, byte[] fileStream) {
         String res = null;
         StringBuffer buffer = new StringBuffer();
-        if (StringUtils.isEmpty(requestUrl) || StringUtils.isEmpty(fileName) || fileLength == null || fileStream == null) {
+        if (StringUtil.isEmpty(requestUrl) || StringUtil.isEmpty(fileName) || fileLength == null || fileStream == null) {
             log.error("发送POST请求上传文件流出错###，以下参数必传：requestUrl/fileName/fileLength/fileStream");
             Map<String, String> tmp = new HashMap<>();
             tmp.put("errcode", "400");

@@ -14,7 +14,7 @@ import tech.wedev.wecom.handler.BaseIntegerEnumTypeHandler;
 import tech.wedev.wecom.handler.BaseStringEnumTypeHandler;
 import tech.wedev.wecom.utils.BeanUtils;
 import tech.wedev.wecom.utils.ReflectUtils;
-import tech.wedev.wecom.utils.StringUtils;
+import tech.wedev.wecom.utils.StringUtil;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -50,7 +50,7 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
     public String statistics(Q q) {
         Class<? extends BasicQO> qClass = q.getClass();
         String tableName = this.getQOTableName(qClass);
-        String sql = "select " + q.getStatistics().getDesc() + "(`" + StringUtils.fieldNameToColumnName(q.getStatisticsField()) + "`) statistics" + " from " + tableName;
+        String sql = "select " + q.getStatistics().getDesc() + "(`" + StringUtil.fieldNameToColumnName(q.getStatisticsField()) + "`) statistics" + " from " + tableName;
         sql = sql + this.getWhere(q, qClass);
         return sql;
     }
@@ -72,7 +72,7 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
             if (declaredField.getName().equals("id")) {
                 continue;
             }
-            columns.add("`" + StringUtils.fieldNameToColumnName(declaredField.getName()) + "`");
+            columns.add("`" + StringUtil.fieldNameToColumnName(declaredField.getName()) + "`");
             if (declaredField.getType().isEnum()) {
                 if (ReflectUtils.isSuperInterface(declaredField.getType(), BaseIntegerEnum.class)) {
                     fields.add(" #'{'ps[{0}]." + declaredField.getName() + ",javaType=" + declaredField.getType().getName() + ",typeHandler=" + BaseIntegerEnumTypeHandler.class.getName() + "} ");
@@ -84,9 +84,9 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
             }
         }
 
-        sql.append(" (").append(StringUtils.join(columns, ",")).append(") ");
+        sql.append(" (").append(StringUtil.join(columns, ",")).append(") ");
         sql.append(" values ");
-        MessageFormat messageFormat = new MessageFormat("(" + StringUtils.join(fields, ",") + ")");
+        MessageFormat messageFormat = new MessageFormat("(" + StringUtil.join(fields, ",") + ")");
         for (int i = 0; i < ps.size(); i++) {
             sql.append(messageFormat.format(new Object[]{i}));
             if (i != ps.size() - 1) {
@@ -131,7 +131,7 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
             if (declaredField.getName().equals("id")) {
                 continue;
             }
-            columns.add("`" + StringUtils.fieldNameToColumnName(declaredField.getName()) + "`");
+            columns.add("`" + StringUtil.fieldNameToColumnName(declaredField.getName()) + "`");
             if (declaredField.getType().isEnum()) {
                 if (ReflectUtils.isSuperInterface(declaredField.getType(), BaseIntegerEnum.class)) {
                     fields.add(" #{" + declaredField.getName() + ",typeHandler=" + BaseIntegerEnumTypeHandler.class.getName() + "} ");
@@ -143,8 +143,8 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
             }
         }
 
-        sql.append(" (").append(StringUtils.join(columns, ",")).append(") ");
-        sql.append(" values(").append(StringUtils.join(fields, ",")).append(") ");
+        sql.append(" (").append(StringUtil.join(columns, ",")).append(") ");
+        sql.append(" values(").append(StringUtil.join(fields, ",")).append(") ");
         return sql.toString();
     }
 
@@ -196,9 +196,9 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
         List<Method> declaredMethods = ReflectUtils.getDeclaredMethods(basicPO.getClass()).stream().filter(a -> a.getName().startsWith("get")).collect(Collectors.toList());
         String commaSymbol = " , ";
         Set<String> databaseQFields = this.getDatabasePFields(basicPO.getClass());
-        declaredMethods = declaredMethods.stream().filter(declaredMethod -> databaseQFields.contains(StringUtils.lowerCaseFirstLetter(declaredMethod.getName().replaceAll("get", "")))).collect(Collectors.toList());
+        declaredMethods = declaredMethods.stream().filter(declaredMethod -> databaseQFields.contains(StringUtil.lowerCaseFirstLetter(declaredMethod.getName().replaceAll("get", "")))).collect(Collectors.toList());
         for (Method declaredMethod : declaredMethods) {
-            String fieldName = StringUtils.lowerCaseFirstLetter(declaredMethod.getName().replaceAll("get", ""));
+            String fieldName = StringUtil.lowerCaseFirstLetter(declaredMethod.getName().replaceAll("get", ""));
             Object o = ReflectUtils.invokeGet(basicPO, fieldName);
             Field declaredField = ReflectUtils.getDeclaredFieldAll(basicPO.getClass(), fieldName);
             if ("id".equals(fieldName) && basicPO.getId() == null) {
@@ -211,7 +211,7 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
                 continue;
             }
             if (o instanceof String) {
-                if (StringUtils.isEmpty(o.toString())) {
+                if (StringUtil.isEmpty(o.toString())) {
                     continue;
                 }
             }
@@ -219,17 +219,17 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
             Class<?> returnType = declaredMethod.getReturnType();
             if (returnType.isEnum()) {
                 if (ReflectUtils.isSuperInterface(returnType, BaseIntegerEnum.class)) {
-                    stringBuilder.append("`" + StringUtils.fieldNameToColumnName(fieldName) + "`").append(" = ").append("#{updateValPO.").append(fieldName).append(",typeHandler=").append(BaseIntegerEnumTypeHandler.class.getName()).append("}").append(commaSymbol);
+                    stringBuilder.append("`" + StringUtil.fieldNameToColumnName(fieldName) + "`").append(" = ").append("#{updateValPO.").append(fieldName).append(",typeHandler=").append(BaseIntegerEnumTypeHandler.class.getName()).append("}").append(commaSymbol);
                 } else if (ReflectUtils.isSuperInterface(returnType, BaseStringEnum.class)) {
-                    stringBuilder.append("`" + StringUtils.fieldNameToColumnName(fieldName) + "`").append(" = ").append("#{updateValPO.").append(fieldName).append(",typeHandler=").append(BaseStringEnumTypeHandler.class.getName()).append("}").append(commaSymbol);
+                    stringBuilder.append("`" + StringUtil.fieldNameToColumnName(fieldName) + "`").append(" = ").append("#{updateValPO.").append(fieldName).append(",typeHandler=").append(BaseStringEnumTypeHandler.class.getName()).append("}").append(commaSymbol);
                     ;
                 }
             } else {
-                stringBuilder.append("`" + StringUtils.fieldNameToColumnName(fieldName) + "`").append(" = ").append("#{updateValPO.").append(fieldName).append("}").append(commaSymbol);
+                stringBuilder.append("`" + StringUtil.fieldNameToColumnName(fieldName) + "`").append(" = ").append("#{updateValPO.").append(fieldName).append("}").append(commaSymbol);
             }
         }
         String set = stringBuilder.toString();
-        if (StringUtils.isNotEmpty(set)) {
+        if (StringUtil.isNotEmpty(set)) {
             set = " set ".substring(0, set.length() - commaSymbol.length());
         }
         return set;
@@ -241,9 +241,9 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
         List<Method> declaredMethods = ReflectUtils.getDeclaredMethods(basicPO.getClass()).stream().filter(a -> a.getName().startsWith("get")).collect(Collectors.toList());
         String commaSymbol = " , ";
         Set<String> databaseQFields = this.getDatabasePFields(basicPO.getClass());
-        declaredMethods = declaredMethods.stream().filter(declaredMethod -> databaseQFields.contains(StringUtils.lowerCaseFirstLetter(declaredMethod.getName().replaceAll("get", "")))).collect(Collectors.toList());
+        declaredMethods = declaredMethods.stream().filter(declaredMethod -> databaseQFields.contains(StringUtil.lowerCaseFirstLetter(declaredMethod.getName().replaceAll("get", "")))).collect(Collectors.toList());
         for (Method declaredMethod : declaredMethods) {
-            String fieldName = StringUtils.lowerCaseFirstLetter(declaredMethod.getName().replaceAll("get", ""));
+            String fieldName = StringUtil.lowerCaseFirstLetter(declaredMethod.getName().replaceAll("get", ""));
             Field declaredField = ReflectUtils.getDeclaredFieldAll(basicPO.getClass(), fieldName);
             if ("id".equals(fieldName) && basicPO.getId() == null) {
                 continue;
@@ -254,16 +254,16 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
             Class<?> returnType = declaredMethod.getReturnType();
             if (returnType.isEnum()) {
                 if (ReflectUtils.isSuperInterface(returnType, BaseIntegerEnum.class)) {
-                    stringBuilder.append("`" + StringUtils.fieldNameToColumnName(fieldName) + "`").append(" = ").append("#{updateValPO.").append(fieldName).append(",typeHandler=").append(BaseIntegerEnumTypeHandler.class.getName()).append("}").append(commaSymbol);
+                    stringBuilder.append("`" + StringUtil.fieldNameToColumnName(fieldName) + "`").append(" = ").append("#{updateValPO.").append(fieldName).append(",typeHandler=").append(BaseIntegerEnumTypeHandler.class.getName()).append("}").append(commaSymbol);
                 } else if (ReflectUtils.isSuperInterface(returnType, BaseStringEnum.class)) {
-                    stringBuilder.append("`" + StringUtils.fieldNameToColumnName(fieldName) + "`").append(" = ").append("#{updateValPO.").append(fieldName).append(",typeHandler=").append(BaseStringEnumTypeHandler.class.getName()).append("}").append(commaSymbol);
+                    stringBuilder.append("`" + StringUtil.fieldNameToColumnName(fieldName) + "`").append(" = ").append("#{updateValPO.").append(fieldName).append(",typeHandler=").append(BaseStringEnumTypeHandler.class.getName()).append("}").append(commaSymbol);
                 }
             } else {
-                stringBuilder.append("`" + StringUtils.fieldNameToColumnName(fieldName) + "`").append(" = ").append("#{updateValPO.").append(fieldName).append("}").append(commaSymbol);
+                stringBuilder.append("`" + StringUtil.fieldNameToColumnName(fieldName) + "`").append(" = ").append("#{updateValPO.").append(fieldName).append("}").append(commaSymbol);
             }
         }
         String set = stringBuilder.toString();
-        if (StringUtils.isNotEmpty(set)) {
+        if (StringUtil.isNotEmpty(set)) {
             set = " set " + set.substring(0, set.length() - commaSymbol.length());
         }
         return set;
@@ -288,16 +288,16 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
         String sql = " ";
         List<String> orderBys = q.getOrderBys();
         if (!CollectionUtils.isEmpty(orderBys)) {
-            orderBys.stream().filter(StringUtils::isNotEmpty).collect(Collectors.toList());
+            orderBys.stream().filter(StringUtil::isNotEmpty).collect(Collectors.toList());
             sql += " order by ";
             for (int i = 0; i < orderBys.size(); i++) {
                 String orderBy = orderBys.get(i);
                 if (orderBy.endsWith("_1")) {
-                    sql += StringUtils.fieldNameToColumnName(orderBy.substring(0, orderBy.indexOf("_1"))) + " asc ";
+                    sql += StringUtil.fieldNameToColumnName(orderBy.substring(0, orderBy.indexOf("_1"))) + " asc ";
                 } else if (orderBy.endsWith("_0")) {
-                    sql += StringUtils.fieldNameToColumnName(orderBy.substring(0, orderBy.indexOf("_0"))) + " desc ";
+                    sql += StringUtil.fieldNameToColumnName(orderBy.substring(0, orderBy.indexOf("_0"))) + " desc ";
                 } else {
-                    sql += StringUtils.fieldNameToColumnName(orderBy) + " asc ";
+                    sql += StringUtil.fieldNameToColumnName(orderBy) + " asc ";
                 }
                 if (i != orderBys.size() - 1) {
                     sql += " , ";
@@ -326,8 +326,8 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
         String groupBy = " ";
         List<String> groupBys = q.getGroupBys();
         if (!CollectionUtils.isEmpty(groupBys)) {
-            groupBys.stream().filter(StringUtils::isNotEmpty).map(StringUtils::fieldNameToColumnName).collect(Collectors.toList());
-            groupBy = " group by " + StringUtils.join(groupBys, ",");
+            groupBys.stream().filter(StringUtil::isNotEmpty).map(StringUtil::fieldNameToColumnName).collect(Collectors.toList());
+            groupBy = " group by " + StringUtil.join(groupBys, ",");
             //TODO 在这里实现having  ComparisonOperatorEnum
         }
         return groupBy;
@@ -348,7 +348,7 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
         for (Method method : declaredMethods) {
             Object val = method.invoke(q);
             Class<?> returnType = method.getReturnType();
-            String fieldName = StringUtils.lowerCaseFirstLetter(method.getName().replaceAll("get", ""));
+            String fieldName = StringUtil.lowerCaseFirstLetter(method.getName().replaceAll("get", ""));
             if (val == null) {
                 continue;
             }
@@ -357,7 +357,7 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
                 continue;
             }
             if (val instanceof String) {
-                if (StringUtils.isEmpty(val.toString())) {
+                if (StringUtil.isEmpty(val.toString())) {
                     continue;
                 }
             }
@@ -370,10 +370,10 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
             }
 
 //            String name = method.getName();
-            if (StringUtils.endsWith(fieldName, "Start", "End")) {
+            if (StringUtil.endsWith(fieldName, "Start", "End")) {
                 scopeFields.put(fieldName, " #{" + fieldName + "} ");
             } else {
-                String key = " `" + StringUtils.fieldNameToColumnName(fieldName) + "` ";
+                String key = " `" + StringUtil.fieldNameToColumnName(fieldName) + "` ";
                 if (returnType.isEnum()) {
                     if (ReflectUtils.isSuperInterface(returnType, BaseIntegerEnum.class)) {
                         eqFields.put(key, " #{" + fieldName + ",typeHandler=" + BaseIntegerEnumTypeHandler.class.getName() + "} ");
@@ -387,7 +387,7 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
         }
 
         for (Map.Entry<String, List<Object>> stringObjectEntry : inFields.entrySet()) {
-            where.append(andStr).append("`").append(StringUtils.fieldNameToColumnName(stringObjectEntry.getKey())).append("`").append(" in (");
+            where.append(andStr).append("`").append(StringUtil.fieldNameToColumnName(stringObjectEntry.getKey())).append("`").append(" in (");
             List<Object> value = stringObjectEntry.getValue();
             for (int i = 0; i < value.size(); i++) {
                 Object obj = value.get(i);
@@ -409,14 +409,14 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
         for (Map.Entry<String, Object> stringObjectEntry : scopeFields.entrySet()) {
             String key = stringObjectEntry.getKey();
             if (key.endsWith("Start")) {
-                where.append(andStr).append(" `" + StringUtils.fieldNameToColumnName(key.substring(0, key.indexOf("Start"))) + "` ").append(" >= ").append(stringObjectEntry.getValue());
+                where.append(andStr).append(" `" + StringUtil.fieldNameToColumnName(key.substring(0, key.indexOf("Start"))) + "` ").append(" >= ").append(stringObjectEntry.getValue());
             } else {
-                where.append(andStr).append(" `" + StringUtils.fieldNameToColumnName(key.substring(0, key.indexOf("End"))) + "` ").append(" <= ").append(stringObjectEntry.getValue());
+                where.append(andStr).append(" `" + StringUtil.fieldNameToColumnName(key.substring(0, key.indexOf("End"))) + "` ").append(" <= ").append(stringObjectEntry.getValue());
             }
         }
 
         String s = where.toString();
-        if (StringUtils.isNotEmpty(s)) {
+        if (StringUtil.isNotEmpty(s)) {
             s = s.substring(andStr.length());
 
             //字段排序
@@ -427,13 +427,13 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
             }
             String[] split = s.split(andStr);
             List<String> whereSort = Arrays.stream(split).sorted((a, b) -> {
-                String aField = StringUtils.matchOne(a, "`\\w+`");
+                String aField = StringUtil.matchOne(a, "`\\w+`");
                 aField = aField.substring(1, aField.length() - 1);
-                String bField = StringUtils.matchOne(b, "`\\w+`");
+                String bField = StringUtil.matchOne(b, "`\\w+`");
                 bField = bField.substring(1, bField.length() - 1);
-                Integer aIndex = fieldOrderMap.get(StringUtils.columnNameToFieldName(aField));
+                Integer aIndex = fieldOrderMap.get(StringUtil.columnNameToFieldName(aField));
                 aIndex = BeanUtils.defaultIfNull(aIndex, 9999);
-                Integer bIndex = fieldOrderMap.get(StringUtils.columnNameToFieldName(bField));
+                Integer bIndex = fieldOrderMap.get(StringUtil.columnNameToFieldName(bField));
                 bIndex = BeanUtils.defaultIfNull(bIndex, 9999);
                 return aIndex - bIndex;
             }).collect(Collectors.toList());
@@ -456,29 +456,29 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
         List<String> columns = declaredFields.stream().filter(field -> field.getAnnotation(Transient.class) == null).map(field -> {
             TableField annotation = field.getAnnotation(TableField.class);
             String columnName;
-            if (annotation != null && StringUtils.isNotEmpty(annotation.value())) {
+            if (annotation != null && StringUtil.isNotEmpty(annotation.value())) {
                 columnName = annotation.value();
             } else {
                 columnName = this.getSelectColumn(field, q.getFields(), q.getIsExcludeFields());
             }
             return columnName;
-        }).filter(a -> StringUtils.isNotEmpty(a)).map(a -> "`" + a + "`").collect(Collectors.toList());
+        }).filter(a -> StringUtil.isNotEmpty(a)).map(a -> "`" + a + "`").collect(Collectors.toList());
         List<String> columnsMap = columns.stream().map(a -> {
             String o = a;
             String orginFieldsName = o.replace("`", "");
             if (orginFieldsName.indexOf("_") != -1) {
-                String s = StringUtils.columnNameToFieldName(orginFieldsName);
+                String s = StringUtil.columnNameToFieldName(orginFieldsName);
                 o += " " + s;
             }
             return o;
         }).collect(Collectors.toList());
         ExceptionAssert.isTrue(CollectionUtils.isEmpty(columnsMap), "列数不能为空");
 
-        return StringUtils.join(columnsMap, " , ");
+        return StringUtil.join(columnsMap, " , ");
     }
 
     private String getPOTableName(Class<? extends BasicPO> pClass) {
-        String tableName = StringUtils.fieldNameToColumnName(StringUtils.lowerCaseFirstLetter(pClass.getSimpleName()).replaceAll("PO", ""));
+        String tableName = StringUtil.fieldNameToColumnName(StringUtil.lowerCaseFirstLetter(pClass.getSimpleName()).replaceAll("PO", ""));
         return this.getTableName(pClass, tableName);
     }
 
@@ -492,20 +492,20 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
     }
 
     private String getQOTableName(Class<? extends BasicQO> qClass) {
-        String tableName = StringUtils.fieldNameToColumnName(StringUtils.lowerCaseFirstLetter(qClass.getSimpleName()).replaceAll("QO", ""));
+        String tableName = StringUtil.fieldNameToColumnName(StringUtil.lowerCaseFirstLetter(qClass.getSimpleName()).replaceAll("QO", ""));
         return this.getTableName(qClass, tableName);
     }
 
     private String getSelectColumn(Field field, List<String> fields, Boolean isExcludeFields) {
         TableField annotation = field.getAnnotation(TableField.class);
         String columnName;
-        if (annotation != null && StringUtils.isNotEmpty(annotation.value())) {
+        if (annotation != null && StringUtil.isNotEmpty(annotation.value())) {
             columnName = annotation.value();
         } else {
-            columnName = StringUtils.fieldNameToColumnName(field.getName());
+            columnName = StringUtil.fieldNameToColumnName(field.getName());
         }
         if (!CollectionUtils.isEmpty(fields)) {
-            fields = fields.stream().map(a -> StringUtils.fieldNameToColumnName(a)).collect(Collectors.toList());
+            fields = fields.stream().map(a -> StringUtil.fieldNameToColumnName(a)).collect(Collectors.toList());
             if (isExcludeFields != null) {
                 if (isExcludeFields) {
                     //包含fields则排除

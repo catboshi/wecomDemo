@@ -68,7 +68,7 @@ public class LowCodeUtils {
         poBaseFields.add("gmtModified");
         poBaseFields.add("createId");
         poBaseFields.add("modifiedId");
-        ExceptionAssert.isTrue(StringUtils.isBlank(controllerPathPre), "wecom.tableprefix不能为空");
+        ExceptionAssert.isTrue(StringUtil.isBlank(controllerPathPre), "wecom.tableprefix不能为空");
     }
 
     @SneakyThrows
@@ -79,18 +79,18 @@ public class LowCodeUtils {
         String beanFileName = System.getProperty("wecom.beanname");
         String tableName = System.getProperty("wecom.tablename");
 
-        beanFileName = BeanUtils.defaultIfNull(beanFileName, StringUtils.capitalizeFirstLetter(StringUtils.columnNameToFieldName(tableName.substring(tableName.indexOf(controllerPathPre) + controllerPathPre.length() + 1))));
+        beanFileName = BeanUtils.defaultIfNull(beanFileName, StringUtil.capitalizeFirstLetter(StringUtil.columnNameToFieldName(tableName.substring(tableName.indexOf(controllerPathPre) + controllerPathPre.length() + 1))));
 
 //        ExceptionAssert.isTrue(StringUtils.isBlank(beanFileName), "bean名不能为空");
-        ExceptionAssert.isTrue(StringUtils.isBlank(tableName), "表名不能为空");
+        ExceptionAssert.isTrue(StringUtil.isBlank(tableName), "表名不能为空");
         Map<String, String> enumInfoDescMap = getEnumInfoDescMap(enums, enumsDescs);
 
 //        DataSource ds = new SimpleDataSource();
 //        加载配置文件
         Properties applicationProperties = new Properties();
         Properties activeapplicationProperties = new Properties();
-        String propertyFileSuffix = StringUtils.defaultVal(System.getProperty("spring.profiles.active"), "");
-        if (StringUtils.isNotBlank(propertyFileSuffix)) {
+        String propertyFileSuffix = StringUtil.defaultVal(System.getProperty("spring.profiles.active"), "");
+        if (StringUtil.isNotBlank(propertyFileSuffix)) {
             String propertiesFile = "application-" + propertyFileSuffix + " properties";
             try (InputStream resourceAsStream = LowCodeUtils.class.getClassLoader().getResourceAsStream(propertiesFile)) {
                 activeapplicationProperties.load(resourceAsStream);
@@ -106,7 +106,7 @@ public class LowCodeUtils {
         List<Triplet<String, String, Class>> enumtriplets = new ArrayList<>();
         for (Iterator<Triplet<String, String, Class>> it = triplets.iterator(); it.hasNext(); ) {
             Triplet<String, String, Class> triplet = it.next();
-            String field = StringUtils.columnNameToFieldName(triplet.getLeft());
+            String field = StringUtil.columnNameToFieldName(triplet.getLeft());
             if (enumFields.contains(field)) {
                 enumtriplets.add(triplet);
                 enumFields.remove(field);
@@ -123,12 +123,12 @@ public class LowCodeUtils {
         Set<String> basePOFieldSet = Arrays.stream(BasicPO.class.getDeclaredFields()).map(a -> a.getName()).collect(Collectors.toSet());
 
         for (Triplet<String, String, Class> triplet : enumtriplets) {
-            String fieldName = StringUtils.columnNameToFieldName(triplet.getLeft());
+            String fieldName = StringUtil.columnNameToFieldName(triplet.getLeft());
             if (basePOFieldSet.contains(fieldName)) {
                 continue;
             }
 
-            String enumName = beanFileName + StringUtils.capitalizeFirstLetter(fieldName) + "Enum";
+            String enumName = beanFileName + StringUtil.capitalizeFirstLetter(fieldName) + "Enum";
             poSb.append("import").append(blankChar).append(enumPackage).append(".").append(enumName).append(";").append(System.getProperty("line.separator"));
             qoSb.append("import").append(blankChar).append(enumPackage).append(".").append(enumName).append(";").append(System.getProperty("line.separator"));
         }
@@ -165,10 +165,10 @@ public class LowCodeUtils {
         qoSb.append("@AllArgsConstructor").append(System.getProperty("line.separator"));
         qoSb.append("@TableName(\"").append(tableName).append("\")").append(System.getProperty("line.separator"));
 
-        poSb.append("public class").append(blankChar).append(StringUtils.capitalizeFirstLetter(beanFileName)).append("PO").append(blankChar).append("extends").append(blankChar).append("BasicPO").append(" {").append(System.getProperty("line.separator"));
-        qoSb.append("public class").append(blankChar).append(StringUtils.capitalizeFirstLetter(beanFileName)).append("QO").append(blankChar).append("extends").append(blankChar).append("BasicQO").append(" {").append(System.getProperty("line.separator"));
+        poSb.append("public class").append(blankChar).append(StringUtil.capitalizeFirstLetter(beanFileName)).append("PO").append(blankChar).append("extends").append(blankChar).append("BasicPO").append(" {").append(System.getProperty("line.separator"));
+        qoSb.append("public class").append(blankChar).append(StringUtil.capitalizeFirstLetter(beanFileName)).append("QO").append(blankChar).append("extends").append(blankChar).append("BasicQO").append(" {").append(System.getProperty("line.separator"));
         for (Triplet<String, String, Class> triplet : triplets) {
-            String fieldName = StringUtils.columnNameToFieldName(triplet.getLeft());
+            String fieldName = StringUtil.columnNameToFieldName(triplet.getLeft());
             if (basePOFieldSet.contains(fieldName)) {
                 continue;
             }
@@ -179,11 +179,11 @@ public class LowCodeUtils {
         }
 
         for (Triplet<String, String, Class> triplet : enumtriplets) {
-            String fieldName = StringUtils.columnNameToFieldName(triplet.getLeft());
+            String fieldName = StringUtil.columnNameToFieldName(triplet.getLeft());
             if (basePOFieldSet.contains(fieldName)) {
                 continue;
             }
-            String enumName = beanFileName + StringUtils.capitalizeFirstLetter(fieldName) + "Enum";
+            String enumName = beanFileName + StringUtil.capitalizeFirstLetter(fieldName) + "Enum";
             enumInfoDescMap.keySet().stream().filter(a -> a.substring(0, a.indexOf(":")).equals(fieldName)).collect(Collectors.toSet());
             poSb.append(tabChar).append("/**").append(System.getProperty("line.separator")).append(tabChar).append("*").append(blankChar).append(triplet.getCenter()).append(System.getProperty("line.separator")).append(tabChar).append("*/").append(System.getProperty("line.separator"));
             poSb.append(tabChar).append("private").append(blankChar).append(enumName).append(blankChar).append(fieldName).append(";").append(System.getProperty("line.separator"));
@@ -215,19 +215,19 @@ public class LowCodeUtils {
             enumFiles.put(enumFile, enumName.getValue());
         }
 
-        File poFile = new File(poPath + "/" + StringUtils.capitalizeFirstLetter(beanFileName) + "PO" + ".java");
+        File poFile = new File(poPath + "/" + StringUtil.capitalizeFirstLetter(beanFileName) + "PO" + ".java");
         ExceptionAssert.isTrue(poFile.exists(), poFile.getName() + "已存在");
-        File qoFile = new File(qoPath + "/" + StringUtils.capitalizeFirstLetter(beanFileName) + "QO" + ".java");
+        File qoFile = new File(qoPath + "/" + StringUtil.capitalizeFirstLetter(beanFileName) + "QO" + ".java");
         ExceptionAssert.isTrue(qoFile.exists(), qoFile.getName() + "已存在");
-        File mapperXmlFile = new File(mapperXmlPath + "/" + StringUtils.capitalizeFirstLetter(beanFileName) + "Mapper" + ".xml");
+        File mapperXmlFile = new File(mapperXmlPath + "/" + StringUtil.capitalizeFirstLetter(beanFileName) + "Mapper" + ".xml");
         ExceptionAssert.isTrue(mapperXmlFile.exists(), mapperXmlFile.getName() + "已存在");
-        File mapperFile = new File(mapperPath + "/" + StringUtils.capitalizeFirstLetter(beanFileName) + "Mapper" + ".java");
+        File mapperFile = new File(mapperPath + "/" + StringUtil.capitalizeFirstLetter(beanFileName) + "Mapper" + ".java");
         ExceptionAssert.isTrue(mapperFile.exists(), mapperFile.getName() + "已存在");
-        File serviceFile = new File(servicePath + "/" + StringUtils.capitalizeFirstLetter(beanFileName) + "Service" + ".java");
+        File serviceFile = new File(servicePath + "/" + StringUtil.capitalizeFirstLetter(beanFileName) + "Service" + ".java");
         ExceptionAssert.isTrue(serviceFile.exists(), serviceFile.getName() + "已存在");
-        File serviceImplFile = new File(servicePath + "/impl/" + StringUtils.capitalizeFirstLetter(beanFileName) + "ServiceImpl" + ".java");
+        File serviceImplFile = new File(servicePath + "/impl/" + StringUtil.capitalizeFirstLetter(beanFileName) + "ServiceImpl" + ".java");
         ExceptionAssert.isTrue(serviceImplFile.exists(), serviceImplFile.getName() + "已存在");
-        File controllerFile = new File(controllerPath + "/" + StringUtils.capitalizeFirstLetter(beanFileName) + "Controller" + ".java");
+        File controllerFile = new File(controllerPath + "/" + StringUtil.capitalizeFirstLetter(beanFileName) + "Controller" + ".java");
         ExceptionAssert.isTrue(controllerFile.exists(), controllerFile.getName() + "已存在");
 
         FileUtils.write(poFile, poSb.toString(), "UTF-8");
@@ -244,13 +244,13 @@ public class LowCodeUtils {
 
     private static Map<String, String> getEnumInfoDescMap(String enums, String enumsDescs) {
         Map<String, String> enumInfoDescMap = new HashMap<>();
-        if (StringUtils.isNotBlank(enums)) {
+        if (StringUtil.isNotBlank(enums)) {
             String[] split = enums.split("-");
             List<String> enumFields = ArrayUtils.asArrayList(split);
             for (String enumField : enumFields) {
-                ExceptionAssert.isFalse(StringUtils.isMatch("a:Integer", "[A-Za-z0-9]+:(Integer|String){1}"), enumField + "配置不正确，类型只能为Integer或String，字段名称只能是字母数字");
+                ExceptionAssert.isFalse(StringUtil.isMatch("a:Integer", "[A-Za-z0-9]+:(Integer|String){1}"), enumField + "配置不正确，类型只能为Integer或String，字段名称只能是字母数字");
             }
-            ExceptionAssert.isTrue(StringUtils.isBlank(enumsDescs), "枚举描述不能为空");
+            ExceptionAssert.isTrue(StringUtil.isBlank(enumsDescs), "枚举描述不能为空");
             String[] split1 = enumsDescs.split("-");
             List<String> enumsFieldsDescs = ArrayUtils.asArrayList(split1);
             ExceptionAssert.isTrue(enumFields.size() != enumsFieldsDescs.size(), "枚举字段数量和描述教量不一致");
@@ -270,7 +270,7 @@ public class LowCodeUtils {
             String[] split = fieldAndType.split(":");
             String field = split[0];
             String type = split[1];
-            String enumName = beanFileName + StringUtils.capitalizeFirstLetter(field) + "Enum";
+            String enumName = beanFileName + StringUtil.capitalizeFirstLetter(field) + "Enum";
             sb.append("package ").append(enumPackage).append(";").append(System.getProperty("line.separator"));
             sb.append("public enum ").append(enumName).append(" implements ");
             String[] fieldInfos = valueInfo.split("[,，]");
@@ -279,7 +279,7 @@ public class LowCodeUtils {
                 for (int i = 0; i < fieldInfos.length; i++) {
                     String fieldInfo = fieldInfos[i];
                     String[] split1 = fieldInfo.split(":");
-                    sb.append(tabChar).append(StringUtils.fieldNameToColumnName(split1[1]).toUpperCase()).append("(").append(split1[0]).append(",\"").append(split1[2]).append("\")");
+                    sb.append(tabChar).append(StringUtil.fieldNameToColumnName(split1[1]).toUpperCase()).append("(").append(split1[0]).append(",\"").append(split1[2]).append("\")");
                     if (i == fieldInfos.length - 1) {
                         sb.append(";").append(System.getProperty("line.separator"));
                     } else {
@@ -292,7 +292,7 @@ public class LowCodeUtils {
                 for (int i = 0; i < fieldInfos.length; i++) {
                     String fieldInfo = fieldInfos[i];
                     String[] split1 = fieldInfo.split(":");
-                    sb.append(tabChar).append(StringUtils.fieldNameToColumnName(split1[1]).toUpperCase()).append("(\"").append(split1[0]).append("\",\"").append(split1[2]).append("\")");
+                    sb.append(tabChar).append(StringUtil.fieldNameToColumnName(split1[1]).toUpperCase()).append("(\"").append(split1[0]).append("\",\"").append(split1[2]).append("\")");
                     if (i == fieldInfos.length - 1) {
                         sb.append(";").append(System.getProperty("line.separator"));
                     } else {
@@ -340,12 +340,12 @@ public class LowCodeUtils {
         StringBuilder service = new StringBuilder();
         service.append("package").append(blankChar).append(org.apache.commons.lang3.StringUtils.replace(servicePath.substring(servicePathRoot.length()), "/", ".").substring(1)).append(";").append(System.getProperty("line.separator"));
 //        service.append("import").append(blankChar).append("com.jsh.erp.BaseService").append(";").append(System.getProperty("line.separator"));
-        service.append("import").append(blankChar).append(poPackage).append(".").append(StringUtils.capitalizeFirstLetter(beanFileName)).append("PO").append(";").append(System.getProperty("line.separator"));
-        service.append("import").append(blankChar).append(org.apache.commons.lang3.StringUtils.replace(qoPath.substring(commonPathRoot.length()), "/", ".").substring(1)).append(".").append(StringUtils.capitalizeFirstLetter(beanFileName)).append("QO").append(";").append(System.getProperty("line.separator"));
+        service.append("import").append(blankChar).append(poPackage).append(".").append(StringUtil.capitalizeFirstLetter(beanFileName)).append("PO").append(";").append(System.getProperty("line.separator"));
+        service.append("import").append(blankChar).append(org.apache.commons.lang3.StringUtils.replace(qoPath.substring(commonPathRoot.length()), "/", ".").substring(1)).append(".").append(StringUtil.capitalizeFirstLetter(beanFileName)).append("QO").append(";").append(System.getProperty("line.separator"));
         service.append(System.getProperty("line.separator"));
         service.append(System.getProperty("line.separator"));
 
-        service.append("public").append(blankChar).append("interface").append(blankChar).append(StringUtils.capitalizeFirstLetter(beanFileName)).append("Service").append(blankChar).append("extends").append(blankChar).append("BasicService<").append(StringUtils.capitalizeFirstLetter(beanFileName)).append("PO").append(",").append(StringUtils.capitalizeFirstLetter(beanFileName)).append("QO").append(">").append(blankChar).append("{").append(System.getProperty("line.separator"));
+        service.append("public").append(blankChar).append("interface").append(blankChar).append(StringUtil.capitalizeFirstLetter(beanFileName)).append("Service").append(blankChar).append("extends").append(blankChar).append("BasicService<").append(StringUtil.capitalizeFirstLetter(beanFileName)).append("PO").append(",").append(StringUtil.capitalizeFirstLetter(beanFileName)).append("QO").append(">").append(blankChar).append("{").append(System.getProperty("line.separator"));
         service.append(System.getProperty("line.separator"));
         service.append("}");
         return service;
@@ -354,12 +354,12 @@ public class LowCodeUtils {
     private static StringBuilder getMapper(String beanFileName, String poPackage) {
         StringBuilder mapper = new StringBuilder();
         mapper.append("package").append(blankChar).append(org.apache.commons.lang3.StringUtils.replace(mapperPath.substring(servicePathRoot.length()), "/", ".").substring(1)).append(";").append(System.getProperty("line.separator"));
-        mapper.append("import").append(blankChar).append(poPackage).append(".").append(StringUtils.capitalizeFirstLetter(beanFileName)).append("PO").append(";").append(System.getProperty("line.separator"));
-        mapper.append("import").append(blankChar).append(org.apache.commons.lang3.StringUtils.replace(qoPath.substring(commonPathRoot.length()), "/", ".").substring(1)).append(".").append(StringUtils.capitalizeFirstLetter(beanFileName)).append("QO").append(";").append(System.getProperty("line.separator"));
+        mapper.append("import").append(blankChar).append(poPackage).append(".").append(StringUtil.capitalizeFirstLetter(beanFileName)).append("PO").append(";").append(System.getProperty("line.separator"));
+        mapper.append("import").append(blankChar).append(org.apache.commons.lang3.StringUtils.replace(qoPath.substring(commonPathRoot.length()), "/", ".").substring(1)).append(".").append(StringUtil.capitalizeFirstLetter(beanFileName)).append("QO").append(";").append(System.getProperty("line.separator"));
         mapper.append("import tech.wedev.wecom.dao.BasicMapper;").append(System.getProperty("line.separator"));
         mapper.append(System.getProperty("line.separator"));
         mapper.append(System.getProperty("line.separator"));
-        mapper.append("public").append(blankChar).append("interface").append(blankChar).append(StringUtils.capitalizeFirstLetter(beanFileName)).append("Mapper").append(blankChar).append("extends").append(blankChar).append("BasicMapper<").append(StringUtils.capitalizeFirstLetter(beanFileName)).append("PO").append(",").append(StringUtils.capitalizeFirstLetter(beanFileName)).append("QO").append(">").append(blankChar).append("{").append(System.getProperty("line.separator"));
+        mapper.append("public").append(blankChar).append("interface").append(blankChar).append(StringUtil.capitalizeFirstLetter(beanFileName)).append("Mapper").append(blankChar).append("extends").append(blankChar).append("BasicMapper<").append(StringUtil.capitalizeFirstLetter(beanFileName)).append("PO").append(",").append(StringUtil.capitalizeFirstLetter(beanFileName)).append("QO").append(">").append(blankChar).append("{").append(System.getProperty("line.separator"));
         mapper.append(System.getProperty("line.separator"));
         mapper.append("}");
         return mapper;
@@ -369,21 +369,21 @@ public class LowCodeUtils {
         StringBuilder mapperXml = new StringBuilder();
         mapperXml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>").append(System.getProperty("line.separator"));
         mapperXml.append("<!DOCTYPE mapper PUBLIC \"-//mybatis.org//DTD Mapper 3.0//EN\" \"http://mybatis.org/dtd/mybatis-3-mapper.dtd\">").append(System.getProperty("line.separator"));
-        mapperXml.append("<mapper namespace=\"").append(org.apache.commons.lang3.StringUtils.replace(mapperPath.substring(servicePathRoot.length()), "/", ".").substring(1)).append(".").append(StringUtils.capitalizeFirstLetter(beanFileName)).append("Mapper").append("\">").append(System.getProperty("line.separator"));
+        mapperXml.append("<mapper namespace=\"").append(org.apache.commons.lang3.StringUtils.replace(mapperPath.substring(servicePathRoot.length()), "/", ".").substring(1)).append(".").append(StringUtil.capitalizeFirstLetter(beanFileName)).append("Mapper").append("\">").append(System.getProperty("line.separator"));
         mapperXml.append(xmlBlankChar).append("<resultMap ").append("id=\"BaseResultMap\" ").append("type=\"").append(poPackage).append(".").append(beanFileName).append("PO").append("\">").append(System.getProperty("line.separator"));
         mapperXml.append(xmlBlankChar).append(xmlBlankChar).append("<id column=\"id\" property=\"id\" jdbcType=\"BIGINT\"/>").append(System.getProperty("line.separator"));
         for (String columnName : columnNames) {
             if ("id".equals(columnName)) {
                 continue;
             }
-            mapperXml.append(xmlBlankChar).append(xmlBlankChar).append("<result column=\"").append(columnName).append("\" ").append("property=\"").append(StringUtils.columnNameToFieldName(columnName)).append("\"/>").append(System.getProperty("line.separator"));
+            mapperXml.append(xmlBlankChar).append(xmlBlankChar).append("<result column=\"").append(columnName).append("\" ").append("property=\"").append(StringUtil.columnNameToFieldName(columnName)).append("\"/>").append(System.getProperty("line.separator"));
         }
         mapperXml.append(xmlBlankChar).append("</resultMap>").append(System.getProperty("line.separator"));
 
 //列
         mapperXml.append(xmlBlankChar).append(" <sql id=\"Base_Column_List\">").append(System.getProperty("line.separator"));
         mapperXml.append(xmlBlankChar).append(xmlBlankChar);
-        mapperXml.append(xmlBlankChar).append(StringUtils.join(columnNames.stream().map(a -> "`" + a + "`").collect(Collectors.toList()), ",")).append(System.getProperty("line.separator"));
+        mapperXml.append(xmlBlankChar).append(StringUtil.join(columnNames.stream().map(a -> "`" + a + "`").collect(Collectors.toList()), ",")).append(System.getProperty("line.separator"));
         mapperXml.append(xmlBlankChar).append(" </sql>").append(System.getProperty("line.separator"));
 
         mapperXml.append("</mapper>").append(System.getProperty("line.separator"));
@@ -393,24 +393,24 @@ public class LowCodeUtils {
     private static StringBuilder getServiceImpl(String beanFileName, String poPackage) {
         StringBuilder serviceImpl = new StringBuilder();
         serviceImpl.append("package").append(blankChar).append(org.apache.commons.lang3.StringUtils.replace(servicePath.substring(servicePathRoot.length()), "/", ".").substring(1)).append(".").append("impl").append(";").append(System.getProperty("line.separator"));
-        serviceImpl.append("import").append(blankChar).append(org.apache.commons.lang3.StringUtils.replace(servicePath.substring(servicePathRoot.length()), "/", ".").substring(1)).append(".").append(StringUtils.capitalizeFirstLetter(beanFileName)).append("Service").append(";").append(System.getProperty("line.separator"));
-        serviceImpl.append("import").append(blankChar).append(poPackage).append(".").append(StringUtils.capitalizeFirstLetter(beanFileName)).append("PO").append(";").append(System.getProperty("line.separator"));
-        serviceImpl.append("import").append(blankChar).append(org.apache.commons.lang3.StringUtils.replace(qoPath.substring(commonPathRoot.length()), "/", ".").substring(1)).append(".").append(StringUtils.capitalizeFirstLetter(beanFileName)).append("QO").append(";").append(System.getProperty("line.separator"));
+        serviceImpl.append("import").append(blankChar).append(org.apache.commons.lang3.StringUtils.replace(servicePath.substring(servicePathRoot.length()), "/", ".").substring(1)).append(".").append(StringUtil.capitalizeFirstLetter(beanFileName)).append("Service").append(";").append(System.getProperty("line.separator"));
+        serviceImpl.append("import").append(blankChar).append(poPackage).append(".").append(StringUtil.capitalizeFirstLetter(beanFileName)).append("PO").append(";").append(System.getProperty("line.separator"));
+        serviceImpl.append("import").append(blankChar).append(org.apache.commons.lang3.StringUtils.replace(qoPath.substring(commonPathRoot.length()), "/", ".").substring(1)).append(".").append(StringUtil.capitalizeFirstLetter(beanFileName)).append("QO").append(";").append(System.getProperty("line.separator"));
 //        serviceImpl.append("import").append(blankChar).append(org.apache.commons.lang3.StringUtils.replace(mapperPath.substring(servicePathRoot.length()), "/", ".").substring(1)).append(".").append("BasicMapper").append(";").append(System.getProperty("line.separator"));
         serviceImpl.append("import tech.wedev.wecom.dao.BasicMapper;").append(System.getProperty("line.separator"));
-        serviceImpl.append("import").append(blankChar).append(org.apache.commons.lang3.StringUtils.replace(mapperPath.substring(servicePathRoot.length()), "/", ".").substring(1)).append(".").append(StringUtils.capitalizeFirstLetter(beanFileName)).append("Mapper").append(";").append(System.getProperty("line.separator"));
+        serviceImpl.append("import").append(blankChar).append(org.apache.commons.lang3.StringUtils.replace(mapperPath.substring(servicePathRoot.length()), "/", ".").substring(1)).append(".").append(StringUtil.capitalizeFirstLetter(beanFileName)).append("Mapper").append(";").append(System.getProperty("line.separator"));
         serviceImpl.append("import").append(blankChar).append("org.springframework.beans.factory.annotation.Autowired").append(";").append(System.getProperty("line.separator"));
         serviceImpl.append("import").append(blankChar).append("org.springframework.stereotype.Service").append(";").append(System.getProperty("line.separator"));
         serviceImpl.append(System.getProperty("line.separator"));
         serviceImpl.append(System.getProperty("line.separator"));
         serviceImpl.append("@Service").append(System.getProperty("line.separator"));
-        serviceImpl.append("public").append(blankChar).append("class").append(blankChar).append(StringUtils.capitalizeFirstLetter(beanFileName)).append("ServiceImpl").append(blankChar).append("extends").append(blankChar).append("BasicServiceImpl<").append(StringUtils.capitalizeFirstLetter(beanFileName)).append("PO").append(",").append(StringUtils.capitalizeFirstLetter(beanFileName)).append("QO").append(">").append(blankChar).append("implements").append(blankChar).append(StringUtils.capitalizeFirstLetter(beanFileName)).append("Service").append(blankChar).append("{").append(System.getProperty("line.separator"));
+        serviceImpl.append("public").append(blankChar).append("class").append(blankChar).append(StringUtil.capitalizeFirstLetter(beanFileName)).append("ServiceImpl").append(blankChar).append("extends").append(blankChar).append("BasicServiceImpl<").append(StringUtil.capitalizeFirstLetter(beanFileName)).append("PO").append(",").append(StringUtil.capitalizeFirstLetter(beanFileName)).append("QO").append(">").append(blankChar).append("implements").append(blankChar).append(StringUtil.capitalizeFirstLetter(beanFileName)).append("Service").append(blankChar).append("{").append(System.getProperty("line.separator"));
         serviceImpl.append(System.getProperty("line.separator"));
         serviceImpl.append(tabChar).append("@Autowired").append(System.getProperty("line.separator"));
-        serviceImpl.append(tabChar).append("private").append(blankChar).append(StringUtils.capitalizeFirstLetter(beanFileName)).append("Mapper").append(blankChar).append(StringUtils.lowerCaseFirstLetter(beanFileName)).append("Mapper").append(";").append(System.getProperty("line.separator"));
+        serviceImpl.append(tabChar).append("private").append(blankChar).append(StringUtil.capitalizeFirstLetter(beanFileName)).append("Mapper").append(blankChar).append(StringUtil.lowerCaseFirstLetter(beanFileName)).append("Mapper").append(";").append(System.getProperty("line.separator"));
         serviceImpl.append(tabChar).append("@Override").append(System.getProperty("line.separator"));
-        serviceImpl.append(tabChar).append("public").append(blankChar).append("BasicMapper<").append(StringUtils.capitalizeFirstLetter(beanFileName)).append("PO").append(",").append(StringUtils.capitalizeFirstLetter(beanFileName)).append("QO").append(">").append(blankChar).append("getBasicMapper()").append("{").append(System.getProperty("line.separator"));
-        serviceImpl.append(tabChar).append(tabChar).append("return").append(blankChar).append(StringUtils.lowerCaseFirstLetter(beanFileName)).append("Mapper").append(";").append(System.getProperty("line.separator"));
+        serviceImpl.append(tabChar).append("public").append(blankChar).append("BasicMapper<").append(StringUtil.capitalizeFirstLetter(beanFileName)).append("PO").append(",").append(StringUtil.capitalizeFirstLetter(beanFileName)).append("QO").append(">").append(blankChar).append("getBasicMapper()").append("{").append(System.getProperty("line.separator"));
+        serviceImpl.append(tabChar).append(tabChar).append("return").append(blankChar).append(StringUtil.lowerCaseFirstLetter(beanFileName)).append("Mapper").append(";").append(System.getProperty("line.separator"));
         serviceImpl.append(tabChar).append("}").append(System.getProperty("line.separator"));
         serviceImpl.append("}");
         return serviceImpl;
@@ -424,21 +424,21 @@ public class LowCodeUtils {
         controller.append("import").append(blankChar).append("org.springframework.web.bind.annotation.RestController").append(";").append(System.getProperty("line.separator"));
         controller.append("import").append(blankChar).append("lombok.extern.slf4j.Slf4j").append(";").append(System.getProperty("line.separator"));
 //        controller.append("import").append(blankChar).append("com.icbc.cfbi.wecom.online.controller.BasicController").append(";").append(System.getProperty("line.separator"));
-        controller.append("import").append(blankChar).append(org.apache.commons.lang3.StringUtils.replace(servicePath.substring(servicePathRoot.length()), "/", ".").substring(1)).append(".").append(StringUtils.capitalizeFirstLetter(beanFileName)).append("Service").append(";").append(System.getProperty("line.separator"));
+        controller.append("import").append(blankChar).append(org.apache.commons.lang3.StringUtils.replace(servicePath.substring(servicePathRoot.length()), "/", ".").substring(1)).append(".").append(StringUtil.capitalizeFirstLetter(beanFileName)).append("Service").append(";").append(System.getProperty("line.separator"));
         controller.append("import").append(blankChar).append(org.apache.commons.lang3.StringUtils.replace(servicePath.substring(servicePathRoot.length()), "/", ".").substring(1)).append(".").append("BasicService").append(";").append(System.getProperty("line.separator"));
-        controller.append("import").append(blankChar).append(poPackage).append(".").append(StringUtils.capitalizeFirstLetter(beanFileName)).append("PO").append(";").append(System.getProperty("line.separator"));
-        controller.append("import").append(blankChar).append(org.apache.commons.lang3.StringUtils.replace(qoPath.substring(commonPathRoot.length()), "/", ".").substring(1)).append(".").append(StringUtils.capitalizeFirstLetter(beanFileName)).append("QO").append(";").append(System.getProperty("line.separator"));
+        controller.append("import").append(blankChar).append(poPackage).append(".").append(StringUtil.capitalizeFirstLetter(beanFileName)).append("PO").append(";").append(System.getProperty("line.separator"));
+        controller.append("import").append(blankChar).append(org.apache.commons.lang3.StringUtils.replace(qoPath.substring(commonPathRoot.length()), "/", ".").substring(1)).append(".").append(StringUtil.capitalizeFirstLetter(beanFileName)).append("QO").append(";").append(System.getProperty("line.separator"));
         controller.append(System.getProperty("line.separator"));
         controller.append(System.getProperty("line.separator"));
         controller.append("@RestController").append(System.getProperty("line.separator"));
-        controller.append("@RequestMapping").append("(").append("\"").append(controllerPathPre).append(StringUtils.fieldNameToColumnName(beanFileName)).append("\"").append(")").append(System.getProperty("line.separator"));
+        controller.append("@RequestMapping").append("(").append("\"").append(controllerPathPre).append(StringUtil.fieldNameToColumnName(beanFileName)).append("\"").append(")").append(System.getProperty("line.separator"));
         controller.append("@Slf4j").append(System.getProperty("line.separator"));
-        controller.append("public").append(blankChar).append("class").append(blankChar).append(StringUtils.capitalizeFirstLetter(beanFileName)).append("Controller").append(blankChar).append("extends").append(blankChar).append("BasicController<").append(StringUtils.capitalizeFirstLetter(beanFileName)).append("PO").append(", ").append(StringUtils.capitalizeFirstLetter(beanFileName)).append("QO").append(">").append(blankChar).append("{").append(System.getProperty("line.separator"));
+        controller.append("public").append(blankChar).append("class").append(blankChar).append(StringUtil.capitalizeFirstLetter(beanFileName)).append("Controller").append(blankChar).append("extends").append(blankChar).append("BasicController<").append(StringUtil.capitalizeFirstLetter(beanFileName)).append("PO").append(", ").append(StringUtil.capitalizeFirstLetter(beanFileName)).append("QO").append(">").append(blankChar).append("{").append(System.getProperty("line.separator"));
         controller.append(tabChar).append("@Autowired").append(System.getProperty("line.separator"));
-        controller.append(tabChar).append("private").append(blankChar).append(StringUtils.capitalizeFirstLetter(beanFileName)).append("Service").append(blankChar).append(StringUtils.lowerCaseFirstLetter(beanFileName)).append("Service").append(";").append(System.getProperty("line.separator"));
+        controller.append(tabChar).append("private").append(blankChar).append(StringUtil.capitalizeFirstLetter(beanFileName)).append("Service").append(blankChar).append(StringUtil.lowerCaseFirstLetter(beanFileName)).append("Service").append(";").append(System.getProperty("line.separator"));
         controller.append(tabChar).append("@Override").append(System.getProperty("line.separator"));
-        controller.append(tabChar).append("public").append(blankChar).append("BasicService<").append(StringUtils.capitalizeFirstLetter(beanFileName)).append("PO").append(",").append(StringUtils.capitalizeFirstLetter(beanFileName)).append("QO").append(">").append(blankChar).append("getBasicService()").append("{").append(System.getProperty("line.separator"));
-        controller.append(tabChar).append(tabChar).append("return").append(blankChar).append(StringUtils.lowerCaseFirstLetter(beanFileName)).append("Service").append(";").append(System.getProperty("line.separator"));
+        controller.append(tabChar).append("public").append(blankChar).append("BasicService<").append(StringUtil.capitalizeFirstLetter(beanFileName)).append("PO").append(",").append(StringUtil.capitalizeFirstLetter(beanFileName)).append("QO").append(">").append(blankChar).append("getBasicService()").append("{").append(System.getProperty("line.separator"));
+        controller.append(tabChar).append(tabChar).append("return").append(blankChar).append(StringUtil.lowerCaseFirstLetter(beanFileName)).append("Service").append(";").append(System.getProperty("line.separator"));
         controller.append(tabChar).append("}").append(System.getProperty("line.separator"));
         controller.append("}");
         return controller;
@@ -450,7 +450,7 @@ public class LowCodeUtils {
             Class.forName("com.mysql.cj.jdbc.Driver");
             String password = SM4Util.decryptEcb(SM4Util.hexKey, applicationProperties.getProperty("spring.datasource.password"));
             String url = applicationProperties.getProperty("spring.datasource.url");
-            String tableSchema = StringUtils.matchOne(url, "(.*\\?)").replaceAll("(.*\\/)", "").replace("?", "");
+            String tableSchema = StringUtil.matchOne(url, "(.*\\?)").replaceAll("(.*\\/)", "").replace("?", "");
             Connection connection = DriverManager.getConnection(url, applicationProperties.getProperty("spring.datasource.username"), password);
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM information_schema.columns WHERE table_schema= ? AND table_name=?;");
             preparedStatement.setString(1, tableSchema);
