@@ -26,7 +26,7 @@ public class WecomApplicationStarter extends SpringBootServletInitializer {
     protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
         ParserConfig parserConfig = ParserConfig.getGlobalInstance();
         parserConfig.setAutoTypeSupport(true);
-        parserConfig.setSafeMode(true);
+        parserConfig.setSafeMode(false);
         return builder.sources(WecomApplicationStarter.class);
     }
 
@@ -34,11 +34,11 @@ public class WecomApplicationStarter extends SpringBootServletInitializer {
         long startTime = System.currentTimeMillis();
         ParserConfig parserConfig = ParserConfig.getGlobalInstance();
         parserConfig.setAutoTypeSupport(true);
-        parserConfig.setSafeMode(true);
+        parserConfig.setSafeMode(false);
         SpringApplication.run(WecomApplicationStarter.class, args);
         long endTime = System.currentTimeMillis();
         long cost = (endTime - startTime) / 1000;
-        log.info(String.format("*******************%s has been started successfully and it takes %s seconds***************", "WECOM", String.valueOf(cost)));
+        log.info(String.format("*******************%s has been started successfully and it takes %s seconds***************", "WECOM", cost));
     }
 
 

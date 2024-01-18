@@ -1,6 +1,6 @@
 package tech.wedev.wecom.container;
 
-import tech.wedev.wecom.utils.ArrayUtils;
+import tech.wedev.wecom.utils.ArrayUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,6 +23,6 @@ public class Triplet<L, C, R> implements Serializable {
     }
 
     public static <L, C, R> List<Triplet<L, C, R>> of(Triplet<L, C, R>... triplets) {
-        return ArrayUtils.asArrayList(triplets);
+        return ArrayUtil.asArrayList(triplets);
     }
 }

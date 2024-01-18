@@ -13,7 +13,7 @@ import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class LowCodeUtils {
+public class LowCodeUtil {
     private static final Map<String, String> jdbcToJavaTypeMap = new HashMap<>();
 
     //项目路径
@@ -79,7 +79,7 @@ public class LowCodeUtils {
         String beanFileName = System.getProperty("wecom.beanname");
         String tableName = System.getProperty("wecom.tablename");
 
-        beanFileName = BeanUtils.defaultIfNull(beanFileName, StringUtil.capitalizeFirstLetter(StringUtil.columnNameToFieldName(tableName.substring(tableName.indexOf(controllerPathPre) + controllerPathPre.length() + 1))));
+        beanFileName = BeanUtil.defaultIfNull(beanFileName, StringUtil.capitalizeFirstLetter(StringUtil.columnNameToFieldName(tableName.substring(tableName.indexOf(controllerPathPre) + controllerPathPre.length() + 1))));
 
 //        ExceptionAssert.isTrue(StringUtils.isBlank(beanFileName), "bean名不能为空");
         ExceptionAssert.isTrue(StringUtil.isBlank(tableName), "表名不能为空");
@@ -92,14 +92,14 @@ public class LowCodeUtils {
         String propertyFileSuffix = StringUtil.defaultVal(System.getProperty("spring.profiles.active"), "");
         if (StringUtil.isNotBlank(propertyFileSuffix)) {
             String propertiesFile = "application-" + propertyFileSuffix + " properties";
-            try (InputStream resourceAsStream = LowCodeUtils.class.getClassLoader().getResourceAsStream(propertiesFile)) {
+            try (InputStream resourceAsStream = LowCodeUtil.class.getClassLoader().getResourceAsStream(propertiesFile)) {
                 activeapplicationProperties.load(resourceAsStream);
             }
         }
-        applicationProperties.load(LowCodeUtils.class.getClassLoader().getResourceAsStream("application.properties"));
+        applicationProperties.load(LowCodeUtil.class.getClassLoader().getResourceAsStream("application.properties"));
         applicationProperties.putAll(activeapplicationProperties);
         //获取数据库字段信息
-        List<Triplet<String, String, Class>> triplets = LowCodeUtils.getTriplets(tableName, applicationProperties);
+        List<Triplet<String, String, Class>> triplets = LowCodeUtil.getTriplets(tableName, applicationProperties);
         List<String> columnNames = triplets.stream().map(Triplet::getLeft).collect(Collectors.toList());
 
         Set<String> enumFields = enumInfoDescMap.keySet().stream().map(a -> a.substring(0, a.indexOf(":"))).collect(Collectors.toSet());
@@ -246,13 +246,13 @@ public class LowCodeUtils {
         Map<String, String> enumInfoDescMap = new HashMap<>();
         if (StringUtil.isNotBlank(enums)) {
             String[] split = enums.split("-");
-            List<String> enumFields = ArrayUtils.asArrayList(split);
+            List<String> enumFields = ArrayUtil.asArrayList(split);
             for (String enumField : enumFields) {
                 ExceptionAssert.isFalse(StringUtil.isMatch("a:Integer", "[A-Za-z0-9]+:(Integer|String){1}"), enumField + "配置不正确，类型只能为Integer或String，字段名称只能是字母数字");
             }
             ExceptionAssert.isTrue(StringUtil.isBlank(enumsDescs), "枚举描述不能为空");
             String[] split1 = enumsDescs.split("-");
-            List<String> enumsFieldsDescs = ArrayUtils.asArrayList(split1);
+            List<String> enumsFieldsDescs = ArrayUtil.asArrayList(split1);
             ExceptionAssert.isTrue(enumFields.size() != enumsFieldsDescs.size(), "枚举字段数量和描述教量不一致");
             for (int i = 0; i < split.length; i++) {
                 enumInfoDescMap.put(split[i], split1[i]);

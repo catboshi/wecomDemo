@@ -14,7 +14,7 @@ import tech.wedev.wecom.entity.qo.BasicQO;
 import tech.wedev.wecom.enums.*;
 import tech.wedev.wecom.mybatis.mapper.BasicMapper;
 import tech.wedev.wecom.standard.BasicService;
-import tech.wedev.wecom.utils.BeanUtils;
+import tech.wedev.wecom.utils.BeanUtil;
 
 import javax.annotation.PostConstruct;
 import java.lang.reflect.Type;
@@ -93,14 +93,14 @@ public abstract class BasicServiceImpl<P extends BasicPO, Q extends BasicQO> imp
     @Override
     @Transactional
     public P selectOne(Q q) {
-        return BeanUtils.defaultGetOne(this.getBasicMapper().select(q));
+        return BeanUtil.defaultGetOne(this.getBasicMapper().select(q));
     }
 
     @Override
     @Transactional
     public P selectOneExists(Q q) {
         q.setIsDeleted(BaseDeletedEnum.EXISTS);
-        return BeanUtils.defaultGetOne(this.getBasicMapper().select(q));
+        return BeanUtil.defaultGetOne(this.getBasicMapper().select(q));
     }
 
     @Override
@@ -116,7 +116,7 @@ public abstract class BasicServiceImpl<P extends BasicPO, Q extends BasicQO> imp
     public P selectById(Long id) {
         Q q = this.qClass.newInstance();
         q.setId(id);
-        return BeanUtils.defaultGetOne(this.select(q));
+        return BeanUtil.defaultGetOne(this.select(q));
     }
 
     @SneakyThrows
@@ -135,7 +135,7 @@ public abstract class BasicServiceImpl<P extends BasicPO, Q extends BasicQO> imp
         Q q = this.qClass.newInstance();
         q.setId(id);
         q.setIsDeleted(BaseDeletedEnum.EXISTS);
-        return BeanUtils.defaultGetOne(this.getBasicMapper().select(q));
+        return BeanUtil.defaultGetOne(this.getBasicMapper().select(q));
     }
 
     @Override
@@ -151,8 +151,8 @@ public abstract class BasicServiceImpl<P extends BasicPO, Q extends BasicQO> imp
     @Override
     @Transactional(propagation = Propagation.SUPPORTS)
     public PageBean<P> selectPage(Q q) {
-        q.setPageSize(BeanUtils.defaultIfNull(q.getPageSize(), 10));
-        q.setPageNum(BeanUtils.defaultIfNull(q.getPageNum(), 1));
+        q.setPageSize(BeanUtil.defaultIfNull(q.getPageSize(), 10));
+        q.setPageNum(BeanUtil.defaultIfNull(q.getPageNum(), 1));
         List<P> ps = this.getBasicMapper().selectPage(q);
         Integer total = this.getBasicMapper().getTotal();
         return PageBean.build(q.getPageSize(), q.getPageNum(), total, ps);

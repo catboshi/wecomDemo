@@ -1,5 +1,6 @@
 package tech.wedev.wecom.standard.impl;
 
+import cn.hutool.core.date.format.FastDateFormat;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.excel.EasyExcelFactory;
 import com.alibaba.excel.ExcelWriter;
@@ -17,12 +18,13 @@ import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
-import tech.wedev.wecom.entity.ExcelDatum;
+import tech.wedev.wecom.entity.common.ExcelDatum;
 import tech.wedev.wecom.entity.po.OpLogPO;
 import tech.wedev.wecom.entity.po.WecomMarketArticlePO;
 import tech.wedev.wecom.entity.qo.WecomMarketArticleQO;
 import tech.wedev.wecom.entity.vo.ResponseVO;
 import tech.wedev.wecom.enums.OpTypeEnum;
+import tech.wedev.wecom.monad.Try;
 import tech.wedev.wecom.mybatis.mapper.OpLogMapper;
 import tech.wedev.wecom.mybatis.mapper.WecomMarketArticleMapper;
 import tech.wedev.wecom.standard.ClientMsgReadLogService;
@@ -133,15 +135,15 @@ public class ClientMsgReadLogServiceImpl implements ClientMsgReadLogService {
         HorizontalCellStyleStrategy horizontalCellStyleStrategy = new HorizontalCellStyleStrategy(headWriteCellStyle, contentWriteCellStyle);
         WriteSheet ws = EasyExcelFactory.writerSheet(0).head(ExcelDatum.class).registerWriteHandler(horizontalCellStyleStrategy).build();
         List<ExcelDatum> data = Lists.newArrayList();
-        param.keySet().forEach(a -> data.add(ExcelDatum.builder().sapNo(a).result(MapUtils.getString(param, a)).build()));
+        param.keySet().forEach(a -> Try.ofFailable(() -> data.add(ExcelDatum.builder().sapNo(a).createTime(FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss").parse(MapUtils.getString(param, a))).build())));
         excelWriter.write(data, ws);
         excelWriter.finish();
     }
 
     @Override
     public void deleteOpContentAfterProcess(List<String> list) {
-        AtomicReference<String> poNos = new AtomicReference<>("");
-        list.forEach(a -> poNos.set(StringUtils.join(a, StrUtil.COMMA)));
+        AtomicReference<String> sapNos = new AtomicReference<>("");
+        list.forEach(a -> sapNos.set(StringUtils.join(a, StrUtil.COMMA)));
         int pageNum = 1, pageSize = 1000;
         List<Map<String, Object>> opLogList;
         do {
@@ -154,9 +156,9 @@ public class ClientMsgReadLogServiceImpl implements ClientMsgReadLogService {
                 try {
                     net.sf.json.JSONObject opContentObject = net.sf.json.JSONObject.fromObject(opContent);
                     flatSelTableData = opContentObject.getJSONArray("flatSelTableData");
-                    for (String poNo : poNos.get().split(StrUtil.COMMA)) {
-                        if (opContentObject.getJSONArray("flatSelTableData").toString().contains(poNo)) {
-                            flatSelTableData.removeIf(opContentData -> poNo.contains(MapUtils.getString(opContentData, "sapNo", "")));
+                    for (String sapNo : sapNos.get().split(StrUtil.COMMA)) {
+                        if (opContentObject.getJSONArray("flatSelTableData").toString().contains(sapNo)) {
+                            flatSelTableData.removeIf(opContentData -> sapNo.contains(MapUtils.getString(opContentData, "sapNo", "")));
                             a.replace("opContent", opContentObject.toString());
                             opLogMapper.update(a);
                         }

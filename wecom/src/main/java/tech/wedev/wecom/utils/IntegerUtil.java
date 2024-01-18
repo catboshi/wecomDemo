@@ -1,7 +1,7 @@
 package tech.wedev.wecom.utils;
 
-public class IntegerUtils {
-    private IntegerUtils() {
+public class IntegerUtil {
+    private IntegerUtil() {
 
     }
 

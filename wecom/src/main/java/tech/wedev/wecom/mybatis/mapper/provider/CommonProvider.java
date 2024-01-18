@@ -12,8 +12,8 @@ import tech.wedev.wecom.enums.BaseStringEnum;
 import tech.wedev.wecom.exception.ExceptionAssert;
 import tech.wedev.wecom.handler.BaseIntegerEnumTypeHandler;
 import tech.wedev.wecom.handler.BaseStringEnumTypeHandler;
-import tech.wedev.wecom.utils.BeanUtils;
-import tech.wedev.wecom.utils.ReflectUtils;
+import tech.wedev.wecom.utils.BeanUtil;
+import tech.wedev.wecom.utils.ReflectUtil;
 import tech.wedev.wecom.utils.StringUtil;
 
 import java.lang.reflect.Field;
@@ -59,7 +59,7 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
 //        Class<? extends BasicPO> pClass = ps.get(0).getClass();
         StringBuilder sql = new StringBuilder();
         sql.append("insert into ").append(this.getPOTableName(pClass));
-        List<Field> declaredFields = ReflectUtils.getDeclaredFields(pClass);
+        List<Field> declaredFields = ReflectUtil.getDeclaredFields(pClass);
         List<String> columns = new ArrayList<>();
         List<String> fields = new ArrayList<>();
         Set<String> databasePFields = this.getDatabasePFields(pClass);
@@ -74,9 +74,9 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
             }
             columns.add("`" + StringUtil.fieldNameToColumnName(declaredField.getName()) + "`");
             if (declaredField.getType().isEnum()) {
-                if (ReflectUtils.isSuperInterface(declaredField.getType(), BaseIntegerEnum.class)) {
+                if (ReflectUtil.isSuperInterface(declaredField.getType(), BaseIntegerEnum.class)) {
                     fields.add(" #'{'ps[{0}]." + declaredField.getName() + ",javaType=" + declaredField.getType().getName() + ",typeHandler=" + BaseIntegerEnumTypeHandler.class.getName() + "} ");
-                } else if (ReflectUtils.isSuperInterface(declaredField.getType(), BaseStringEnum.class)) {
+                } else if (ReflectUtil.isSuperInterface(declaredField.getType(), BaseStringEnum.class)) {
                     fields.add(" #'{'ps[{0}]." + declaredField.getName() + ",javaType=" + declaredField.getType().getName() + ",typeHandler=" + BaseStringEnumTypeHandler.class.getName() + "} ");
                 }
             } else {
@@ -100,7 +100,7 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
      * 获取和表对应的字段
      */
     private Set<String> getDatabasePFields(Class<? extends BasicPO> p) {
-        List<Field> declaredFields = ReflectUtils.getDeclaredFields(p);
+        List<Field> declaredFields = ReflectUtil.getDeclaredFields(p);
         Set<String> removeFields = new HashSet<>();
         Set<String> databaseFields = new HashSet<>();
         for (Field declaredField : declaredFields) {
@@ -118,7 +118,7 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
         Class<? extends BasicPO> pClass = p.getClass();
         StringBuilder sql = new StringBuilder();
         sql.append("insert into ").append(this.getPOTableName(pClass));
-        List<Field> declaredFields = ReflectUtils.getDeclaredFields(pClass);
+        List<Field> declaredFields = ReflectUtil.getDeclaredFields(pClass);
         List<String> columns = new ArrayList<>();
         List<String> fields = new ArrayList<>();
         Set<String> databaseQFields = this.getDatabasePFields(pClass);
@@ -133,9 +133,9 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
             }
             columns.add("`" + StringUtil.fieldNameToColumnName(declaredField.getName()) + "`");
             if (declaredField.getType().isEnum()) {
-                if (ReflectUtils.isSuperInterface(declaredField.getType(), BaseIntegerEnum.class)) {
+                if (ReflectUtil.isSuperInterface(declaredField.getType(), BaseIntegerEnum.class)) {
                     fields.add(" #{" + declaredField.getName() + ",typeHandler=" + BaseIntegerEnumTypeHandler.class.getName() + "} ");
-                } else if (ReflectUtils.isSuperInterface(declaredField.getType(), BaseStringEnum.class)) {
+                } else if (ReflectUtil.isSuperInterface(declaredField.getType(), BaseStringEnum.class)) {
                     fields.add(" #{" + declaredField.getName() + ",typeHandler=" + BaseStringEnumTypeHandler.class.getName() + "} ");
                 }
             } else {
@@ -193,14 +193,14 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
     @SneakyThrows
     private String getUpdateSelectiveSet(BasicPO basicPO) {
         StringBuilder stringBuilder = new StringBuilder();
-        List<Method> declaredMethods = ReflectUtils.getDeclaredMethods(basicPO.getClass()).stream().filter(a -> a.getName().startsWith("get")).collect(Collectors.toList());
+        List<Method> declaredMethods = ReflectUtil.getDeclaredMethods(basicPO.getClass()).stream().filter(a -> a.getName().startsWith("get")).collect(Collectors.toList());
         String commaSymbol = " , ";
         Set<String> databaseQFields = this.getDatabasePFields(basicPO.getClass());
         declaredMethods = declaredMethods.stream().filter(declaredMethod -> databaseQFields.contains(StringUtil.lowerCaseFirstLetter(declaredMethod.getName().replaceAll("get", "")))).collect(Collectors.toList());
         for (Method declaredMethod : declaredMethods) {
             String fieldName = StringUtil.lowerCaseFirstLetter(declaredMethod.getName().replaceAll("get", ""));
-            Object o = ReflectUtils.invokeGet(basicPO, fieldName);
-            Field declaredField = ReflectUtils.getDeclaredFieldAll(basicPO.getClass(), fieldName);
+            Object o = ReflectUtil.invokeGet(basicPO, fieldName);
+            Field declaredField = ReflectUtil.getDeclaredFieldAll(basicPO.getClass(), fieldName);
             if ("id".equals(fieldName) && basicPO.getId() == null) {
                 continue;
             }
@@ -218,9 +218,9 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
 
             Class<?> returnType = declaredMethod.getReturnType();
             if (returnType.isEnum()) {
-                if (ReflectUtils.isSuperInterface(returnType, BaseIntegerEnum.class)) {
+                if (ReflectUtil.isSuperInterface(returnType, BaseIntegerEnum.class)) {
                     stringBuilder.append("`" + StringUtil.fieldNameToColumnName(fieldName) + "`").append(" = ").append("#{updateValPO.").append(fieldName).append(",typeHandler=").append(BaseIntegerEnumTypeHandler.class.getName()).append("}").append(commaSymbol);
-                } else if (ReflectUtils.isSuperInterface(returnType, BaseStringEnum.class)) {
+                } else if (ReflectUtil.isSuperInterface(returnType, BaseStringEnum.class)) {
                     stringBuilder.append("`" + StringUtil.fieldNameToColumnName(fieldName) + "`").append(" = ").append("#{updateValPO.").append(fieldName).append(",typeHandler=").append(BaseStringEnumTypeHandler.class.getName()).append("}").append(commaSymbol);
                     ;
                 }
@@ -238,13 +238,13 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
     @SneakyThrows
     private String getUpdateSet(BasicPO basicPO) {
         StringBuilder stringBuilder = new StringBuilder();
-        List<Method> declaredMethods = ReflectUtils.getDeclaredMethods(basicPO.getClass()).stream().filter(a -> a.getName().startsWith("get")).collect(Collectors.toList());
+        List<Method> declaredMethods = ReflectUtil.getDeclaredMethods(basicPO.getClass()).stream().filter(a -> a.getName().startsWith("get")).collect(Collectors.toList());
         String commaSymbol = " , ";
         Set<String> databaseQFields = this.getDatabasePFields(basicPO.getClass());
         declaredMethods = declaredMethods.stream().filter(declaredMethod -> databaseQFields.contains(StringUtil.lowerCaseFirstLetter(declaredMethod.getName().replaceAll("get", "")))).collect(Collectors.toList());
         for (Method declaredMethod : declaredMethods) {
             String fieldName = StringUtil.lowerCaseFirstLetter(declaredMethod.getName().replaceAll("get", ""));
-            Field declaredField = ReflectUtils.getDeclaredFieldAll(basicPO.getClass(), fieldName);
+            Field declaredField = ReflectUtil.getDeclaredFieldAll(basicPO.getClass(), fieldName);
             if ("id".equals(fieldName) && basicPO.getId() == null) {
                 continue;
             }
@@ -253,9 +253,9 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
             }
             Class<?> returnType = declaredMethod.getReturnType();
             if (returnType.isEnum()) {
-                if (ReflectUtils.isSuperInterface(returnType, BaseIntegerEnum.class)) {
+                if (ReflectUtil.isSuperInterface(returnType, BaseIntegerEnum.class)) {
                     stringBuilder.append("`" + StringUtil.fieldNameToColumnName(fieldName) + "`").append(" = ").append("#{updateValPO.").append(fieldName).append(",typeHandler=").append(BaseIntegerEnumTypeHandler.class.getName()).append("}").append(commaSymbol);
-                } else if (ReflectUtils.isSuperInterface(returnType, BaseStringEnum.class)) {
+                } else if (ReflectUtil.isSuperInterface(returnType, BaseStringEnum.class)) {
                     stringBuilder.append("`" + StringUtil.fieldNameToColumnName(fieldName) + "`").append(" = ").append("#{updateValPO.").append(fieldName).append(",typeHandler=").append(BaseStringEnumTypeHandler.class.getName()).append("}").append(commaSymbol);
                 }
             } else {
@@ -339,7 +339,7 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
 
     private String getWhere(@Param("q") Q q, Class<? extends BasicQO> qClass) throws IllegalAccessException, InvocationTargetException {
         StringBuilder where = new StringBuilder();
-        List<Method> declaredMethods = ReflectUtils.getDeclaredMethods(qClass).stream().filter(a -> a.getName().startsWith("get")).collect(Collectors.toList());
+        List<Method> declaredMethods = ReflectUtil.getDeclaredMethods(qClass).stream().filter(a -> a.getName().startsWith("get")).collect(Collectors.toList());
         Map<String, Object> eqFields = new HashMap<>();
         Map<String, List<Object>> inFields = new HashMap<>();
 
@@ -352,7 +352,7 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
             if (val == null) {
                 continue;
             }
-            Field declaredField = ReflectUtils.getDeclaredRootField(qClass, fieldName);
+            Field declaredField = ReflectUtil.getDeclaredRootField(qClass, fieldName);
             if (declaredField == null || declaredField.getAnnotation(NotWhere.class) != null) {
                 continue;
             }
@@ -375,9 +375,9 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
             } else {
                 String key = " `" + StringUtil.fieldNameToColumnName(fieldName) + "` ";
                 if (returnType.isEnum()) {
-                    if (ReflectUtils.isSuperInterface(returnType, BaseIntegerEnum.class)) {
+                    if (ReflectUtil.isSuperInterface(returnType, BaseIntegerEnum.class)) {
                         eqFields.put(key, " #{" + fieldName + ",typeHandler=" + BaseIntegerEnumTypeHandler.class.getName() + "} ");
-                    } else if (ReflectUtils.isSuperInterface(returnType, BaseStringEnum.class)) {
+                    } else if (ReflectUtil.isSuperInterface(returnType, BaseStringEnum.class)) {
                         eqFields.put(key, " #{" + fieldName + ",typeHandler=" + BaseStringEnumTypeHandler.class.getName() + "} ");
                     }
                 } else {
@@ -420,7 +420,7 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
             s = s.substring(andStr.length());
 
             //字段排序
-            List<String> fieldOrders = BeanUtils.defaultIfNull(q.getFieldOrders(), new ArrayList<>());
+            List<String> fieldOrders = BeanUtil.defaultIfNull(q.getFieldOrders(), new ArrayList<>());
             Map<String, Integer> fieldOrderMap = new HashMap<>();
             for (int i = 0; i < fieldOrders.size(); i++) {
                 fieldOrderMap.put(fieldOrders.get(i), i);
@@ -432,9 +432,9 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
                 String bField = StringUtil.matchOne(b, "`\\w+`");
                 bField = bField.substring(1, bField.length() - 1);
                 Integer aIndex = fieldOrderMap.get(StringUtil.columnNameToFieldName(aField));
-                aIndex = BeanUtils.defaultIfNull(aIndex, 9999);
+                aIndex = BeanUtil.defaultIfNull(aIndex, 9999);
                 Integer bIndex = fieldOrderMap.get(StringUtil.columnNameToFieldName(bField));
-                bIndex = BeanUtils.defaultIfNull(bIndex, 9999);
+                bIndex = BeanUtil.defaultIfNull(bIndex, 9999);
                 return aIndex - bIndex;
             }).collect(Collectors.toList());
 
@@ -451,7 +451,7 @@ public class CommonProvider<P extends BasicPO, Q extends BasicQO> {
 
     private String getSelectColumnNames(@Param("q") Q q, Class<?> po) {
         Set<String> databasePFields = this.getDatabasePFields((Class<? extends BasicPO>) po);
-        List<Field> declaredFields = ReflectUtils.getDeclaredFields(po);
+        List<Field> declaredFields = ReflectUtil.getDeclaredFields(po);
         declaredFields = declaredFields.stream().filter(field -> databasePFields.contains(field.getName())).collect(Collectors.toList());
         List<String> columns = declaredFields.stream().filter(field -> field.getAnnotation(Transient.class) == null).map(field -> {
             TableField annotation = field.getAnnotation(TableField.class);

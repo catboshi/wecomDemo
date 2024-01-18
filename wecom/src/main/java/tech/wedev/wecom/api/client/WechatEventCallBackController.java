@@ -310,7 +310,7 @@ public class WechatEventCallBackController {
 
             //仅判断小程序mediaId是否过期
             var mediaId = Objects.equals(a.getSourceFormat(), WelcomeMessageCfgEnum.TypeENUM.APP.getCode()) ? (Objects.isNull(a.getMediaCreatedTime()) ||
-                    ObjectUtils.strToType(DateUtils.printDays(a.getMediaCreatedTime(), DateUtils.currentDate()), Integer.class) >= 3 ? null : a.getMediaId()) : "";
+                    ObjectUtil.strToType(DateUtil.printDays(a.getMediaCreatedTime(), DateUtil.currentDate()), Integer.class) >= 3 ? null : a.getMediaId()) : "";
 
             var pic_media_id = Optional.ofNullable(mediaId).orElseGet(() -> {
                 var result = wecomMarketArticleService.uploadQiweArticle(ClientShareUploadQO.builder()
@@ -324,7 +324,7 @@ public class WechatEventCallBackController {
 
                 String newMediaId = "";
                 if (result.getRetCode() == 200) {
-                    var resultMap = ObjectUtils.strObjToType(result.getData(), HashMap.class);
+                    var resultMap = ObjectUtil.strObjToType(result.getData(), HashMap.class);
                     newMediaId = MapUtils.getString(resultMap, "mediaId");
                 }
                 return newMediaId;

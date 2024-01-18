@@ -9,7 +9,7 @@ import tech.wedev.autm.asyntask.entity.AsynTaskDtl;
 import tech.wedev.autm.asyntask.service.IAsynTaskDtlService;
 import tech.wedev.wecom.mybatis.mapper.IAsynTaskDtlHisMapper;
 import tech.wedev.wecom.mybatis.mapper.IAsynTaskDtlMapper;
-import tech.wedev.wecom.utils.ValConvertUtils;
+import tech.wedev.wecom.utils.ValConvertUtil;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ public class AsynTaskDtlServiceImpl implements IAsynTaskDtlService {
         result.setTaskType(asynTaskDtlDO.getTaskType());
         result.setSubTaskType(asynTaskDtlDO.getSubTaskType());
         result.setState(asynTaskDtlDO.getState());
-        result.setPriority(TaskPriorityType.getEnum(ValConvertUtils.intToDecimal(asynTaskDtlDO.getPriority())));
+        result.setPriority(TaskPriorityType.getEnum(ValConvertUtil.intToDecimal(asynTaskDtlDO.getPriority())));
         result.setApplyTime(asynTaskDtlDO.getApplyTime());
         result.setInQueueTime(asynTaskDtlDO.getInQueueTime());
         result.setIp(asynTaskDtlDO.getIp());
@@ -45,8 +45,8 @@ public class AsynTaskDtlServiceImpl implements IAsynTaskDtlService {
         result.setEndWorkTime(asynTaskDtlDO.getEndWorkTime());
         result.setErrCode(asynTaskDtlDO.getErrCode());
         result.setErrMsg(asynTaskDtlDO.getErrMsg());
-        result.setDealNum(ValConvertUtils.intToDecimal(asynTaskDtlDO.getDealNum()));
-        result.setTimeoutLimit(ValConvertUtils.intToDecimal(asynTaskDtlDO.getTimeoutLimit()));
+        result.setDealNum(ValConvertUtil.intToDecimal(asynTaskDtlDO.getDealNum()));
+        result.setTimeoutLimit(ValConvertUtil.intToDecimal(asynTaskDtlDO.getTimeoutLimit()));
         result.setPlanTime(asynTaskDtlDO.getPlanTime());
         result.setRefCol1(asynTaskDtlDO.getRefCol1());
         result.setRefCol2(asynTaskDtlDO.getRefCol2());
@@ -73,7 +73,7 @@ public class AsynTaskDtlServiceImpl implements IAsynTaskDtlService {
         asynTaskDtlDO.setTaskType(taskBean.getTaskType());
         asynTaskDtlDO.setSubTaskType(taskBean.getSubTaskType());
         asynTaskDtlDO.setState(taskBean.getState());
-        asynTaskDtlDO.setPriority(ValConvertUtils.decimalToInt(taskBean.getPriority().getValue()));
+        asynTaskDtlDO.setPriority(ValConvertUtil.decimalToInt(taskBean.getPriority().getValue()));
         asynTaskDtlDO.setApplyTime(taskBean.getApplyTime());
         asynTaskDtlDO.setInQueueTime(taskBean.getInQueueTime());
         asynTaskDtlDO.setIp(taskBean.getIp());
@@ -82,9 +82,9 @@ public class AsynTaskDtlServiceImpl implements IAsynTaskDtlService {
         asynTaskDtlDO.setEndWorkTime(taskBean.getEndWorkTime());
         asynTaskDtlDO.setErrCode(taskBean.getErrCode());
         asynTaskDtlDO.setErrMsg(taskBean.getErrMsg());
-        asynTaskDtlDO.setDealNum(ValConvertUtils.decimalToInt(taskBean.getDealNum()));
+        asynTaskDtlDO.setDealNum(ValConvertUtil.decimalToInt(taskBean.getDealNum()));
         if (taskBean.getTimeoutLimit() != null) {
-            asynTaskDtlDO.setTimeoutLimit(ValConvertUtils.decimalToInt(taskBean.getTimeoutLimit()));
+            asynTaskDtlDO.setTimeoutLimit(ValConvertUtil.decimalToInt(taskBean.getTimeoutLimit()));
         }
         asynTaskDtlDO.setPlanTime(taskBean.getPlanTime());
         asynTaskDtlDO.setRefCol1(taskBean.getRefCol1());

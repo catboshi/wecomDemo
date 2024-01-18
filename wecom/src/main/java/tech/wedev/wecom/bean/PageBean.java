@@ -1,6 +1,6 @@
 package tech.wedev.wecom.bean;
 
-import tech.wedev.wecom.utils.BeanUtils;
+import tech.wedev.wecom.utils.BeanUtil;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -51,9 +51,9 @@ public class PageBean<T> implements Serializable {
     }
 
     public static <S, D> PageBean<D> copyProperty(PageBean<S> s, Class<D> d) {
-        s.result = BeanUtils.defaultIfNull(s.result, new ArrayList<>());
-        PageBean<D> pageBeanDest = BeanUtils.copyProperty(s, PageBean.class);
-        pageBeanDest.result = BeanUtils.copyProperties(s.result, d);
+        s.result = BeanUtil.defaultIfNull(s.result, new ArrayList<>());
+        PageBean<D> pageBeanDest = BeanUtil.copyProperty(s, PageBean.class);
+        pageBeanDest.result = BeanUtil.copyProperties(s.result, d);
         pageBeanDest.total = s.getTotal();
         pageBeanDest.pageCount = s.getPageCount();
         pageBeanDest.pageNum = s.getPageNum();

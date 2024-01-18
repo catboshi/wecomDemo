@@ -3,8 +3,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public final class BeanUtils {
-    private BeanUtils() {
+public final class BeanUtil {
+    private BeanUtil() {
 
     }
     public static <T> T defaultIfNull(T src, T def) {

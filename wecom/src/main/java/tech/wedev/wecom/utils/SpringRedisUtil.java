@@ -2,16 +2,17 @@ package tech.wedev.wecom.utils;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.core.Cursor;
-import org.springframework.data.redis.core.RedisConnectionUtils;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ScanOptions;
+import org.springframework.data.redis.core.*;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Component;
+import tech.wedev.wecom.constants.CommonConstants;
+import tech.wedev.wecom.entity.common.Department;
+import tech.wedev.wecom.entity.common.User;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -21,7 +22,10 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings({"unchecked", "all"})
 public class SpringRedisUtil {
     private static final Logger log = LoggerFactory.getLogger(SpringRedisUtil.class);
-    private RedisTemplate<Object, Object> redisTemplate;
+
+    private static final String USER_DETAIL = "USER:DETAIL";
+    private static final String DEPT_DETAIL = "DEPT_DETAIL";
+    private static RedisTemplate<Object, Object> redisTemplate;
 
     public SpringRedisUtil(RedisTemplate<Object, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
@@ -275,7 +279,7 @@ public class SpringRedisUtil {
      * @param item 项 不能为null
      * @return 值
      */
-    public Object hget(String key, String item) {
+    public static Object hget(String key, String item) {
         return redisTemplate.opsForHash().get(key, item);
     }
 
@@ -691,5 +695,48 @@ public class SpringRedisUtil {
         log.debug("成功删除缓存：" + keys.toString());
         log.debug("缓存删除数量：" + count + "个");
         log.debug("--------------------------------------------");
+    }
+
+    /**
+     * 根据用户shortName获取用户基本信息对象
+     */
+    public static User getUserObj(String userShortName) {
+        try {
+            return (User) hget(USER_DETAIL, userShortName.toLowerCase());
+        } catch (Exception e) {
+            log.error("SpringRedisUtil.getUserObj{userShortName: " + userShortName + "}", e);
+            return null;
+        }
+
+    }
+
+    /**
+     * 获取当前用户语言
+     */
+    public static String getUserLanguage(final String userShortName) {
+        try {
+            HashOperations<Object, Object, Object> hashOperation = redisTemplate.opsForHash();
+            String language = (String) hashOperation.get(CommonConstants.USER_LANGUAGE_KEY, userShortName.toLowerCase());
+            User user = SpringRedisUtil.getUserObj(userShortName);
+            if (StringUtils.isBlank(language) && null != user) {
+                return CommonConstants.ZH_CN;
+            }
+            return StringUtils.isNotBlank(language) ? language : CommonConstants.ZH_CN;
+        } catch (Exception e) {
+            log.error("获取用户[{}]默认语言错误", userShortName, e);
+            return StringUtils.EMPTY;
+        }
+    }
+
+    /**
+     * 根据部门code或部门codePath获取部门对象
+     */
+    public static Department getOneDepartmentObj(String code) {
+        try {
+            HashOperations<Object, Object, Department> hashOperations = redisTemplate.opsForHash();
+            return hashOperations.get(DEPT_DETAIL, code);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }
