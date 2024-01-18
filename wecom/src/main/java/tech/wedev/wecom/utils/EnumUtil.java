@@ -6,8 +6,8 @@ import tech.wedev.wecom.enums.BaseStringEnum;
 import java.util.Arrays;
 import java.util.Optional;
 
-public final class EnumUtils {
-    private EnumUtils() {
+public final class EnumUtil {
+    private EnumUtil() {
 
     }
 

@@ -9,7 +9,7 @@ import tech.wedev.wecom.enums.BaseDeletedEnum;
 import tech.wedev.wecom.exception.ExceptionAssert;
 import tech.wedev.wecom.exception.ExceptionCode;
 import tech.wedev.wecom.standard.BaseService;
-import tech.wedev.wecom.utils.BeanUtils;
+import tech.wedev.wecom.utils.BeanUtil;
 
 import java.util.Date;
 import java.util.List;
@@ -27,7 +27,7 @@ public abstract class BaseServiceImpl<P extends BasePO, Q extends BaseQO> implem
         ExceptionAssert.isNull(q.getId(), ExceptionCode.INVALID_PARAMETER);
         List<P> select = getBaseMapper().select(q);
         ExceptionAssert.isTrue(select.size() > 1, ExceptionCode.MORE_THAN_ONE);
-        return BeanUtils.defaultGetOne(select);
+        return BeanUtil.defaultGetOne(select);
     }
 
     @Override
@@ -37,7 +37,7 @@ public abstract class BaseServiceImpl<P extends BasePO, Q extends BaseQO> implem
         q.setIsDeleted(BaseDeletedEnum.EXISTS.getCode());
         List<P> select = this.getBaseMapper().select(q);
         ExceptionAssert.isTrue(select.size() > 1, ExceptionCode.MORE_THAN_ONE);
-        return BeanUtils.defaultGetOne(select);
+        return BeanUtil.defaultGetOne(select);
     }
 
     @Override
@@ -48,7 +48,7 @@ public abstract class BaseServiceImpl<P extends BasePO, Q extends BaseQO> implem
         q.setId(id);
         List<P> select = this.getBaseMapper().select(q);
         ExceptionAssert.isTrue(select.size() > 1, ExceptionCode.MORE_THAN_ONE);
-        return BeanUtils.defaultGetOne(select);
+        return BeanUtil.defaultGetOne(select);
     }
 
     private Q getQObject() {
@@ -70,13 +70,13 @@ public abstract class BaseServiceImpl<P extends BasePO, Q extends BaseQO> implem
         q.setIsDeleted(BaseDeletedEnum.EXISTS.getCode());
         List<P> select = this.getBaseMapper().select(q);
         ExceptionAssert.isTrue(select.size() > 1, ExceptionCode.MORE_THAN_ONE);
-        return BeanUtils.defaultGetOne(select);    }
+        return BeanUtil.defaultGetOne(select);    }
 
     @Override
     @Transactional
     public PageBean<P> selectPage(Q q) {
-        q.setPageSize(BeanUtils.defaultIfNull(q.getPageSize(), 10));
-        q.setPageNum(BeanUtils.defaultIfNull(q.getPageNum(), 1));
+        q.setPageSize(BeanUtil.defaultIfNull(q.getPageSize(), 10));
+        q.setPageNum(BeanUtil.defaultIfNull(q.getPageNum(), 1));
         final List<P> select = this.getBaseMapper().select(q);
         if (select.size()==2) {
             final List<P> p1 = (List<P>) select.get(0);
@@ -104,7 +104,7 @@ public abstract class BaseServiceImpl<P extends BasePO, Q extends BaseQO> implem
     @Transactional
     public int deleteByPrimaryKeyForLogic(Q q) {
         q.setIsDeleted(BaseDeletedEnum.DEL.getCode());
-        q.setGmtModified(BeanUtils.defaultIfNull(q.getGmtModified(), new Date()));
+        q.setGmtModified(BeanUtil.defaultIfNull(q.getGmtModified(), new Date()));
         return this.updateByPrimaryKey(q);
     }
 
@@ -113,7 +113,7 @@ public abstract class BaseServiceImpl<P extends BasePO, Q extends BaseQO> implem
     public int updateByPrimaryKey(Q q) {
         ExceptionAssert.isTrue(q.getId()==null&& CollectionUtils.isEmpty(q.getIds()), ExceptionCode.INVALID_PARAMETER);
         this.updateByPrimaryKeyBefore(q);
-        q.setGmtModified(BeanUtils.defaultIfNull(q.getGmtModified(), new Date()));
+        q.setGmtModified(BeanUtil.defaultIfNull(q.getGmtModified(), new Date()));
         return this.getBaseMapper().updateByPrimaryKey(q);
     }
 
@@ -122,8 +122,8 @@ public abstract class BaseServiceImpl<P extends BasePO, Q extends BaseQO> implem
     public int save(P p) {
         this.saveBefore(p);
         p.setIsDeleted(BaseDeletedEnum.EXISTS.getCode());
-        p.setGmtCreate(BeanUtils.defaultIfNull(p.getGmtCreate(), new Date()));
-        p.setGmtModified(BeanUtils.defaultIfNull(p.getGmtModified(), new Date()));
+        p.setGmtCreate(BeanUtil.defaultIfNull(p.getGmtCreate(), new Date()));
+        p.setGmtModified(BeanUtil.defaultIfNull(p.getGmtModified(), new Date()));
         return this.getBaseMapper().save(p);
     }
 }

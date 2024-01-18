@@ -2,7 +2,7 @@ package tech.wedev.wecom.utils;
 
 import java.math.BigDecimal;
 
-public class AmountUtils {
+public class AmountUtil {
 
     private static final String UNIT = "万千佰拾亿千佰拾万千佰拾元角分";
     private static final String DIGIT = "零壹贰叁肆伍陆柒捌玖";

@@ -7,7 +7,7 @@ import java.lang.reflect.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ReflectUtils {
+public class ReflectUtil {
     private static final String SET_METHOD_PREFIX = "set";
     private static final String GET_METHOD_PREFIX = "get";
     private static final String METHOD_SPLITER = "\\.";
@@ -17,7 +17,7 @@ public class ReflectUtils {
     private static final String LIST_METHOD_REGEX = "\\d+\\}";
     private static final String MAP_METHOD_SPLITER = ")";
 
-    private ReflectUtils() {
+    private ReflectUtil() {
 
     }
 
@@ -28,8 +28,8 @@ public class ReflectUtils {
      * @return
      */
     public static <T> T getMethodByExpression(Object src, String getMethodNameExpression) {
-        RuntimeExceptionUtils.isTrue(StringUtil.isBlank(getMethodNameExpression), StringUtil.format("表达式不能为空，getMethodNameExpression{}", getMethodNameExpression));
-        RuntimeExceptionUtils.isTrue(src == null, StringUtil.format("对象不能为空"));
+        RuntimeExceptionUtil.isTrue(StringUtil.isBlank(getMethodNameExpression), StringUtil.format("表达式不能为空，getMethodNameExpression{}", getMethodNameExpression));
+        RuntimeExceptionUtil.isTrue(src == null, StringUtil.format("对象不能为空"));
         final List<String> methodNames = StringUtil.split(getMethodNameExpression, METHOD_SPLITER);
         Object invokeObj = src;
         String getMethodName = methodNames.get(0);
@@ -39,14 +39,14 @@ public class ReflectUtils {
             if (invokeObj == null) {
                 return null;
             }
-            invokeObj = ((Object[]) invokeObj)[IntegerUtils.valueOf(split[0])];
+            invokeObj = ((Object[]) invokeObj)[IntegerUtil.valueOf(split[0])];
         } else if (StringUtil.matchOne(getMethodName, LIST_METHOD_REGEX).length() > 1) {
             final String[] split = getMethodName.split(LIST_METHOD_SPLITER);
             invokeObj = invokeGet(invokeObj, split[1]);
             if (invokeObj == null) {
                 return null;
             }
-            invokeObj = ((List) invokeObj).get(IntegerUtils.valueOf(split[0]));
+            invokeObj = ((List) invokeObj).get(IntegerUtil.valueOf(split[0]));
         } else {
             invokeObj = invokeGet(invokeObj, getMethodName);
         }
@@ -57,8 +57,8 @@ public class ReflectUtils {
     }
 
     public static <T> void setMethodByExpression(Object src, String setMethodNameExpression, Class<T> parameterType, T parameter) {
-        RuntimeExceptionUtils.isTrue(StringUtil.isBlank(setMethodNameExpression), StringUtil.format("表达式不能为空，setMethodNameExpression{}", setMethodNameExpression));
-        RuntimeExceptionUtils.isTrue(src == null, StringUtil.format("对象不能为空"));
+        RuntimeExceptionUtil.isTrue(StringUtil.isBlank(setMethodNameExpression), StringUtil.format("表达式不能为空，setMethodNameExpression{}", setMethodNameExpression));
+        RuntimeExceptionUtil.isTrue(src == null, StringUtil.format("对象不能为空"));
         final List<String> methodNames = StringUtil.split(setMethodNameExpression, METHOD_SPLITER);
         String getMethodName = methodNames.get(0);
         Object invokeObj = src;
@@ -81,7 +81,7 @@ public class ReflectUtils {
     private static Object getObjectForArray(Object src, String getMethodName, Object invokeObj) {
         final String[] split = getMethodName.split(ARRAY_METHOD_SPLITER);
         invokeObj = invokeGet(invokeObj, split[1]);
-        int requestLength = IntegerUtils.valueOf(split[0]) + 1;
+        int requestLength = IntegerUtil.valueOf(split[0]) + 1;
         if (invokeObj == null) {
             final Object[] temp = (Object[]) Array.newInstance(getGetterMethod(src.getClass(), split[1]).getReturnType(), requestLength);
             for (int i = 0; i < requestLength; i++) {
@@ -94,13 +94,13 @@ public class ReflectUtils {
         if (requestLength > length) {
             invokeArray = Arrays.copyOf(invokeArray, requestLength);
             for (int i = length; i < requestLength; i++) {
-                if (ArrayUtils.indexOf(invokeArray, i) == null) {
+                if (ArrayUtil.indexOf(invokeArray, i) == null) {
                     invokeArray[i] = getArrayObject(invokeArray);
                 }
             }
         }
         invokeSet(src, split[1], (Class<Object[]>) invokeArray.getClass(), invokeArray);
-        invokeObj = invokeArray[IntegerUtils.valueOf(split[0])];
+        invokeObj = invokeArray[IntegerUtil.valueOf(split[0])];
         return invokeObj;
     }
 
@@ -111,7 +111,7 @@ public class ReflectUtils {
             invokeObj = new ArrayList<>();
         }
         final List invokeObjList = (List) invokeObj;
-        int requestLength = IntegerUtils.valueOf(split[0]) + 1;
+        int requestLength = IntegerUtil.valueOf(split[0]) + 1;
         if (requestLength > invokeObjList.size()) {
             for (int i = invokeObjList.size(); i < requestLength; i++) {
                 if (ListUtils.indexOf(invokeObjList, i) == null) {
@@ -120,7 +120,7 @@ public class ReflectUtils {
             }
         }
         invokeSet(src, split[1], List.class, invokeObjList);
-        invokeObj = invokeObjList.get(IntegerUtils.valueOf(split[0]));
+        invokeObj = invokeObjList.get(IntegerUtil.valueOf(split[0]));
         return invokeObj;
     }
 
@@ -131,7 +131,7 @@ public class ReflectUtils {
 
     @SneakyThrows
     private static Object getArrayObject(Object[] objects) {
-        return ArrayUtils.getArrayType(objects).newInstance();
+        return ArrayUtil.getArrayType(objects).newInstance();
     }
 
     private static Object getGenericTypeFieldObject(Class clazz, String getMethodName) {
@@ -241,7 +241,7 @@ public class ReflectUtils {
 
     public static <T> T invokeDeclareMethod(Object src, String methodName, Class<T> returnType, Object... params) {
         try {
-            final Object[] objects = BeanUtils.defaultIfNull(params, new Object[]{});
+            final Object[] objects = BeanUtil.defaultIfNull(params, new Object[]{});
             Class<?>[] cl = new Class[objects.length];
             for (int i = 0; i < objects.length; i++) {
                 cl[i] = objects[i].getClass();
@@ -340,7 +340,7 @@ public class ReflectUtils {
     }
 
     public static Field getDeclaredFieldAll(Class clazz, String fieldName) {
-        List<Field> declaredFields = ReflectUtils.getDeclaredFields(clazz);
+        List<Field> declaredFields = ReflectUtil.getDeclaredFields(clazz);
         for (Field declaredField : declaredFields) {
             if (declaredField.getName().equals(fieldName)) {
                 return declaredField;

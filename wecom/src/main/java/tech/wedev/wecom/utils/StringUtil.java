@@ -138,7 +138,7 @@ public final class StringUtil {
     }
     public static <T> String matchOne(String src, String regex) {
         final List<String> match = match(src, regex);
-        RuntimeExceptionUtils.isTrue(match.size() > 1, format("结果集大于1, src{}regex{}", src, regex));
+        RuntimeExceptionUtil.isTrue(match.size() > 1, format("结果集大于1, src{}regex{}", src, regex));
         if (match.size() == 1) {
             return match.get(0);
         }

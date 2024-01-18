@@ -9,6 +9,9 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import tech.wedev.wecom.annos.PassToken;
+import tech.wedev.wecom.common.UserContextHolder;
+import tech.wedev.wecom.entity.common.User;
+import tech.wedev.wecom.utils.ResultUtil;
 import tech.wedev.wecom.utils.SpringRedisUtil;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,8 +24,8 @@ import java.lang.reflect.Method;
  */
 public class AuthenticationInterceptor implements HandlerInterceptor {
 
-    @Value("${secretKey}")
-    private String secretKey;
+    @Value("${encryptKey}")
+    private String encryptKey;
 
     /**
      *  预处理回调方法，实现处理器的预处理，第三个参数为响应的处理器，自定义Controller，
@@ -37,20 +40,18 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         response.setContentType("text/html;charset=UTF-8");
-        String token = "eyJhbGci0iJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2RlIjoiSFoxMDAzMzYyMCJ9.IyjtPAVSAbCHcJ1KJg5G3AvPIc9F3UoOIK14PUUuFPY";
-        //request.getHeader("Authorization");//从 http 请求头中取出 token
+        //从 http 请求头中取出 token
+        String token = request.getHeader("Authorization");
         // 如果不是映射到方法直接通过
         if (!(handler instanceof HandlerMethod)) {
             return true;
         }
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         Method method = handlerMethod.getMethod();
-        //检查是否有passtoken注释，有则跳过认证
+        //检查是否有PassToken注释，有则跳过认证
         if (method.isAnnotationPresent(PassToken.class)) {
             PassToken passToken = method.getAnnotation(PassToken.class);
-            if (passToken.required()) {
-                return true;
-            }
+            return passToken.required();
         } else {
             // 执行认证
             if (token == null) {
@@ -58,7 +59,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                 return false;
             }
             // 验证 token
-            JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(secretKey)).build();
+            JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(encryptKey)).build();
             try {
                 jwtVerifier.verify(token);
             } catch (Exception e) {
@@ -75,13 +76,13 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                     return false;
                 }
                 request.setAttribute("curUser", user);
+                UserContextHolder.setUser(user);
             } catch (Exception e) {
                 response.getWriter().print(ResultUtil.error("找不到用户ID"));
                 return false;
             }
             return true;
         }
-        return false;
     }
 
     /**
@@ -101,6 +102,6 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
      */
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        // Do nothing because of X and Y.
+        UserContextHolder.refresh();
     }
 }

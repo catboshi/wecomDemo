@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-public class HttpRequestUtils {
+public class HttpRequestUtil {
 
     public static JSONObject getAccessResult(String url) throws IOException {
         log.info("HttpTools GET########url: " + url);

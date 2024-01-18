@@ -12,8 +12,8 @@ import tech.wedev.wecom.entity.qo.GenParamBasicQO;
 import tech.wedev.wecom.enums.GenParamBasicParamCodeEnum;
 import tech.wedev.wecom.enums.GenParamBasicParamTypeEnum;
 import tech.wedev.wecom.standard.GenParamBasicService;
-import tech.wedev.wecom.utils.ArrayUtils;
-import tech.wedev.wecom.utils.BeanUtils;
+import tech.wedev.wecom.utils.ArrayUtil;
+import tech.wedev.wecom.utils.BeanUtil;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -45,7 +45,7 @@ public class GenParamBasicServiceImpl extends BasicServiceImpl<GenParamBasicPO, 
     @Override
     public String queryWecomGenParamValue(GenParamBasicParamTypeEnum paramType, GenParamBasicParamCodeEnum paramCode) {
         List<GenParamBasicPO> params = genParamBasicMapper.select(GenParamBasicQO.builder().paramCode(paramCode).paramType(paramType)
-                .orderBys(ArrayUtils.asArrayList("id_0")).corpIds(TokenContextHolder.getCorpIds()).build());
+                .orderBys(ArrayUtil.asArrayList("id_0")).corpIds(TokenContextHolder.getCorpIds()).build());
         if (params.isEmpty()) {
             return "";
         }
@@ -59,9 +59,9 @@ public class GenParamBasicServiceImpl extends BasicServiceImpl<GenParamBasicPO, 
         String paramValue = wecomGenParamCache.getIfPresent(key);
         if (paramValue == null) {
             genParamBasicQO.setCorpIds(null);
-            genParamBasicQO.setOrderBys(ArrayUtils.asArrayList("id_0"));
+            genParamBasicQO.setOrderBys(ArrayUtil.asArrayList("id_0"));
             List<GenParamBasicPO> wecomGenParamList = genParamBasicMapper.select(genParamBasicQO);
-            paramValue = BeanUtils.defaultIfNull(BeanUtils.defaultGetOne(wecomGenParamList), new GenParamBasicPO()).getParamValue();
+            paramValue = BeanUtil.defaultIfNull(BeanUtil.defaultGetOne(wecomGenParamList), new GenParamBasicPO()).getParamValue();
             wecomGenParamCache.put(key, paramValue);
         }
         return paramValue;

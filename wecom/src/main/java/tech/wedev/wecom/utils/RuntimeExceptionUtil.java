@@ -1,7 +1,7 @@
 package tech.wedev.wecom.utils;
 
-public class RuntimeExceptionUtils {
-    private RuntimeExceptionUtils() {
+public class RuntimeExceptionUtil {
+    private RuntimeExceptionUtil() {
 
     }
     public static void isTrue (boolean express, String msg) {

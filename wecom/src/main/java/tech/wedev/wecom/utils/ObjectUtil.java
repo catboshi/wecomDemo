@@ -4,8 +4,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.function.Function;
-public class ObjectUtils {
-    private ObjectUtils() {
+public class ObjectUtil {
+    private ObjectUtil() {
     }
     public static <T> T strToType(String src, Class<T> clazz) { return strToType(src, clazz, null); }
 

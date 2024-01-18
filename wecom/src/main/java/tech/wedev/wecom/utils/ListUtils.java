@@ -21,8 +21,8 @@ public final class ListUtils {
         if (CollectionUtils.isEmpty(t)) {
             return t;
         }
-        start = BeanUtils.defaultIfNull(start, 0);
-        end = BeanUtils.defaultIfNull(end, t.size());
+        start = BeanUtil.defaultIfNull(start, 0);
+        end = BeanUtil.defaultIfNull(end, t.size());
         if (start < 0) {
             start = 0;
         }

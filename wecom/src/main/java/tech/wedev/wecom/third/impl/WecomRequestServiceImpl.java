@@ -133,7 +133,7 @@ public class WecomRequestServiceImpl implements WecomRequestService {
         try {
             Date tokenModified = findTokenModified(paramType, tokenInDB.get(0));
             if (!Objects.isNull(tokenModified)) {
-                tokenTimeOut = Integer.parseInt(DateUtils.printDiffer(tokenModified, DateTime.now()));
+                tokenTimeOut = Integer.parseInt(DateUtil.printDiffer(tokenModified, DateTime.now()));
             }
         } catch (Exception e) {
             log.error("WecomRequestServiceImpl###generateAccessToken###parse tokenTimeOut异常: ", e);
@@ -165,7 +165,7 @@ public class WecomRequestServiceImpl implements WecomRequestService {
         log.info("WecomRequestServiceImpl###authGetUserInfo###企微API URL: " + url);
         JSONObject httpResult;
         try {
-            httpResult = HttpRequestUtils.getAccessResult(url);
+            httpResult = HttpRequestUtil.getAccessResult(url);
         } catch (Exception e) {
             log.error("WecomRequestServiceImpl###authGetUserInfo###企微API调用异常" + e.getMessage());
             throw new WecomException(ExceptionCode.REQUEST_ERROR);
@@ -363,7 +363,7 @@ public class WecomRequestServiceImpl implements WecomRequestService {
         String url = wecomApiUrlPrefix + WecomApiUrlConstant.GET_TOKEN;
         String token;
         try {
-            JSONObject accessToken = HttpRequestUtils.getAccessResult(String.format(url, corpIdInDB.get(0).getParamValue(), secretInDB.get(0).getParamValue()));
+            JSONObject accessToken = HttpRequestUtil.getAccessResult(String.format(url, corpIdInDB.get(0).getParamValue(), secretInDB.get(0).getParamValue()));
             int errCode = accessToken.getIntValue("errcode");
             String errMsg = accessToken.getString("errmsg");
             log.info("调用企微接口获取access_token返回结果，errcode=" + errCode + "##errmsg=" + errMsg);
@@ -408,7 +408,7 @@ public class WecomRequestServiceImpl implements WecomRequestService {
         String url = wecomApiUrlPrefix + WecomApiUrlConstant.GET_TOKEN;
         String token;
         try {
-            JSONObject accessToken = HttpRequestUtils.getAccessResult(String.format(url, corpIdInDB, secretInDB));
+            JSONObject accessToken = HttpRequestUtil.getAccessResult(String.format(url, corpIdInDB, secretInDB));
             int errCode = accessToken.getIntValue("errcode");
             String errMsg = accessToken.getString("errmsg");
             log.info("调用企微接口获取access_token返回结果，errcode=" + errCode + "##errmsg=" + errMsg);
@@ -481,8 +481,8 @@ public class WecomRequestServiceImpl implements WecomRequestService {
 
         //更新参数表token，设置redis缓存
 //        List<GenParamPO> tokenInDBParam = this.getParamFromDB(tokenTicketType, paramType);
-        List<GenParamBasicPO> tokenInDBParam = genParamBasicService.select(GenParamBasicQO.builder().isDeleted(BaseDeletedEnum.EXISTS).paramType(EnumUtils.getByStringCode(GenParamBasicParamTypeEnum.class, paramType.getParamTypeEnum().getName()))
-                .paramCode(EnumUtils.getByStringCode(GenParamBasicParamCodeEnum.class, paramType.getName())).orderBys(ArrayUtils.asArrayList("id_0")).corpIds(ArrayUtils.asArrayNotNull(corpId, "SYSTEM")).build());
+        List<GenParamBasicPO> tokenInDBParam = genParamBasicService.select(GenParamBasicQO.builder().isDeleted(BaseDeletedEnum.EXISTS).paramType(EnumUtil.getByStringCode(GenParamBasicParamTypeEnum.class, paramType.getParamTypeEnum().getName()))
+                .paramCode(EnumUtil.getByStringCode(GenParamBasicParamCodeEnum.class, paramType.getName())).orderBys(ArrayUtil.asArrayList("id_0")).corpIds(ArrayUtil.asArrayNotNull(corpId, "SYSTEM")).build());
 
         this.updateTokenFromWecom(corpId, paramType, tokenTicketType, tokenOrTicket, tokenInDBParam, context);
     }
@@ -634,16 +634,16 @@ public class WecomRequestServiceImpl implements WecomRequestService {
     private JSONObject doHttpByMethodType(String methodType, Map<String, Object> body, String url) throws Exception {
         if (ParamsConstant.METHOD_POST.equalsIgnoreCase(methodType)) {
             if (Objects.nonNull(body.get("fileStream"))) {
-                String httpResult = HttpRequestUtils.httpRequestFileStream(url, String.valueOf(body.get("fileName")), Long.valueOf(String.valueOf(body.get("fileLength"))), (byte[]) body.get("fileStream"));
+                String httpResult = HttpRequestUtil.httpRequestFileStream(url, String.valueOf(body.get("fileName")), Long.valueOf(String.valueOf(body.get("fileLength"))), (byte[]) body.get("fileStream"));
                 log.info("WecomRequestServiceImpl###上传文件###企微API返回: " + httpResult);
                 return JSONObject.parseObject(httpResult);
             } else {
-                String httpResult = HttpRequestUtils.httpPost(url, JSON.toJSONString(body), 8000);
+                String httpResult = HttpRequestUtil.httpPost(url, JSON.toJSONString(body), 8000);
                 log.info("WecomRequestServiceImpl###通用接口###企微API返回: " + httpResult);
                 return JSONObject.parseObject(httpResult);
             }
         } else {
-            JSONObject httpResult = HttpRequestUtils.getAccessResult(url);
+            JSONObject httpResult = HttpRequestUtil.getAccessResult(url);
             log.info("WecomRequestServiceImpl###requestQiWeApi###企微API返回: " + httpResult);
             return httpResult;
         }

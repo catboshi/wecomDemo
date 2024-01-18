@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tech.wedev.wecom.third.WecomRequestService;
 import tech.wedev.wecom.tools.HttpProxyTools;
-import tech.wedev.wecom.utils.DateUtils;
+import tech.wedev.wecom.utils.DateUtil;
 import tech.wedev.wecom.utils.StringUtil;
 
 import java.text.SimpleDateFormat;
@@ -108,7 +108,7 @@ public class WecomMarketArticleServiceImpl extends BasicServiceImpl<WecomMarketA
 
             Long a = Long.valueOf(createdAt);
             String currentTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(a);
-            Date date = DateUtils.formatStrToDate(currentTime);
+            Date date = DateUtil.formatStrToDate(currentTime);
             int update = wecomMarketArticleMapper.updateByArticleSourceAndArticleApp(clientShareUploadQO, mediaId, date);
 
             Map<String, Object> resultMap = new HashMap<>();

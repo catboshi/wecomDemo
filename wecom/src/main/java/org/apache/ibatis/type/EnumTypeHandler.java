@@ -4,7 +4,7 @@ import tech.wedev.wecom.enums.BaseIntegerEnum;
 import tech.wedev.wecom.enums.BaseStringEnum;
 import tech.wedev.wecom.handler.BaseIntegerEnumTypeHandler;
 import tech.wedev.wecom.handler.BaseStringEnumTypeHandler;
-import tech.wedev.wecom.utils.ReflectUtils;
+import tech.wedev.wecom.utils.ReflectUtil;
 
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
@@ -27,11 +27,11 @@ public class EnumTypeHandler<E extends Enum<E>> extends BaseTypeHandler<E> {
 
     @Override
     public void setNonNullParameter(PreparedStatement ps, int i, E parameter, JdbcType jdbcType) throws SQLException {
-        if (ReflectUtils.isSuperInterface(type, BaseIntegerEnum.class)) {
+        if (ReflectUtil.isSuperInterface(type, BaseIntegerEnum.class)) {
             BaseIntegerEnumTypeHandler baseIntegerEnumTypeHandler = new BaseIntegerEnumTypeHandler(type);
             baseIntegerEnumTypeHandler.setNonNullParameter(ps, i, (BaseIntegerEnum) parameter, jdbcType);
             return;
-        } else if (ReflectUtils.isSuperInterface(type, BaseStringEnum.class)) {
+        } else if (ReflectUtil.isSuperInterface(type, BaseStringEnum.class)) {
             BaseStringEnumTypeHandler baseStringEnumTypeHandler = new BaseStringEnumTypeHandler(type);
             baseStringEnumTypeHandler.setNonNullParameter(ps, i, (BaseStringEnum) parameter, jdbcType);
             return;
@@ -46,10 +46,10 @@ public class EnumTypeHandler<E extends Enum<E>> extends BaseTypeHandler<E> {
 
     @Override
     public E getNullableResult(ResultSet rs, String columnName) throws SQLException {
-        if (ReflectUtils.isSuperInterface(type, BaseIntegerEnum.class)) {
+        if (ReflectUtil.isSuperInterface(type, BaseIntegerEnum.class)) {
             BaseIntegerEnumTypeHandler baseIntegerEnumTypeHandler = new BaseIntegerEnumTypeHandler(type);
             return (E) baseIntegerEnumTypeHandler.getNullableResult(rs, columnName);
-        } else if (ReflectUtils.isSuperInterface(type, BaseStringEnum.class)) {
+        } else if (ReflectUtil.isSuperInterface(type, BaseStringEnum.class)) {
             BaseStringEnumTypeHandler baseStringEnumTypeHandler = new BaseStringEnumTypeHandler(type);
             return (E) baseStringEnumTypeHandler.getNullableResult(rs, columnName);
         }
@@ -60,10 +60,10 @@ public class EnumTypeHandler<E extends Enum<E>> extends BaseTypeHandler<E> {
 
     @Override
     public E getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
-        if (ReflectUtils.isSuperInterface(type, BaseIntegerEnum.class)) {
+        if (ReflectUtil.isSuperInterface(type, BaseIntegerEnum.class)) {
             BaseIntegerEnumTypeHandler baseIntegerEnumTypeHandler = new BaseIntegerEnumTypeHandler(type);
             return (E) baseIntegerEnumTypeHandler.getNullableResult(rs, columnIndex);
-        } else if (ReflectUtils.isSuperInterface(type, BaseStringEnum.class)) {
+        } else if (ReflectUtil.isSuperInterface(type, BaseStringEnum.class)) {
             BaseStringEnumTypeHandler baseStringEnumTypeHandler = new BaseStringEnumTypeHandler(type);
             return (E) baseStringEnumTypeHandler.getNullableResult(rs, columnIndex);
         }
@@ -74,10 +74,10 @@ public class EnumTypeHandler<E extends Enum<E>> extends BaseTypeHandler<E> {
 
     @Override
     public E getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
-        if (ReflectUtils.isSuperInterface(type, BaseIntegerEnum.class)) {
+        if (ReflectUtil.isSuperInterface(type, BaseIntegerEnum.class)) {
             BaseIntegerEnumTypeHandler baseIntegerEnumTypeHandler = new BaseIntegerEnumTypeHandler(type);
             return (E) baseIntegerEnumTypeHandler.getNullableResult(cs, columnIndex);
-        } else if (ReflectUtils.isSuperInterface(type, BaseStringEnum.class)) {
+        } else if (ReflectUtil.isSuperInterface(type, BaseStringEnum.class)) {
             BaseStringEnumTypeHandler baseStringEnumTypeHandler = new BaseStringEnumTypeHandler(type);
             return (E) baseStringEnumTypeHandler.getNullableResult(cs, columnIndex);
         }

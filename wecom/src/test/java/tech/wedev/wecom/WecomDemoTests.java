@@ -14,7 +14,7 @@ import tech.wedev.wecom.entity.po.WecomMarketArticlePO;
 import tech.wedev.wecom.enums.AttachmentsMsgTypeEnum;
 import tech.wedev.wecom.monad.Try;
 import tech.wedev.wecom.request.RequestV1Private;
-import tech.wedev.wecom.utils.ObjectUtils;
+import tech.wedev.wecom.utils.ObjectUtil;
 import tech.wedev.wecom.utils.SM4Util;
 import tech.wedev.wecom.utils.StringUtil;
 
@@ -67,7 +67,7 @@ public class WecomDemoTests {
 
 	@Test
 	public void test5() {
-		System.out.println(ObjectUtils.strToType("100", Integer.class) + 1);
+		System.out.println(ObjectUtil.strToType("100", Integer.class) + 1);
 		ListUtils.partition(new ArrayList<>(), 200).stream().filter(CollectionUtils::isNotEmpty).forEach(System.out::println);
 	}
 
@@ -109,7 +109,7 @@ public class WecomDemoTests {
 //		var getDeclaredFields0 = Class.class.getDeclaredMethod("getDeclaredFields0", boolean.class);
 //		getDeclaredFields0.setAccessible(true);
 //		var invoke = getDeclaredFields0.invoke(Class.class, false);
-		var obj = ObjectUtils.strObjToType(Class.forName("tech.wedev.wecom.request.RequestV1Private$" + StringUtil.capitalizeFirstLetter("link")).newInstance(), RequestV1Private.Link.class);
+		var obj = ObjectUtil.strObjToType(Class.forName("tech.wedev.wecom.request.RequestV1Private$" + StringUtil.capitalizeFirstLetter("link")).newInstance(), RequestV1Private.Link.class);
 
 		var declaredFields1 = Class.forName("com.stream.streamdemo.request.RequestV1Private$" + StringUtil.capitalizeFirstLetter("link")).getDeclaredFields();
 		/*for (Field field : declaredFields1) {
@@ -133,7 +133,7 @@ public class WecomDemoTests {
 						var f1 = b.getDeclaredField("link");
 						f1.setAccessible(true);
 						var instance = b.newInstance();
-						f1.set(ObjectUtils.strObjToType(instance, RequestV1Private.Attachments.class),obj);
+						f1.set(ObjectUtil.strObjToType(instance, RequestV1Private.Attachments.class),obj);
 						System.out.println(instance);
 					} catch (Exception e) {
 						throw new RuntimeException(e);

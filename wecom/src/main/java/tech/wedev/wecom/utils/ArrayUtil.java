@@ -3,8 +3,8 @@ package tech.wedev.wecom.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class ArrayUtils {
-    private ArrayUtils() {
+public final class ArrayUtil {
+    private ArrayUtil() {
 
     }
     public static <T> T indexOf(T[] t, int index) {
@@ -51,7 +51,7 @@ public final class ArrayUtils {
     }
 
     public static <T> List<T> subList(List<T> list, Integer batchSize) {
-        batchSize = BeanUtils.defaultIfNull(batchSize, 1000);
+        batchSize = BeanUtil.defaultIfNull(batchSize, 1000);
         if (list.size() > batchSize) {
             return list. subList(0, batchSize);
         } else {

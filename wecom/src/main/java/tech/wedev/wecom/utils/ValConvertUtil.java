@@ -5,8 +5,8 @@ import java.math.BigDecimal;
 /**
  * 值类型相互转换工具类
  */
-public class ValConvertUtils {
-    public ValConvertUtils() {
+public class ValConvertUtil {
+    public ValConvertUtil() {
     }
 
     /**

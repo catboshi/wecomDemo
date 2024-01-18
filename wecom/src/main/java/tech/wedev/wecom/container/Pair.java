@@ -1,6 +1,6 @@
 package tech.wedev.wecom.container;
 
-import tech.wedev.wecom.utils.ArrayUtils;
+import tech.wedev.wecom.utils.ArrayUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,6 +22,6 @@ public class Pair<L, R> implements Serializable {
     }
 
     public static <L, R> List<Pair<L, R>> of(Pair<L, R>... pairs) {
-        return ArrayUtils.asArrayList(pairs);
+        return ArrayUtil.asArrayList(pairs);
     }
 }
